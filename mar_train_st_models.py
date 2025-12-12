@@ -77,8 +77,7 @@ else:
 storage_url = optuna.storages.InMemoryStorage()
 
 for path in [MODEL_DIR, PRED_DIR]:
-    if not os.path.exists(path):
-        os.makedirs(path)
+    os.makedirs(path, exist_ok=True)
 
 
 
