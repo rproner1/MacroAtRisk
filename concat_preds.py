@@ -3,7 +3,7 @@ import numpy as np
 import argparse
 import os 
 
-DATE = '25-12-17'
+DATE = '25-12-18_7cv'
 MT_PRED_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/MT_Predictions_25-11-10/"
 ST_PRED_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/ST_Predictions_{DATE}/"
 LIT_BENCH_PRED_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/LitBenchmarkPredictions_25-11-27/"

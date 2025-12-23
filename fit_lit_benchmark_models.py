@@ -24,7 +24,7 @@ COUNTRY = args.country
 HORIZON_IN_QUARTERS = args.horizon
 QUANTILES = args.quantiles
 
-DATE = '25-11-27'
+DATE = '25-12-23'
 
 DATA_DIR = "/home/rproner/Documents/Data/MacroAtRisk/"
 PRED_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/LitBenchmarkPredictions_{DATE}/"
