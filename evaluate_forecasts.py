@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-from skforecast.metrics import crps_from_quantiles
 from fit_naive import expanding_stats
 
 from utils import compute_oos_r1_score, compute_oos_r2_score, estimate_mean_from_quantiles
