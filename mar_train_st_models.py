@@ -29,12 +29,12 @@ parser.add_argument("--year", type=int, required=True, help="train cutoff year")
 parser.add_argument("--target", type=int, required=True, help="target variable index")
 parser.add_argument("--country", type=str, default="us", help="country code (us/ca)")
 parser.add_argument("--horizon", type=int, default=4, help="forecast horizon in quarters")
-parser.add_argument("--trials", type=int, default=20, help="number of trials per model/layer combination")
+parser.add_argument("--trials", type=int, default=50, help="number of trials per model/layer combination")
 parser.add_argument("--time-steps", type=int, default=12, help="number of time steps for RNN models")
 parser.add_argument("--quantiles", type=float, nargs="*", default=[0.05,0.25,0.50,0.75,0.95], help="list of quantiles to predict")
 parser.add_argument("--overwrite-log", action="store_true", help="overwrite existing log file")
 parser.add_argument("--local", action="store_true", help="run locally (use local data/DB)")
-parser.add_argument("--n-estimators", type=int, default=10, help="number of estimators per ensemble model")
+parser.add_argument("--n-estimators", type=int, default=5, help="number of estimators per ensemble model")
 parser.add_argument("--val-years", type=int, default=5, help="number of validation years for early stopping")
 parser.add_argument("--k-folds", type=int, default=10, help="number of folds for cross-validation")
 parser.add_argument("--date", type=str, default=str(date.today()), help="date string for file paths")
@@ -88,8 +88,8 @@ for path in [MODEL_DIR, PRED_DIR]:
 # ******************************** Data ********************************
 
 input_paths = [
-    f'{DATA_DIR}{COUNTRY}_macro_predictors_{HORIZON_IN_QUARTERS}q_1961-01--2024-12.csv', 
-    # f'{DATA_DIR}{COUNTRY}_financial_predictors_{HORIZON_IN_QUARTERS}q_1960-01--2024-12.csv'
+    f'{DATA_DIR}{COUNTRY}_macro_predictors_{HORIZON_IN_QUARTERS}q_1961-01--2024-12.csv'
+    # f'{DATA_DIR}{COUNTRY}_oap_firm_avg_diff_financial_predictors_{HORIZON_IN_QUARTERS}q_1961-01--2024-12.csv'
 ]
 
 non_rnn_data, rnn_data, meta_data = prepare_quantile_data(

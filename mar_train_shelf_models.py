@@ -32,12 +32,13 @@ parser.add_argument("--year", type=int, required=True, help="train cutoff year")
 parser.add_argument("--target", type=int, required=True, help="target variable index")
 parser.add_argument("--country", type=str, default="us", help="country code (us/ca)")
 parser.add_argument("--horizon", type=int, default=4, help="forecast horizon in quarters")
-parser.add_argument("--trials", type=int, default=20, help="number of trials per model/layer combination")
+parser.add_argument("--trials", type=int, default=50, help="number of trials per model/layer combination")
 parser.add_argument("--time-steps", type=int, default=12, help="number of time steps for RNN models")
 parser.add_argument("--quantiles", type=float, nargs="*", default=[0.05,0.25,0.50,0.75,0.95], help="list of quantiles to predict")
 parser.add_argument("--overwrite-log", action="store_true", help="overwrite existing log file")
 parser.add_argument("--local", action="store_true", help="run locally (use local data/DB)")
-parser.add_argument("--n-estimators", type=int, default=10, help="number of estimators per ensemble model")
+parser.add_argument("--n-estimators", type=int, default=5, help="number of estimators per ensemble model")
+parser.add_argument("--k-folds", type=int, default=10, help="number of folds for cross-validation")
 parser.add_argument("--date", type=str, default=str(date.today()), help="date string for file paths")
 args = parser.parse_args()
 
@@ -53,6 +54,7 @@ TARGET_IDX = args.target
 TRIALS = args.trials
 TIME_STEPS = args.time_steps
 N_ESTIMATORS = args.n_estimators
+K_FOLDS = args.k_folds
 DATE = args.date
 
 if RUN_LOCALLY: 
@@ -72,8 +74,8 @@ if RUN_LOCALLY:
 else:
     DATA_DIR = "/home/rproner/projects/rrg-camera/rproner/Data/MacroAtRisk/"
     TUNING_LOG_DIR = "/home/rproner/projects/rrg-camera/rproner/MacroAtRisk/TuningLogs/"
-    MODEL_DIR = f"/home/rproner/projects/rrg-camera/rproner/MacroAtRisk/Models_{DATE}/"
-    PRED_DIR = f"/home/rproner/projects/rrg-camera/rproner/MacroAtRisk/Shelf_Predictions_{DATE}/"
+    MODEL_DIR = f"/home/rproner/projects/rrg-camera/rproner/MacroAtRisk/Models/Models_{DATE}/"
+    PRED_DIR = f"/home/rproner/projects/rrg-camera/rproner/MacroAtRisk/Predictions/Shelf_Predictions_{DATE}/"
     tuning_log_path = f"{TUNING_LOG_DIR}st_tuning_log_{DATE}.json"
     os.makedirs(TUNING_LOG_DIR, exist_ok=True)
 
@@ -81,15 +83,15 @@ storage_url = optuna.storages.InMemoryStorage()
 
 for path in [MODEL_DIR, PRED_DIR]:
     if not os.path.exists(path):
-        os.makedirs(path)
+        os.makedirs(path, exist_ok=True)
 
 
 
 # ******************************** Data ********************************
 
 input_paths = [
-    f'{DATA_DIR}{COUNTRY}_macro_predictors_{HORIZON_IN_QUARTERS}q_1961-01--2024-12.csv', 
-    # f'{DATA_DIR}{COUNTRY}_financial_predictors_{HORIZON_IN_QUARTERS}q_1960-01--2024-12.csv'
+    f'{DATA_DIR}{COUNTRY}_macro_predictors_{HORIZON_IN_QUARTERS}q_1961-01--2024-12.csv' 
+    # f'{DATA_DIR}{COUNTRY}_oap_firm_avg_diff_financial_predictors_{HORIZON_IN_QUARTERS}q_1961-01--2024-12.csv'
 ]
 
 non_rnn_data, rnn_data, meta_data = prepare_quantile_data(
@@ -183,7 +185,7 @@ for model in linear_models:
 
     else: 
         print(f"Tuning {model_name}...")
-        search = GridSearchCV(estimator=linear_models[model], param_grid=grid, cv=10, n_jobs=-1)
+        search = GridSearchCV(estimator=linear_models[model], param_grid=grid, cv=K_FOLDS, n_jobs=-1)
         best_fit = search.fit(X_tr, y_tr.values.flatten())
         best_params = best_fit.best_params_
         save_hyperparameters(best_params, model_name, tuning_log_path)
@@ -342,7 +344,7 @@ for Q, q in zip(path_quantiles, QUANTILES):
     else:
         print(f'Tuning {study_name}...')
         gbt_grid = {'learning_rate' : [0.1, 0.01, 0.001],'n_estimators' : [50, 100, 200],'subsample' : [0.25, 0.5, 1.0], 'max_depth' : list(range(1, 6+1, 2))}
-        grid_search = GridSearchCV(gbt, gbt_grid, refit=True, cv=10, n_jobs=-1)
+        grid_search = GridSearchCV(gbt, gbt_grid, refit=True, cv=K_FOLDS, n_jobs=-1)
 
         # Perform grid search and refit with best params
         best_fit = grid_search.fit(X_train_full, y_train_full.values.flatten())
@@ -365,7 +367,7 @@ else:
     print(f'Tuning {study_name}...')
 
     qrf_grid = {'n_estimators':[100,500,1000], 'max_depth':list(range(1, 12+1))}
-    grid_search = GridSearchCV(qrf, qrf_grid, refit=True, cv=10, n_jobs=-1)
+    grid_search = GridSearchCV(qrf, qrf_grid, refit=True, cv=K_FOLDS, n_jobs=-1)
 
     best_fit = grid_search.fit(X_train_full, y_train_full.values.flatten())
 
@@ -390,7 +392,7 @@ else:
     print(f'Tuning {study_name}...')
 
     qrf_grid = {'n_estimators':[100,500,1000], 'max_depth':list(range(1, 12+1))}
-    grid_search = GridSearchCV(qrf, qrf_grid, refit=True, cv=10, n_jobs=-1)
+    grid_search = GridSearchCV(qrf, qrf_grid, refit=True, cv=K_FOLDS, n_jobs=-1)
 
     best_fit = grid_search.fit(X_train_full_lags, y_train_full_lags.values.flatten())
 

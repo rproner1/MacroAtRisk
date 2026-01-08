@@ -3,11 +3,11 @@ import numpy as np
 import argparse
 import os 
 
-DATE = '25-12-18_7cv'
+DATE = '26-01-07_5vy'
 MT_PRED_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/MT_Predictions_25-11-10/"
 ST_PRED_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/ST_Predictions_{DATE}/"
-LIT_BENCH_PRED_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/LitBenchmarkPredictions_25-11-27/"
-SHELF_PRED_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/Shelf_Predictions_25-12-16/"
+LIT_BENCH_PRED_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/LitBenchmarkPredictions_25-12-23/"
+SHELF_PRED_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/Shelf_Predictions_26-01-07/"
 PRED_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/Predictions_{DATE}/"
 
 os.makedirs(PRED_DIR, exist_ok=True)

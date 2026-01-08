@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import os
 import argparse
 
-DATE = '25-12-17'
+DATE = '26-01-07_5vy'
 PRED_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/Predictions_{DATE}/"
 NAIVE_PRED_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/USNaivePredictions/"
 RESULTS_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/Results_{DATE}/"
@@ -82,11 +82,11 @@ for TARGET_IDX in [0,1,2]:
         benchmark_model,
         # "QRF",
         "QRF-l",
-        # "QGB",
+        "QGB",
         # "RNN",
-        "DMQv0",
-        "DMQv1",
-        "DMQv2",
+        "DMQv0c",
+        "DMQv1c",
+        "DMQv2c",
         # "DMQv3",
         # "DMQv4",
         # "DMQe_012",
