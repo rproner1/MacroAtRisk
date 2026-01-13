@@ -2,17 +2,25 @@ import pandas as pd
 import numpy as np
 from fit_naive import expanding_stats
 
-from utils import compute_oos_r1_score, compute_oos_r2_score, estimate_mean_from_quantiles
-import matplotlib.pyplot as plt
+from utils import compute_oos_r1_score
 
 import os
 import argparse
-from datetime import datetime
 
-DATE = datetime.now().strftime("%Y%m%d")
+DATE = "20260108"
+base_model_subset = [
+    'LR',
+    'LAS',
+    'QRF',
+    'QGB',
+    'DMQv0c',
+    'DMQv1c',
+    'DMQv2c'
+]
 PRED_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/Predictions/"
 NAIVE_PRED_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/USNaivePredictions/"
 RESULTS_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/Results/{DATE}/"
+TABLES_DIR = "/home/rproner/Documents/Projects/MacroAtRisk/ResultsTables/"
 
 os.makedirs(RESULTS_DIR, exist_ok=True)
 
@@ -54,6 +62,7 @@ for TARGET_IDX in [0,1,2]:
     elif TARGET_IDX==2:
         benchmark_model = "UAR"
 
+    model_subset = ['AR1', benchmark_model] + base_model_subset
 
     # Naive rolling mean and quantile predictions for computing out-of-sample R1 and R2
     y_full = pd.read_csv(f'/home/rproner/Documents/Data/MacroAtRisk/{COUNTRY}_targets_1961-01--2024-12.csv', index_col=0, parse_dates=True).loc['1961-01-01':'2024-12-01', :]
@@ -159,3 +168,13 @@ for TARGET_IDX in [0,1,2]:
     r1_results_df['Mean'] = r1_results_df.loc[:, QUANTILES].mean(axis=1)
     r1_results_df.sort_values('Mean', ascending=False).to_csv(f"{RESULTS_DIR}oos_r1_{COUNTRY}_{HORIZON_IN_QUARTERS}q_{target_dict[TARGET_IDX]}_{TEST_START}-{TEST_END}.csv", index=False)
 
+    # Make latex table 
+    
+    r1_results_df = r1_results_df.set_index(['Model'])
+    row_order = ['Mean'] + r1_results_df.columns[:-1].tolist()
+    r1_report_df = r1_results_df.transpose().loc[row_order, model_subset]
+    rename_rows_map = {k: f"Q{int(k*100)}" if k!='Mean' else 'Mean' for k in r1_report_df.index}
+    r1_report_df.rename(index=rename_rows_map, inplace=True)
+    r1_report_df.columns.name = None
+    r1_report_df.index.name = None
+    r1_report_df.to_latex(TABLES_DIR + f"r1_{target_dict[TARGET_IDX]}.tex", float_format="%.1f")

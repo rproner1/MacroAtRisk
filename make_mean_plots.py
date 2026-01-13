@@ -1,7 +1,5 @@
-from datetime import datetime
 import pandas as pd
 import numpy as np
-from skforecast.metrics import crps_from_quantiles
 from fit_naive import expanding_stats
 
 from utils import compute_oos_r1_score, compute_oos_r2_score, estimate_mean_from_quantiles
@@ -9,10 +7,10 @@ import matplotlib.pyplot as plt
 
 import os
 import argparse
+from datetime import datetime
 
-DATE = "20260108" # datetime.now().strftime("%Y%m%d")
-
-base_model_subset = [
+DATE = "20260108"
+base_plot_list = [
     'LR',
     'LAS',
     'QRF',
@@ -21,13 +19,12 @@ base_model_subset = [
     'DMQv1c',
     'DMQv2c'
 ]
-
-
 PRED_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/Predictions/"
 NAIVE_PRED_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/USNaivePredictions/"
 RESULTS_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/Results/{DATE}/"
-TABLES_DIR = "/home/rproner/Documents/Projects/MacroAtRisk/ResultsTables/"
-os.makedirs(RESULTS_DIR, exist_ok=True)
+FIG_DIR = "/home/rproner/Documents/Projects/MacroAtRisk/ResultsFigures/"
+
+os.makedirs(FIG_DIR, exist_ok=True)
 
 parser = argparse.ArgumentParser(description="Evaluate forecasts")
 # parser.add_argument("--target", type=int, required=True, help="target variable index")
@@ -67,7 +64,7 @@ for TARGET_IDX in [0,1,2]:
     elif TARGET_IDX==2:
         benchmark_model = "UAR"
 
-    model_subset = ['AR1', benchmark_model] + base_model_subset
+    plot_list = ['AR1', benchmark_model] + base_plot_list
 
     # Naive rolling mean and quantile predictions for computing out-of-sample R1 and R2
     y_full = pd.read_csv(f'/home/rproner/Documents/Data/MacroAtRisk/{COUNTRY}_targets_1961-01--2024-12.csv', index_col=0, parse_dates=True).loc['1961-01-01':'2024-12-01', :]
@@ -77,54 +74,25 @@ for TARGET_IDX in [0,1,2]:
 
     # Load predictions
     preds = pd.read_csv(f"{PRED_DIR}all_models_predictions_{COUNTRY}_{HORIZON_IN_QUARTERS}q_{target_dict[TARGET_IDX]}.csv", index_col=0, parse_dates=True).loc[TEST_START:TEST_END]
-
     models_list = set([c.split('_')[0] for c in preds.columns if '_' in c])
 
     # Load actuals
     actuals = pd.read_csv(f"/home/rproner/Documents/Data/MacroAtRisk/{COUNTRY}_targets_1961-01--2024-12.csv", index_col=0, parse_dates=True)
     actuals = actuals.loc[TEST_START:TEST_END, target_dict[TARGET_IDX]]
 
-    # Evaluate forecasts
-    # R-squared
-    r2_report = {
-        'Model': [],
-        'R2': []
-    }
-
-    all_model_mean_preds = {}
     for model in models_list:
-
-        print("Evaluating model:", model)
-
+         
         # Grab model quantile predictions
         model_preds = preds.loc[:, f"{model}_Q{int_quantiles[0]}":f"{model}_Q{int_quantiles[-1]}"]
 
-        # Estimate the mean from quantiles
-        model_mean_preds = estimate_mean_from_quantiles(model_preds.values, weights=[0.15, 0.225, 0.25, 0.225, 0.15])
-        # model_mean_preds = model_preds.loc[:, f"{model}_Q50"].values
-        all_model_mean_preds[model] = model_mean_preds
+        # Get mean preds
+        model_mean_preds = estimate_mean_from_quantiles(model_preds)
 
-        # Compute R2
-        r2 = compute_oos_r2_score(
-            y_true=actuals.values.flatten(),
-            y_pred=model_mean_preds.flatten(),
-            benchmark=naive_mean_test.values.flatten()
-        )
-
-        r2_report['Model'].append(model)
-        r2_report['R2'].append(r2)
-
-    r2 = compute_oos_r2_score(
-        y_true=actuals.values.flatten(),
-        y_pred=preds.loc[:, 'AR1_Mean'].values.flatten(),
-        benchmark=naive_mean_test.values.flatten()
-    )
-    r2_report['Model'].append('AR1_Mean')
-    r2_report['R2'].append(r2)
-
-    r2_report_df = pd.DataFrame(r2_report).apply(lambda x: round(x, 1) if x.name=='R2' else x)
-    r2_report_df.sort_values('R2', ascending=False).to_csv(f"{RESULTS_DIR}oos_r2_{COUNTRY}_{HORIZON_IN_QUARTERS}q_{target_dict[TARGET_IDX]}_{TEST_START}-{TEST_END}.csv", index=False)
-
-    # Make latex table 
-    r2_report_df = r2_report_df.set_index('Model').transpose().loc[:, model_subset]
-    r2_report_df.to_latex(TABLES_DIR + f"r2_{target_dict[TARGET_IDX]}.tex", float_format="%.1f")
+        # Plot mean preds
+        fig, ax = plt.subplots()
+        ax.plot(actuals.index, model_mean_preds, label=f"{model} Mean", color="#7fbfff")
+        ax.plot(actuals.index, actuals, label="Actual", color='black')
+        ax.set_title(f"{target_dict[TARGET_IDX]} - {model} Mean Forecast")
+        ax.legend()
+        plt.savefig(f"{FIG_DIR}{model}_mean_plot_{COUNTRY}_{HORIZON_IN_QUARTERS}q_{target_dict[TARGET_IDX]}.png")
+        plt.close(fig)

@@ -1,0 +1,56 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.2 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{nyt/global//global/global}
+    \entry{Liu2023}{article}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=f973610d59252075921cae16abfcc02e}{%
+           family={Liu},
+           familyi={L\bibinitperiod},
+           given={Fred},
+           giveni={F\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{language}{1}{%
+        {en}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier BV}%
+      }
+      \strng{namehash}{f973610d59252075921cae16abfcc02e}
+      \strng{fullhash}{f973610d59252075921cae16abfcc02e}
+      \strng{bibnamehash}{f973610d59252075921cae16abfcc02e}
+      \strng{authorbibnamehash}{f973610d59252075921cae16abfcc02e}
+      \strng{authornamehash}{f973610d59252075921cae16abfcc02e}
+      \strng{authorfullhash}{f973610d59252075921cae16abfcc02e}
+      \field{sortinit}{L}
+      \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{SSRN Electron. J.}
+      \field{title}{Quantile machine learning and the cross-section of stock returns}
+      \field{year}{2023}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+
