@@ -1,0 +1,396 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.2 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{nyt/global//global/global}
+    \entry{Adrian2019}{article}{}
+      \name{author}{3}{}{%
+        {{un=0,uniquepart=base,hash=481f61173b27efd5969e65c8de80a573}{%
+           family={Adrian},
+           familyi={A\bibinitperiod},
+           given={Tobias},
+           giveni={T\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=52bb9c3897265ffda88761a285c6fa8b}{%
+           family={Boyarchenko},
+           familyi={B\bibinitperiod},
+           given={Nina},
+           giveni={N\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=5bd75a97c4a951e753c86c8edbc8a560}{%
+           family={Giannone},
+           familyi={G\bibinitperiod},
+           given={Domenico},
+           giveni={D\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{language}{1}{%
+        {en}%
+      }
+      \list{publisher}{1}{%
+        {American Economic Association}%
+      }
+      \strng{namehash}{dde24d0be07fba65bbcd1fe2d29da830}
+      \strng{fullhash}{dde24d0be07fba65bbcd1fe2d29da830}
+      \strng{bibnamehash}{dde24d0be07fba65bbcd1fe2d29da830}
+      \strng{authorbibnamehash}{dde24d0be07fba65bbcd1fe2d29da830}
+      \strng{authornamehash}{dde24d0be07fba65bbcd1fe2d29da830}
+      \strng{authorfullhash}{dde24d0be07fba65bbcd1fe2d29da830}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{We study the conditional distribution of GDP growth as a function of economic and financial conditions. Deteriorating financial conditions are associated with an increase in the conditional volatility and a decline in the conditional mean of GDP growth, leading the lower quantiles of GDP growth to vary with financial conditions and the upper quantiles to be stable over time. Upside risks to GDP growth are low in most periods while downside risks increase as financial conditions become tighter. We argue that amplification mechanisms in the financial sector generate the observed growth vulnerability dynamics. (JEL C53, E23, E27, E32, E44)}
+      \field{journaltitle}{Am. Econ. Rev.}
+      \field{month}{4}
+      \field{number}{4}
+      \field{title}{Vulnerable growth}
+      \field{volume}{109}
+      \field{year}{2019}
+      \field{pages}{1263\bibrangedash 1289}
+      \range{pages}{27}
+    \endentry
+    \entry{Adrian2025}{article}{}
+      \name{author}{4}{ul=2}{%
+        {{un=0,uniquepart=base,hash=481f61173b27efd5969e65c8de80a573}{%
+           family={Adrian},
+           familyi={A\bibinitperiod},
+           given={Tobias},
+           giveni={T\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=cb4022b80a384724e20ebc99c85862ae}{%
+           family={Chen},
+           familyi={C\bibinitperiod},
+           given={Hongqi},
+           giveni={H\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=098895eea6d8cfae15e07fcd0b25a549}{%
+           family={Dovì},
+           familyi={D\bibinitperiod},
+           given={Max-Sebastian},
+           giveni={M\bibinithyphendelim S\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=c652fd4443823bab614272375bde18b3}{%
+           family={Lee},
+           familyi={L\bibinitperiod},
+           given={Ji\bibnamedelima Hyung},
+           giveni={J\bibinitperiod\bibinitdelim H\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{b9fc0ae0e8c3cebec25b843b697dfce4}
+      \strng{fullhash}{46a1e7c5b605c728b8f8bcff6134e8cb}
+      \strng{bibnamehash}{b9fc0ae0e8c3cebec25b843b697dfce4}
+      \strng{authorbibnamehash}{b9fc0ae0e8c3cebec25b843b697dfce4}
+      \strng{authornamehash}{b9fc0ae0e8c3cebec25b843b697dfce4}
+      \strng{authorfullhash}{46a1e7c5b605c728b8f8bcff6134e8cb}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{We analyse growth vulnerabilities in the US using quantile partial correlation regression, a selection-based machine-learning method that achieves model selection consistency under time series. We find that downside risk is primarily driven by financial, labour-market, and housing variables, with their importance changing over time. Decomposing downside risk into its individual components, we construct sector-specific indices that predict it, while controlling for information from other sectors, thereby isolating the downside risks emanating from each sector.}
+      \field{eprintclass}{econ.GN}
+      \field{title}{Machine-learning growth at risk}
+      \field{year}{2025}
+      \verb{eprint}
+      \verb 2506.00572
+      \endverb
+    \endentry
+    \entry{Caruana1997}{article}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=599c5251d489b92dc7856277d56cb1a9}{%
+           family={Caruana},
+           familyi={C\bibinitperiod},
+           given={Rich},
+           giveni={R\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{language}{1}{%
+        {en}%
+      }
+      \list{publisher}{2}{%
+        {Springer Science}%
+        {Business Media LLC}%
+      }
+      \strng{namehash}{599c5251d489b92dc7856277d56cb1a9}
+      \strng{fullhash}{599c5251d489b92dc7856277d56cb1a9}
+      \strng{bibnamehash}{599c5251d489b92dc7856277d56cb1a9}
+      \strng{authorbibnamehash}{599c5251d489b92dc7856277d56cb1a9}
+      \strng{authornamehash}{599c5251d489b92dc7856277d56cb1a9}
+      \strng{authorfullhash}{599c5251d489b92dc7856277d56cb1a9}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Multitask Learning is an approach to inductive transfer that improves generalization by using the domain information contained in the training signals of related tasks as an inductive bias. It does this by learning tasks in parallel while using a shared representation; what is learned for each task can help other tasks be learned better. This paper reviews prior work on MTL, presents new evidence that MTL in backprop nets discovers task relatedness without the need of supervisory signals, and presents new results for MTL with k-nearest neighbor and kernel regression. In this paper we demonstrate multitask learning in three domains. We explain how multitask learning works, and show that there are many opportunities for multitask learning in real domains. We present an algorithm and results for multitask learning with case-based methods like k-nearest neighbor and kernel regression, and sketch an algorithm for multitask learning in decision trees. Because multitask learning works, can be applied to many different kinds of domains, and can be used with different learning algorithms, we conjecture there will be many opportunities for its use on real-world problems.}
+      \field{journaltitle}{Mach. Learn.}
+      \field{month}{7}
+      \field{number}{1}
+      \field{title}{Multitask learning}
+      \field{volume}{28}
+      \field{year}{1997}
+      \field{pages}{41\bibrangedash 75}
+      \range{pages}{35}
+    \endentry
+    \entry{Chavleishvili2024}{article}{}
+      \name{author}{2}{}{%
+        {{un=0,uniquepart=base,hash=a55bc03f38c16ab959b11e7567a544b2}{%
+           family={Chavleishvili},
+           familyi={C\bibinitperiod},
+           given={Sulkhan},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=bc717fc042b6e7ba3738dd13fbb4317d}{%
+           family={Manganelli},
+           familyi={M\bibinitperiod},
+           given={Simone},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {Wiley Online Library}%
+      }
+      \strng{namehash}{480a757af37938a7f0d0a6544f499924}
+      \strng{fullhash}{480a757af37938a7f0d0a6544f499924}
+      \strng{bibnamehash}{480a757af37938a7f0d0a6544f499924}
+      \strng{authorbibnamehash}{480a757af37938a7f0d0a6544f499924}
+      \strng{authornamehash}{480a757af37938a7f0d0a6544f499924}
+      \strng{authorfullhash}{480a757af37938a7f0d0a6544f499924}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Journal of Applied Econometrics}
+      \field{number}{1}
+      \field{title}{Forecasting and stress testing with quantile vector autoregression}
+      \field{volume}{39}
+      \field{year}{2024}
+      \field{pages}{66\bibrangedash 85}
+      \range{pages}{20}
+    \endentry
+    \entry{Giannone2025}{misc}{}
+      \name{author}{5}{}{%
+        {{un=0,uniquepart=base,hash=ee3eb4bacc0398606ba2437c5eed936a}{%
+           family={Chi},
+           familyi={C\bibinitperiod},
+           given={Ta-Chung},
+           giveni={T\bibinithyphendelim C\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=c054e65441c8637535e26f2cb787747b}{%
+           family={Fan},
+           familyi={F\bibinitperiod},
+           given={Ting-Han},
+           giveni={T\bibinithyphendelim H\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=1bd60e7f54386456fb8550d0570123ef}{%
+           family={Ghigliazza},
+           familyi={G\bibinitperiod},
+           given={Raffaele\bibnamedelima M.},
+           giveni={R\bibinitperiod\bibinitdelim M\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=5bd75a97c4a951e753c86c8edbc8a560}{%
+           family={Giannone},
+           familyi={G\bibinitperiod},
+           given={Domenico},
+           giveni={D\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=ccc99b37ef55238f9a5c0bd1b9cdc16a}{%
+           family={Wang},
+           familyi={W\bibinitperiod},
+           given={Zixuan},
+           giveni={Z\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{319e39b543d902ac7258999b9fc74f6a}
+      \strng{fullhash}{4570edc1636a480d33c819aff5ff588b}
+      \strng{bibnamehash}{319e39b543d902ac7258999b9fc74f6a}
+      \strng{authorbibnamehash}{319e39b543d902ac7258999b9fc74f6a}
+      \strng{authornamehash}{319e39b543d902ac7258999b9fc74f6a}
+      \strng{authorfullhash}{4570edc1636a480d33c819aff5ff588b}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{eprintclass}{econ.EM}
+      \field{eprinttype}{arXiv}
+      \field{title}{Macroeconomic Forecasting and Machine Learning}
+      \field{year}{2025}
+      \verb{eprint}
+      \verb 2510.11008
+      \endverb
+      \verb{urlraw}
+      \verb https://arxiv.org/abs/2510.11008
+      \endverb
+      \verb{url}
+      \verb https://arxiv.org/abs/2510.11008
+      \endverb
+    \endentry
+    \entry{Kiley2022}{article}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=945fe3870bebb78a56b0e0f0ea185cec}{%
+           family={Kiley},
+           familyi={K\bibinitperiod},
+           given={Michael\bibnamedelima T},
+           giveni={M\bibinitperiod\bibinitdelim T\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{language}{1}{%
+        {en}%
+      }
+      \list{publisher}{1}{%
+        {Wiley}%
+      }
+      \strng{namehash}{945fe3870bebb78a56b0e0f0ea185cec}
+      \strng{fullhash}{945fe3870bebb78a56b0e0f0ea185cec}
+      \strng{bibnamehash}{945fe3870bebb78a56b0e0f0ea185cec}
+      \strng{authorbibnamehash}{945fe3870bebb78a56b0e0f0ea185cec}
+      \strng{authornamehash}{945fe3870bebb78a56b0e0f0ea185cec}
+      \strng{authorfullhash}{945fe3870bebb78a56b0e0f0ea185cec}
+      \field{sortinit}{K}
+      \field{sortinithash}{c02bf6bff1c488450c352b40f5d853ab}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{J. Money Credit Bank.}
+      \field{month}{8}
+      \field{number}{5}
+      \field{title}{Unemployment risk}
+      \field{volume}{54}
+      \field{year}{2022}
+      \field{pages}{1407\bibrangedash 1424}
+      \range{pages}{18}
+    \endentry
+    \entry{Liu2023}{article}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=f973610d59252075921cae16abfcc02e}{%
+           family={Liu},
+           familyi={L\bibinitperiod},
+           given={Fred},
+           giveni={F\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{language}{1}{%
+        {en}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier BV}%
+      }
+      \strng{namehash}{f973610d59252075921cae16abfcc02e}
+      \strng{fullhash}{f973610d59252075921cae16abfcc02e}
+      \strng{bibnamehash}{f973610d59252075921cae16abfcc02e}
+      \strng{authorbibnamehash}{f973610d59252075921cae16abfcc02e}
+      \strng{authornamehash}{f973610d59252075921cae16abfcc02e}
+      \strng{authorfullhash}{f973610d59252075921cae16abfcc02e}
+      \field{sortinit}{L}
+      \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{SSRN Electron. J.}
+      \field{title}{Quantile machine learning and the cross-section of stock returns}
+      \field{year}{2023}
+    \endentry
+    \entry{Lopez-Salido2024}{article}{}
+      \name{author}{2}{}{%
+        {{un=0,uniquepart=base,hash=4fe8a85e2b77cc83979af36d6b13456c}{%
+           family={López-Salido},
+           familyi={L\bibinithyphendelim S\bibinitperiod},
+           given={David},
+           giveni={D\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=f48b255e995273080a578f764c1c8944}{%
+           family={Loria},
+           familyi={L\bibinitperiod},
+           given={Francesca},
+           giveni={F\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{language}{1}{%
+        {en}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier BV}%
+      }
+      \strng{namehash}{fdd199672a178b1df3ad4f7c5da8de39}
+      \strng{fullhash}{fdd199672a178b1df3ad4f7c5da8de39}
+      \strng{bibnamehash}{fdd199672a178b1df3ad4f7c5da8de39}
+      \strng{authorbibnamehash}{fdd199672a178b1df3ad4f7c5da8de39}
+      \strng{authornamehash}{fdd199672a178b1df3ad4f7c5da8de39}
+      \strng{authorfullhash}{fdd199672a178b1df3ad4f7c5da8de39}
+      \field{sortinit}{L}
+      \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{J. Monet. Econ.}
+      \field{month}{7}
+      \field{number}{103570}
+      \field{title}{Inflation at risk}
+      \field{volume}{145}
+      \field{year}{2024}
+      \field{pages}{103570}
+      \range{pages}{1}
+    \endentry
+    \entry{Schmidt2016}{article}{}
+      \name{author}{2}{}{%
+        {{un=0,uniquepart=base,hash=5f8825aadef2dc16e63fe0877182044b}{%
+           family={Schmidt},
+           familyi={S\bibinitperiod},
+           given={Lawrence},
+           giveni={L\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=56a4f4e9ee4f67fcb0d528cbce811e14}{%
+           family={Zhu},
+           familyi={Z\bibinitperiod},
+           given={Yinchu},
+           giveni={Y\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{244ad2028064feecfea2fe4be2de399c}
+      \strng{fullhash}{244ad2028064feecfea2fe4be2de399c}
+      \strng{bibnamehash}{244ad2028064feecfea2fe4be2de399c}
+      \strng{authorbibnamehash}{244ad2028064feecfea2fe4be2de399c}
+      \strng{authornamehash}{244ad2028064feecfea2fe4be2de399c}
+      \strng{authorfullhash}{244ad2028064feecfea2fe4be2de399c}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Available at SSRN 2220901}
+      \field{title}{Quantile spacings: A simple method for the joint estimation of multiple quantiles without crossing}
+      \field{year}{2016}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

@@ -1,0 +1,126 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{float}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{caption}
+\usepackage{subcaption}
+
+\geometry{margin=1in}
+\onehalfspacing
+
+\title{Sample}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Figures}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../ResultsFigures/DMQe_quantile_plot_us_4q_Infl_yoy.png}
+    \caption{Forecasts for Infl\_yoy using DMQe}
+    \label{fig:infl_yoy_dmqe}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../ResultsFigures/DMQe_quantile_plot_us_4q_IP_yoy.png}
+    \caption{Forecasts for IP\_yoy using DMQe}
+    \label{fig:ip_yoy_dmqe}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../ResultsFigures/DMQe_quantile_plot_us_4q_Unrate_yoy.png}
+    \caption{Forecasts for Unrate\_yoy using DMQe}
+    \label{fig:unrate_yoy_dmqe}
+\end{figure}
+
+\newpage
+
+\newpage
+
+\section{Tables}
+% Inflation yoy
+\begin{table}[H]
+\centering
+\caption{Infl\_yoy}
+\label{tab:infl_yoy}
+\begin{subtable}{\textwidth}
+\centering
+\caption*{Panel A: R1 --- Infl\_yoy}
+\resizebox{\textwidth}{!}{%
+\input{../ResultsTables/r1_Infl_yoy.tex}
+}
+\end{subtable}
+
+\vspace{1em}
+
+\begin{subtable}{\textwidth}
+\centering
+\caption*{Panel B: R2 --- Infl\_yoy}
+\resizebox{\textwidth}{!}{%
+\input{../ResultsTables/r2_Infl_yoy.tex}
+}
+\end{subtable}
+\end{table}
+
+% IP yoy
+\begin{table}[H]
+\centering
+\caption{IP\_yoy}
+\label{tab:ip_yoy}
+\begin{subtable}{\textwidth}
+\centering
+\caption*{Panel A: R1 --- IP\_yoy}
+\resizebox{\textwidth}{!}{%
+\input{../ResultsTables/r1_IP_yoy.tex}
+}
+\end{subtable}
+
+\vspace{1em}
+
+\begin{subtable}{\textwidth}
+\centering
+\caption*{Panel B: R2 --- IP\_yoy}
+\resizebox{\textwidth}{!}{%
+\input{../ResultsTables/r2_IP_yoy.tex}
+}
+\end{subtable}
+\end{table}
+
+% Unrate yoy
+\begin{table}[H]
+\centering
+\caption{Unrate\_yoy}
+\label{tab:unrate_yoy}
+\begin{subtable}{\textwidth}
+\centering
+\caption*{Panel A: R1 --- Unrate\_yoy}
+\resizebox{\textwidth}{!}{%
+\input{../ResultsTables/r1_Unrate_yoy.tex}
+}
+\end{subtable}
+
+\vspace{1em}
+
+\begin{subtable}{\textwidth}
+\centering
+\caption*{Panel B: R2 --- Unrate\_yoy}
+\resizebox{\textwidth}{!}{%
+\input{../ResultsTables/r2_Unrate_yoy.tex}
+}
+\end{subtable}
+\end{table}
+
+\end{document}

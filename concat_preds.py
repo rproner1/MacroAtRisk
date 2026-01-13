@@ -1,14 +1,14 @@
 import pandas as pd
 import numpy as np
 import argparse
-import os 
+import os
+from datetime import datetime
 
-DATE = '26-01-07_5vy'
-MT_PRED_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/MT_Predictions_25-11-10/"
-ST_PRED_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/ST_Predictions_{DATE}/"
-LIT_BENCH_PRED_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/LitBenchmarkPredictions_25-12-23/"
-SHELF_PRED_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/Shelf_Predictions_26-01-07/"
-PRED_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/Predictions_{DATE}/"
+DATE = "20260108"
+ST_PRED_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/ST_Predictions/"
+LIT_BENCH_PRED_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/LitBenchmarkPredictions/"
+SHELF_PRED_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/Shelf_Predictions/"
+PRED_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/Predictions/{DATE}/"
 
 os.makedirs(PRED_DIR, exist_ok=True)
 
