@@ -4,7 +4,7 @@ import argparse
 import os
 from datetime import datetime
 
-DATE = datetime.now().strftime("%Y%m%d")
+DATE = "20260108"
 ST_PRED_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/ST_Predictions/"
 LIT_BENCH_PRED_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/LitBenchmarkPredictions/"
 SHELF_PRED_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/Shelf_Predictions/"
