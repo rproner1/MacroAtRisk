@@ -45,38 +45,37 @@
 
 \begin{frame}{Assessing macro-financial tail risks still challenging}
 
-Standard macro-fin toolkit: GDP-at-risk (Adrian et al 2019); unemployment-at-risk (Kiley 2022); inflation-at-risk (L\'{o}pez-Salido and Loria 2024)
-%(\cite{imf2017}, \cite{Adrian2019}, \cite{Lopez-Salido2024}, \cite{Kiley2022}): GDP-at-risk, inflation-at-risk, unemployment-at-risk%, \cite{ecb2019}, \cite{esrb2024}) yet challenging%\cite{imf2024}, 
+Standard macro-fin toolkit: GDP-at-risk \parencite{Adrian2019}; unemployment-at-risk \parencite{Kiley2022}; inflation-at-risk \parencite{Lopez-Salido2024}
     \vspace{.4cm}
 
     \begin{enumerate}
         \item \textbf{How to fully capture non-linearity and possible skewness?}
         \begin{itemize}
-            \item Adrian et al (2019) use quantile regression (conditional linear)
+            \item \textcite{Adrian2019}, \textcite{Kiley2022}, and \textcite{Lopez-Salido2024} use quantile regression (conditional linear)
         \end{itemize}
         \vspace{.4cm}
         \item \textbf{How to allow for big data?}
         \begin{itemize}
-            \item Adrian et al (2019) assume only an index of financial conditions matter
-            \item Adrian et al (2025) and Gianonne et al (2025) use Quantile ML
+            \item \textcite{Adrian2019} assume only an index of financial conditions matter
+            \item \textcite{Adrian2025} and \textcite{Giannone2025} use Quantile ML
         \end{itemize}            
         \vspace{.4cm}
         \item \textbf{How to ensure coherent joint movement of tails?}
         \begin{itemize}
-            \item Modelling quantile spacing (Schmidt and Zhu, 2013) prevents quantile crossing 
-            \item Quantile VAR (Chavleishvili et al, 2024; Boire et al, 2023) %ensure same process drives all quantiles
-        \end{itemize}  
+            \item Quantile VAR \parencite{Chavleishvili2024} %ensure same process drives all quantiles
+            \item Modelling quantile spacing \parencite{Schmidt2016} prevents quantile crossing
+        \end{itemize}
         \vspace{.4cm}
     \end{enumerate}
     Challenges can be solved with our new ML method
 \end{frame}
 
 \begin{frame}{How do we assess macro-financial tail risks in this paper?}
-    $\Rightarrow$ \textbf{Deep learning}: allows for high degree of complexity and multiple features\\
+    $\Rightarrow$ \textbf{Deep learning}: allows for high degree of time-varying complexity and high-dimensional data \\
     \vspace{.2cm}
-    $\Rightarrow$ \textbf{Multi-task}: use info learned by each task to learn other tasks (Caruana 1997)\\% reduces overfitting (Ruder 2017)\\ 
+    $\Rightarrow$ \textbf{Multi-task}: use info learned by each task to learn other tasks \parencite{Caruana1997} \\% reduces overfitting (Ruder 2017)\\
     \vspace{.2cm}
-    $\Rightarrow$ \textbf{No-crossing architecture}: target quantile spacings (Schmidt and Zhu, 2013)\\
+    $\Rightarrow$ \textbf{No-crossing architecture}: implement quantile spacings \parencite{Schmidt2016}\\
     \vspace{.7cm}
 \end{frame}
 
@@ -98,7 +97,7 @@ Standard macro-fin toolkit: GDP-at-risk (Adrian et al 2019); unemployment-at-ris
 	\end{enumerate}    
 \end{frame}
 
-\begin{frame}{Closest paper to us: Adrian et al 2025}
+\begin{frame}{Closest paper to us: \textcite{Adrian2025}}
 
 	\textbf{What they do:} forecast the tails ($\tau=0.05$ and $\tau=0.95$) of monthly industrial production growth, one-month ahead using Quantile Random Forest (QRF), Quantile Gradiant Boosting (QGB), Quantile Partial Correlation Regression (QPCR), GARCH, Quantile Regressions (QR)
     
@@ -130,7 +129,11 @@ Standard macro-fin toolkit: GDP-at-risk (Adrian et al 2019); unemployment-at-ris
                 \item Pct change in unemployment rate: $UR_{t+h} = \ln(UR_{t+h}) - \ln(UR_{t})$.
             \end{itemize} 
         \item Annual expanding window training procedure beginning with Jan 1961--Dec 1997 to forecast Jan 1998--Dec 1998.
-        \vspace{.2cm}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Data and Methodology}
+    \begin{itemize}
         \item Quantile forecasts are evaluated with the out-of-sample $R^1$ metric: 
         $$
         R^1_{oos} = 1- \frac{\sum_{t=1}^{T_{oos}} \rho_\tau (y_{t+h} - \hat y_{\tau,t+h}) }{\sum_{t=1}^{T_{oos}} \rho_\tau (y_{t+h} - \bar y_{\tau}) }
@@ -141,11 +144,12 @@ Standard macro-fin toolkit: GDP-at-risk (Adrian et al 2019); unemployment-at-ris
         $$
         R^2_{oos} = 1- \frac{\sum_{t=1}^{T_{oos}}  (y_{t+h} - \bar Q_{t+h})^2 }{\sum_{t=1}^{T_{oos}} (y_{t+h} - \bar y)^2 }
         $$
-        where $\bar y$ is the expanding historical mean \\and $\bar Q$ is the robust estimate of the mean taken from \cite{Liu2023}:
+        where $\bar y$ is the expanding historical mean \\and $\bar Q$ is the robust estimate of the mean taken from \textcite{Liu2023}:
         $$
         \bar Q = 0.15 Q_{0.05} + 0.225Q_{0.25} + 0.25Q_{0.5} + 0.75Q_{0.75} + 0.15Q_{0.95}
         $$
-    \end{itemize}
+    \end{itemize}    
+
 \end{frame}
 
 \begin{frame}{Data and Methodology}
@@ -336,13 +340,51 @@ Standard macro-fin toolkit: GDP-at-risk (Adrian et al 2019); unemployment-at-ris
     % \vspace{-.2cm}
 \end{frame}
 
-% \begin{frame}[allowframebreaks]{References}
-%     \printbibliography
-% \end{frame}
+\begin{frame}[allowframebreaks]{References}
+    \printbibliography
+\end{frame}
 
-% \appendix
+\appendix
 
-% \section{Appendix}
+\section{Appendix}
+\begin{frame}[allowframebreaks]{Theorem 1 (Quantile Mean Formula)}
+\textbf{Theorem 1.} Let $F_t(x) = P(r_{i,t+1} \leq x \mid \mathcal{F}_t)$ be the cumulative distribution function of stock excess return $r_{i,t+1}$ conditional on information set $\mathcal{F}_t$.
+
+For $0 < \tau_1 < \cdots < \tau_K < 1$, let
+\[
+\begin{aligned}
+\bar{Q}_K &= (\tau_1 + \frac{\tau_2 - \tau_1}{2}) Q_{\tau_1} + (\frac{\tau_2 - \tau_1}{2} + \frac{\tau_3 - \tau_2}{2}) Q_{\tau_2} + \cdots \\
+&\quad + (\frac{\tau_{K-2} - \tau_{K-1}}{2} + \frac{\tau_{K-1} - \tau_K}{2}) Q_{\tau_{K-1}} + (\frac{\tau_{K} - \tau_{K-1}}{2} + (1-\tau_K)) Q_{\tau_K} \\
+&= \frac{\tau_2 + \tau 1}{2}Q_{\tau_1} + \frac{\tau_3 - \tau_1}{2} Q_{\tau_2} + ... + \frac{\tau_K - \tau_{K-2}}{2} Q_{\tau_{K-1}} + (1 - \frac{\tau_{K} - \tau_{K-1}}{2}) Q_{\tau_K} \\
+\end{aligned}
+\]
+where $Q_{\tau_k} = Q_{\tau_k}(r_{i,t+1} \mid \mathcal{F}_t)$ are quantiles of $r_{i,t+1}$, $k = 1, \ldots, K$.
+
+Assume that $F_t(x)$ is continuous and strictly monotonically increasing, $E_t(r_{i,t+1})$ exists, and
+\[
+E_t(r_{i,t+1}) = \int_{\mathbb{R}} x\, d\mu_{F_t},
+\]
+where $\int_{\mathbb{R}} x\, d\mu_{F_t}$ is a Lebesgue–Stieltjes integral, $\mu_{F_t}$ is the Lebesgue–Stieltjes measure associated with $F_t$, and $\mathbb{R}$ is the set of real numbers. Then
+\[
+\lim_{\Delta_1 \to 0,\, \Delta_2 \to 0} \bar{Q}_K = E_t(r_{i,t+1}),
+\]
+where $\Delta_1 = \max\{\tau_2 + \tau_1, 1 - (\tau_K + \tau_{K-1})\}$ and $\Delta_2 = \max_{2 \leq k \leq K-1} \{ Q_{(\tau_k + \tau_{k+1})/2} - Q_{(\tau_{k-1} + \tau_k)/2} \}$.
+\end{frame}
+
+\begin{frame}{Proof of Theorem 1 (Sketch)}
+\textbf{Proof.} Without loss of generality, fix firm $i$ and time $t$. Since $\int_{\mathbb{R}} x\, d\mu_{F_t}$ exists, then the Riemann–Stieltjes integral $\int_{\mathbb{R}} x\, dF_t(x)$ exists and $E_t(r_{i,t+1}) = \int_{\mathbb{R}} x\, dF_t(x)$.
+
+Let $[a, b]$ be an interval containing the support of $r_{i,t+1}$, and partition $[a, b]$ into subintervals. Define the Riemann–Stieltjes sum
+\[
+RS_t(K) = \sum_{k=1}^K c_k (F_t(x_k) - F_t(x_{k-1})),
+\]
+where $c_k \in (x_{k-1}, x_k]$. As the partition gets finer, $RS_t(K) \to \int_a^b x\, dF_t(x)$.
+
+By choosing quantile points and weights as in the theorem, the sum $\bar{Q}_K$ approximates $E_t(r_{i,t+1})$ arbitrarily well as the mesh of the partition and the quantile spacing go to zero. Thus, $\bar{Q}_K \to E_t(r_{i,t+1})$ as $K \to \infty$ and the quantile grid becomes dense.
+
+\hfill$\square$
+\end{frame}
+
 % \begin{frame}{Robustness -- Inflation GFC and Covid}
 
 %     \begin{table}[]

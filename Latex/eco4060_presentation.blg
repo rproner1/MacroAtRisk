@@ -1,15 +1,15 @@
 [0] Config.pm:307> INFO - This is Biber 2.19
 [0] Config.pm:310> INFO - Logfile is 'eco4060_presentation.blg'
-[90] biber:340> INFO - === Mon Jan 12, 2026, 13:24:34
-[106] Biber.pm:419> INFO - Reading 'eco4060_presentation.bcf'
-[172] Biber.pm:979> INFO - Found 1 citekeys in bib section 0
-[187] Biber.pm:4419> INFO - Processing section 0
-[195] Biber.pm:4610> INFO - Looking for bibtex file 'references.bib' for section 0
-[197] bibtex.pm:1713> INFO - LaTeX decoding ...
-[211] bibtex.pm:1519> INFO - Found BibTeX data source 'references.bib'
-[248] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
-[248] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
-[248] Biber.pm:4239> INFO - Sorting list 'nyt/global//global/global' of type 'entry' with template 'nyt' and locale 'en-US'
-[248] Biber.pm:4245> INFO - No sort tailoring available for locale 'en-US'
-[250] bbl.pm:660> INFO - Writing 'eco4060_presentation.bbl' with encoding 'UTF-8'
-[251] bbl.pm:763> INFO - Output to eco4060_presentation.bbl
+[88] biber:340> INFO - === Tue Jan 13, 2026, 09:49:10
+[104] Biber.pm:419> INFO - Reading 'eco4060_presentation.bcf'
+[164] Biber.pm:979> INFO - Found 9 citekeys in bib section 0
+[175] Biber.pm:4419> INFO - Processing section 0
+[184] Biber.pm:4610> INFO - Looking for bibtex file 'references.bib' for section 0
+[185] bibtex.pm:1713> INFO - LaTeX decoding ...
+[201] bibtex.pm:1519> INFO - Found BibTeX data source 'references.bib'
+[287] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[287] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[287] Biber.pm:4239> INFO - Sorting list 'nyt/global//global/global' of type 'entry' with template 'nyt' and locale 'en-US'
+[287] Biber.pm:4245> INFO - No sort tailoring available for locale 'en-US'
+[299] bbl.pm:660> INFO - Writing 'eco4060_presentation.bbl' with encoding 'UTF-8'
+[305] bbl.pm:763> INFO - Output to eco4060_presentation.bbl

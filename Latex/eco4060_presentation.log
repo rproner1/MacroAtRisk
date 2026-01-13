@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.1.12)  12 JAN 2026 13:24
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.1.12)  13 JAN 2026 10:04
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1025,15 +1025,15 @@ Package caption Info: End \AtBeginDocument code.
  (./eco4060_presentation.nav) [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
-LaTeX Font Info:    Trying to load font information for U+msa on input line 72.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 71.
  (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 72.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 71.
  (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-LaTeX Font Info:    Trying to load font information for OT1+mathkerncmss on input line 72.
+LaTeX Font Info:    Trying to load font information for OT1+mathkerncmss on input line 71.
  (/usr/share/texlive/texmf-dist/tex/latex/sansmathaccent/ot1mathkerncmss.fd
 File: ot1mathkerncmss.fd 2020/01/31 Fontinst v1.933 font definitions for OT1/mathkerncmss.
 ) [2
@@ -1044,102 +1044,120 @@ File: ot1mathkerncmss.fd 2020/01/31 Fontinst v1.933 font definitions for OT1/mat
 
 ] [5
 
-]
-Overfull \vbox (50.97859pt too high) detected at line 149
- []
+] [6
 
-[6
+] [7
 
 ]
-<./Figures/DMQv1.png, id=202, 963.6pt x 722.7pt>
+<./Figures/DMQv1.png, id=275, 963.6pt x 722.7pt>
 File: ./Figures/DMQv1.png Graphic file (type png)
 <use ./Figures/DMQv1.png>
-Package pdftex.def Info: ./Figures/DMQv1.png  used on input line 158.
+Package pdftex.def Info: ./Figures/DMQv1.png  used on input line 162.
 (pdftex.def)             Requested size: 278.83578pt x 209.1255pt.
 
-Overfull \vbox (10.3242pt too high) detected at line 158
+Overfull \vbox (10.3242pt too high) detected at line 162
  []
 
-[7
+[8
 
- <./Figures/DMQv1.png>] (../ResultsTables/r1_Infl_yoy.tex) (../ResultsTables/r2_Infl_yoy.tex) [8
+ <./Figures/DMQv1.png>] (../ResultsTables/r1_Infl_yoy.tex) (../ResultsTables/r2_Infl_yoy.tex) [9
 
 ]
-<../ResultsFigures/IAR_quantile_plot_us_4q_Infl_yoy.png, id=258, 455.301pt x 338.7054pt>
+<../ResultsFigures/IAR_quantile_plot_us_4q_Infl_yoy.png, id=333, 455.301pt x 338.7054pt>
 File: ../ResultsFigures/IAR_quantile_plot_us_4q_Infl_yoy.png Graphic file (type png)
 <use ../ResultsFigures/IAR_quantile_plot_us_4q_Infl_yoy.png>
-Package pdftex.def Info: ../ResultsFigures/IAR_quantile_plot_us_4q_Infl_yoy.png  used on input line 210.
+Package pdftex.def Info: ../ResultsFigures/IAR_quantile_plot_us_4q_Infl_yoy.png  used on input line 214.
 (pdftex.def)             Requested size: 131.01959pt x 97.46748pt.
-<../ResultsFigures/QRF_quantile_plot_us_4q_Infl_yoy.png, id=259, 455.301pt x 338.7054pt>
+<../ResultsFigures/QRF_quantile_plot_us_4q_Infl_yoy.png, id=334, 455.301pt x 338.7054pt>
 File: ../ResultsFigures/QRF_quantile_plot_us_4q_Infl_yoy.png Graphic file (type png)
 <use ../ResultsFigures/QRF_quantile_plot_us_4q_Infl_yoy.png>
-Package pdftex.def Info: ../ResultsFigures/QRF_quantile_plot_us_4q_Infl_yoy.png  used on input line 210.
+Package pdftex.def Info: ../ResultsFigures/QRF_quantile_plot_us_4q_Infl_yoy.png  used on input line 214.
 (pdftex.def)             Requested size: 131.01959pt x 97.46748pt.
-<../ResultsFigures/DMQv1c_quantile_plot_us_4q_Infl_yoy.png, id=260, 455.301pt x 338.7054pt>
+<../ResultsFigures/DMQv1c_quantile_plot_us_4q_Infl_yoy.png, id=335, 455.301pt x 338.7054pt>
 File: ../ResultsFigures/DMQv1c_quantile_plot_us_4q_Infl_yoy.png Graphic file (type png)
 <use ../ResultsFigures/DMQv1c_quantile_plot_us_4q_Infl_yoy.png>
-Package pdftex.def Info: ../ResultsFigures/DMQv1c_quantile_plot_us_4q_Infl_yoy.png  used on input line 210.
+Package pdftex.def Info: ../ResultsFigures/DMQv1c_quantile_plot_us_4q_Infl_yoy.png  used on input line 214.
 (pdftex.def)             Requested size: 131.01959pt x 97.46748pt.
-<../ResultsFigures/DMQv1c_mean_plot_us_4q_Infl_yoy.png, id=261, 462.528pt x 346.896pt>
+<../ResultsFigures/DMQv1c_mean_plot_us_4q_Infl_yoy.png, id=336, 462.528pt x 346.896pt>
 File: ../ResultsFigures/DMQv1c_mean_plot_us_4q_Infl_yoy.png Graphic file (type png)
 <use ../ResultsFigures/DMQv1c_mean_plot_us_4q_Infl_yoy.png>
-Package pdftex.def Info: ../ResultsFigures/DMQv1c_mean_plot_us_4q_Infl_yoy.png  used on input line 210.
+Package pdftex.def Info: ../ResultsFigures/DMQv1c_mean_plot_us_4q_Infl_yoy.png  used on input line 214.
 (pdftex.def)             Requested size: 129.95863pt x 97.46898pt.
- [9
+ [10
 
- <../ResultsFigures/IAR_quantile_plot_us_4q_Infl_yoy.png> <../ResultsFigures/QRF_quantile_plot_us_4q_Infl_yoy.png> <../ResultsFigures/DMQv1c_quantile_plot_us_4q_Infl_yoy.png> <../ResultsFigures/DMQv1c_mean_plot_us_4q_Infl_yoy.png>] (../ResultsTables/r1_IP_yoy.tex) (../ResultsTables/r2_IP_yoy.tex) [10
+ <../ResultsFigures/IAR_quantile_plot_us_4q_Infl_yoy.png> <../ResultsFigures/QRF_quantile_plot_us_4q_Infl_yoy.png> <../ResultsFigures/DMQv1c_quantile_plot_us_4q_Infl_yoy.png> <../ResultsFigures/DMQv1c_mean_plot_us_4q_Infl_yoy.png>] (../ResultsTables/r1_IP_yoy.tex) (../ResultsTables/r2_IP_yoy.tex) [11
 
 ]
-<../ResultsFigures/VG_quantile_plot_us_4q_IP_yoy.png, id=316, 455.301pt x 338.7054pt>
+<../ResultsFigures/VG_quantile_plot_us_4q_IP_yoy.png, id=396, 455.301pt x 338.7054pt>
 File: ../ResultsFigures/VG_quantile_plot_us_4q_IP_yoy.png Graphic file (type png)
 <use ../ResultsFigures/VG_quantile_plot_us_4q_IP_yoy.png>
-Package pdftex.def Info: ../ResultsFigures/VG_quantile_plot_us_4q_IP_yoy.png  used on input line 259.
+Package pdftex.def Info: ../ResultsFigures/VG_quantile_plot_us_4q_IP_yoy.png  used on input line 263.
 (pdftex.def)             Requested size: 131.01959pt x 97.46748pt.
-<../ResultsFigures/QRF_quantile_plot_us_4q_IP_yoy.png, id=317, 455.301pt x 338.7054pt>
+<../ResultsFigures/QRF_quantile_plot_us_4q_IP_yoy.png, id=397, 455.301pt x 338.7054pt>
 File: ../ResultsFigures/QRF_quantile_plot_us_4q_IP_yoy.png Graphic file (type png)
 <use ../ResultsFigures/QRF_quantile_plot_us_4q_IP_yoy.png>
-Package pdftex.def Info: ../ResultsFigures/QRF_quantile_plot_us_4q_IP_yoy.png  used on input line 259.
+Package pdftex.def Info: ../ResultsFigures/QRF_quantile_plot_us_4q_IP_yoy.png  used on input line 263.
 (pdftex.def)             Requested size: 131.01959pt x 97.46748pt.
-<../ResultsFigures/DMQv2c_quantile_plot_us_4q_IP_yoy.png, id=318, 455.301pt x 338.7054pt>
+<../ResultsFigures/DMQv2c_quantile_plot_us_4q_IP_yoy.png, id=398, 455.301pt x 338.7054pt>
 File: ../ResultsFigures/DMQv2c_quantile_plot_us_4q_IP_yoy.png Graphic file (type png)
 <use ../ResultsFigures/DMQv2c_quantile_plot_us_4q_IP_yoy.png>
-Package pdftex.def Info: ../ResultsFigures/DMQv2c_quantile_plot_us_4q_IP_yoy.png  used on input line 259.
+Package pdftex.def Info: ../ResultsFigures/DMQv2c_quantile_plot_us_4q_IP_yoy.png  used on input line 263.
 (pdftex.def)             Requested size: 131.01959pt x 97.46748pt.
-<../ResultsFigures/DMQv2c_mean_plot_us_4q_IP_yoy.png, id=319, 462.528pt x 346.896pt>
+<../ResultsFigures/DMQv2c_mean_plot_us_4q_IP_yoy.png, id=399, 462.528pt x 346.896pt>
 File: ../ResultsFigures/DMQv2c_mean_plot_us_4q_IP_yoy.png Graphic file (type png)
 <use ../ResultsFigures/DMQv2c_mean_plot_us_4q_IP_yoy.png>
-Package pdftex.def Info: ../ResultsFigures/DMQv2c_mean_plot_us_4q_IP_yoy.png  used on input line 259.
+Package pdftex.def Info: ../ResultsFigures/DMQv2c_mean_plot_us_4q_IP_yoy.png  used on input line 263.
 (pdftex.def)             Requested size: 129.95863pt x 97.46898pt.
- [11
+ [12
 
- <../ResultsFigures/VG_quantile_plot_us_4q_IP_yoy.png> <../ResultsFigures/QRF_quantile_plot_us_4q_IP_yoy.png> <../ResultsFigures/DMQv2c_quantile_plot_us_4q_IP_yoy.png> <../ResultsFigures/DMQv2c_mean_plot_us_4q_IP_yoy.png>] (../ResultsTables/r1_Unrate_yoy.tex) (../ResultsTables/r2_Unrate_yoy.tex) [12
+ <../ResultsFigures/VG_quantile_plot_us_4q_IP_yoy.png> <../ResultsFigures/QRF_quantile_plot_us_4q_IP_yoy.png> <../ResultsFigures/DMQv2c_quantile_plot_us_4q_IP_yoy.png> <../ResultsFigures/DMQv2c_mean_plot_us_4q_IP_yoy.png>] (../ResultsTables/r1_Unrate_yoy.tex) (../ResultsTables/r2_Unrate_yoy.tex) [13
 
 ]
-<../ResultsFigures/UAR_quantile_plot_us_4q_Unrate_yoy.png, id=375, 455.301pt x 338.7054pt>
+<../ResultsFigures/UAR_quantile_plot_us_4q_Unrate_yoy.png, id=459, 455.301pt x 338.7054pt>
 File: ../ResultsFigures/UAR_quantile_plot_us_4q_Unrate_yoy.png Graphic file (type png)
 <use ../ResultsFigures/UAR_quantile_plot_us_4q_Unrate_yoy.png>
-Package pdftex.def Info: ../ResultsFigures/UAR_quantile_plot_us_4q_Unrate_yoy.png  used on input line 309.
+Package pdftex.def Info: ../ResultsFigures/UAR_quantile_plot_us_4q_Unrate_yoy.png  used on input line 313.
 (pdftex.def)             Requested size: 131.01959pt x 97.46748pt.
-<../ResultsFigures/QRF_quantile_plot_us_4q_Unrate_yoy.png, id=376, 455.301pt x 338.7054pt>
+<../ResultsFigures/QRF_quantile_plot_us_4q_Unrate_yoy.png, id=460, 455.301pt x 338.7054pt>
 File: ../ResultsFigures/QRF_quantile_plot_us_4q_Unrate_yoy.png Graphic file (type png)
 <use ../ResultsFigures/QRF_quantile_plot_us_4q_Unrate_yoy.png>
-Package pdftex.def Info: ../ResultsFigures/QRF_quantile_plot_us_4q_Unrate_yoy.png  used on input line 309.
+Package pdftex.def Info: ../ResultsFigures/QRF_quantile_plot_us_4q_Unrate_yoy.png  used on input line 313.
 (pdftex.def)             Requested size: 131.01959pt x 97.46748pt.
-<../ResultsFigures/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png, id=377, 455.301pt x 338.7054pt>
+<../ResultsFigures/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png, id=461, 455.301pt x 338.7054pt>
 File: ../ResultsFigures/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png Graphic file (type png)
 <use ../ResultsFigures/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png>
-Package pdftex.def Info: ../ResultsFigures/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png  used on input line 309.
+Package pdftex.def Info: ../ResultsFigures/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png  used on input line 313.
 (pdftex.def)             Requested size: 131.01959pt x 97.46748pt.
-<../ResultsFigures/DMQv0c_mean_plot_us_4q_Unrate_yoy.png, id=378, 462.528pt x 346.896pt>
+<../ResultsFigures/DMQv0c_mean_plot_us_4q_Unrate_yoy.png, id=462, 462.528pt x 346.896pt>
 File: ../ResultsFigures/DMQv0c_mean_plot_us_4q_Unrate_yoy.png Graphic file (type png)
 <use ../ResultsFigures/DMQv0c_mean_plot_us_4q_Unrate_yoy.png>
-Package pdftex.def Info: ../ResultsFigures/DMQv0c_mean_plot_us_4q_Unrate_yoy.png  used on input line 309.
+Package pdftex.def Info: ../ResultsFigures/DMQv0c_mean_plot_us_4q_Unrate_yoy.png  used on input line 313.
 (pdftex.def)             Requested size: 129.95863pt x 97.46898pt.
- [13
+ [14
 
- <../ResultsFigures/UAR_quantile_plot_us_4q_Unrate_yoy.png> <../ResultsFigures/QRF_quantile_plot_us_4q_Unrate_yoy.png> <../ResultsFigures/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png> <../ResultsFigures/DMQv0c_mean_plot_us_4q_Unrate_yoy.png>] [14
+ <../ResultsFigures/UAR_quantile_plot_us_4q_Unrate_yoy.png> <../ResultsFigures/QRF_quantile_plot_us_4q_Unrate_yoy.png> <../ResultsFigures/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png> <../ResultsFigures/DMQv0c_mean_plot_us_4q_Unrate_yoy.png>] [15
 
-] [15
+]
+
+LaTeX Font Warning: Font shape `OT1/cmss/m/sc' in size <10.95> not available
+(Font)              Font shape `OT1/cmr/m/sc' tried instead on input line 345.
+
+[16
+
+] [17
+
+
+]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\translate ' on input line 347.
+
+[18
+
+] [19
+
+
+] [20
 
 ]
 \tf@nav=\write7
@@ -1157,24 +1175,24 @@ LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
  ***********
 Package rerunfilecheck Info: File `eco4060_presentation.out' has not changed.
-(rerunfilecheck)             Checksum: 7DAA24DF27BB0B63AF4F86D55AAF3144;543.
+(rerunfilecheck)             Checksum: B7DD392906C34AA57F78DF304CAE0BBC;715.
 Package logreq Info: Writing requests to 'eco4060_presentation.run.xml'.
 \openout1 = `eco4060_presentation.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 33414 strings out of 474222
- 668011 string characters out of 5748733
+ 33520 strings out of 474222
+ 670058 string characters out of 5748733
  1943975 words of memory out of 5000000
- 55051 multiletter control sequences out of 15000+600000
- 571216 words of font info for 83 fonts, out of 8000000 for 9000
+ 55135 multiletter control sequences out of 15000+600000
+ 571685 words of font info for 85 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 128i,14n,123p,744b,1277s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmssbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb>
-Output written on eco4060_presentation.pdf (15 pages, 3613519 bytes).
+ 128i,14n,123p,1347b,1722s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmcsc10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmssbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
+Output written on eco4060_presentation.pdf (20 pages, 3714964 bytes).
 PDF statistics:
- 527 PDF objects out of 1000 (max. 8388607)
- 446 compressed objects within 5 object streams
- 37 named destinations out of 1000 (max. 500000)
- 148 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 756 PDF objects out of 1000 (max. 8388607)
+ 658 compressed objects within 7 object streams
+ 57 named destinations out of 1000 (max. 500000)
+ 164 words of extra memory for PDF output out of 10000 (max. 10000000)
 

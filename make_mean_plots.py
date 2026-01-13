@@ -52,6 +52,12 @@ target_dict = {
     2: 'Unrate_yoy'
 }
 
+target_name_dict = {
+    0: 'Inflation',
+    1: 'Industrial Production',
+    2: 'Unemployment Rate'
+}
+
 TEST_START = '1998-01-01'
 TEST_END = '2024-12-01'
 
@@ -92,7 +98,12 @@ for TARGET_IDX in [0,1,2]:
         fig, ax = plt.subplots()
         ax.plot(actuals.index, model_mean_preds, label=f"{model} Mean", color="#7fbfff")
         ax.plot(actuals.index, actuals, label="Actual", color='black')
-        ax.set_title(f"{target_dict[TARGET_IDX]} - {model} Mean Forecast")
+        ax.axvspan('2001-03-01', '2001-11-01', -1,1, color='grey', alpha=0.25)
+        ax.axvspan('2007-12-01', '2009-06-01', -1,1, color='grey', alpha=0.25)
+        ax.axvspan('2020-02-01', '2020-04-01', -1,1, color='grey', alpha=0.25)
+        ax.set_title(f"Mean Forecast for {model}")
+        ax.set_ylabel(f"Y-o-y log change in {target_name_dict[TARGET_IDX]}")
         ax.legend()
+        plt.tight_layout()
         plt.savefig(f"{FIG_DIR}{model}_mean_plot_{COUNTRY}_{HORIZON_IN_QUARTERS}q_{target_dict[TARGET_IDX]}.png")
         plt.close(fig)

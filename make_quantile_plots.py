@@ -90,7 +90,7 @@ for TARGET_IDX in [0,1,2]:
 
         # keep a sequential cmap for the earlier branch
 
-        cmap = 'RdYlBu' if TARGET_IDX == 1 else 'RdYlBu_r'
+        cmap = 'RdYlBu_r' # 'RdYlBu' if TARGET_IDX == 1 else 'RdYlBu_r'
         cmap = plt.get_cmap(cmap)
         n_q = len(int_quantiles)
 
@@ -104,7 +104,8 @@ for TARGET_IDX in [0,1,2]:
         for i, q in enumerate(int_quantiles):
 
             line_color = colors[i]
-            if q == 50 or q == 25:
+            q_tail = 25 # 75 if TARGET_IDX == 1 else 25
+            if q == 50 or q == q_tail:
                 r,g,b,a = line_color
                 darker_color = (r*0.5, g*0.5, b*0.5, a)
                 line_color = darker_color
@@ -148,15 +149,6 @@ for TARGET_IDX in [0,1,2]:
                 zorder=1,
                 interpolate=True
                 )
-        # Plot the naive predictions for comparison
-        # for q in int_quantiles:
-        #     ax.plot(
-        #         actuals.index,
-        #         naive_preds.loc[TEST_START:TEST_END, f"Expanding_Q{q}"].values.flatten(),
-        #         label=f"Naive Q{q}",
-        #         linestyle=':',
-        #         alpha=0.8
-        #     )
 
         # Plot the actual values
         ax.plot(

@@ -542,6 +542,8 @@ INPUT ../ResultsFigures/DMQv0c_mean_plot_us_4q_Unrate_yoy.png
 INPUT ../ResultsFigures/DMQv0c_mean_plot_us_4q_Unrate_yoy.png
 INPUT ../ResultsFigures/DMQv0c_mean_plot_us_4q_Unrate_yoy.png
 INPUT ../ResultsFigures/DMQv0c_mean_plot_us_4q_Unrate_yoy.png
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmtt10.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmcsc10.tfm
 OUTPUT eco4060_presentation.nav
 OUTPUT eco4060_presentation.toc
 OUTPUT eco4060_presentation.snm
@@ -550,6 +552,7 @@ INPUT ./eco4060_presentation.out
 INPUT ./eco4060_presentation.out
 INPUT eco4060_presentation.run.xml
 OUTPUT eco4060_presentation.run.xml
+INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmcsc10.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb
@@ -562,4 +565,8 @@ INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi10.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi8.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi9.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb
+INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb
+INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb
+INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb
+INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb
