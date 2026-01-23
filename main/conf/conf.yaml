@@ -1,0 +1,18 @@
+logging_level: 20
+matplotlib:
+  font:
+    family: serif
+    sans_serif:
+      - Helvetica
+    serif:
+      - "Computer Modern Roman"
+
+data:
+  download: false
+  ignore_download_cache: false
+  start_date: "1961-01-01"
+  end_date: "2024-12-01"
+  fred_md_file: "2025-12-MD.csv"
+  
+
+
