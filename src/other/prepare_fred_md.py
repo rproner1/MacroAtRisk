@@ -1,5 +1,5 @@
 import pandas as pd
-from utils import prepare_missing
+from utils.utils import prepare_missing
 
 X = pd.read_csv("/home/rproner/Documents/Data/2025-10-MD.csv", index_col=0)
 

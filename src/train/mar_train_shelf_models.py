@@ -19,7 +19,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = ""  # For parallelization
 
 import argparse
 from operator import itemgetter
-from utils import *
+from utils.utils import *
 
 SEED = 1  # Set random seed for reproducibility
 tf.random.set_seed(SEED)  # Set TensorFlow random seed

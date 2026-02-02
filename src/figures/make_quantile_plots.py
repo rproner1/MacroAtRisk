@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from fit_naive import expanding_stats
 
-from utils import compute_oos_r1_score, compute_oos_r2_score, estimate_mean_from_quantiles
+from utils.utils import compute_oos_r1_score, compute_oos_r2_score, estimate_mean_from_quantiles
 import matplotlib.pyplot as plt
 
 import os

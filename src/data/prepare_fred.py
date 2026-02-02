@@ -1,27 +1,8 @@
-import sys
-import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import pandas as pd
 import numpy as np
-from dotenv import load_dotenv
 from dateutil.relativedelta import relativedelta
-from utils.clean_data import remove_cols
-
-load_dotenv()
-
-DATA_DIR = os.getenv("DATADIR")
-raw_data_dir = os.path.join(DATA_DIR, "raw/")
-
-# Load configuration parameters
-import yaml
-with open("conf/prepare_us_data_conf.yaml", "r") as f:
-    config = yaml.safe_load(f)
-
-DESIRED_START_DATE_OF_SAMPLES = pd.to_datetime(config["desired_start_date_of_samples"])
-HORIZON_IN_QUARTERS = config["horizon_in_quarters"]
-REMOVE_COLS_THRESHOLD = config["remove_cols_threshold"]
-INITIAL_TRAINING_LAST_DATE = pd.to_datetime(config["intial_training_last_date"])
-LAST_DATE_OF_SAMPLE = pd.to_datetime(config["last_date_of_sample"])
+from src.utils.clean_data import remove_cols
+from pathlib import Path
 
 financial_fred_vars = [
     'S&P 500', 
@@ -134,7 +115,14 @@ def prepare_missing(rawdata: np.ndarray, tcode: list | np.ndarray) -> np.ndarray
     yt = np.column_stack(yt)
     return yt
 
-def get_fred_md_x(fred_file_name: str) -> pd.DataFrame:
+def get_fred_md_x(
+        file_path: Path, 
+        horizon_in_quarters: int,
+        desired_start_date_of_samples: pd.Timestamp,
+        last_date_of_sample: pd.Timestamp,
+        remove_cols_threshold: float,
+        initial_training_last_date: pd.Timestamp
+    ) -> pd.DataFrame:
     
     """
     Prepares FRED data for modeling by applying transformations, lagging variables, and cleaning missing data.
@@ -145,7 +133,7 @@ def get_fred_md_x(fred_file_name: str) -> pd.DataFrame:
         pd.DataFrame: Prepared FRED data ready for modeling.
     """
     
-    df = pd.read_csv(os.path.join(raw_data_dir, fred_file_name))
+    df = pd.read_csv(file_path)
     
     # Apply stationary transformations
     col_names = df.columns.tolist()
@@ -158,22 +146,56 @@ def get_fred_md_x(fred_file_name: str) -> pd.DataFrame:
     fred.set_index('date', inplace=True)
 
     # Trim data to desired date range plus buffer for lags
-    fred = fred.loc[(DESIRED_START_DATE_OF_SAMPLES - relativedelta(months=3*HORIZON_IN_QUARTERS + 1)):LAST_DATE_OF_SAMPLE]
+    fred = fred.loc[(desired_start_date_of_samples - relativedelta(months=3*horizon_in_quarters + 1)):last_date_of_sample]
 
     # Drop columns with too many missing values in first training window
-    fred = remove_cols(REMOVE_COLS_THRESHOLD, fred, train_end=INITIAL_TRAINING_LAST_DATE)
+    fred = remove_cols(remove_cols_threshold, fred, train_end=initial_training_last_date)
 
     fred_macro_cols = [c for c in fred if c not in financial_fred_vars]
     fred_fin_cols = [c for c in fred if c in financial_fred_vars]
 
     # Lag predictors, adding extra lag for macro variables for announcement delay
-    fred[fred_fin_cols] = fred[fred_fin_cols].shift(3*HORIZON_IN_QUARTERS)
-    fred[fred_macro_cols] = fred[fred_macro_cols].shift(3*HORIZON_IN_QUARTERS+1)
+    fred[fred_fin_cols] = fred[fred_fin_cols].shift(3*horizon_in_quarters)
+    fred[fred_macro_cols] = fred[fred_macro_cols].shift(3*horizon_in_quarters+1)
 
-    fred = fred.loc[DESIRED_START_DATE_OF_SAMPLES:LAST_DATE_OF_SAMPLE]
+    fred = fred.loc[desired_start_date_of_samples:last_date_of_sample]
 
     return fred
 
-if __name__ == "__main__":
-    fred_x = get_fred_md_x("2025-12-MD.csv")
-    print(fred_x.head())
+
+def get_targets(
+        file_path: Path, 
+        desired_start_date_of_samples: pd.Timestamp, 
+        last_date_of_sample: pd.Timestamp
+    ) -> pd.DataFrame:
+    """
+    Prepares target variables from FRED data for modeling.
+
+    Parameters:
+        file_path (Path): Path to the FRED data CSV file.   
+    Returns:
+        pd.DataFrame: Prepared target variables ready for modeling.
+    """
+
+    df = pd.read_csv(file_path)
+    
+    # Fix date format and set as index
+    df = df.loc[1:, :] # skip first row with transformation codes
+    df['sasdate'] = pd.to_datetime(df['sasdate'], format='%m/%d/%Y')
+    df.set_index('sasdate', inplace=True)
+    df.index.name = 'date'
+
+    # Create target variables
+    infl_t = np.log(df['CPIAUCSL']) - np.log(df['CPIAUCSL'].shift(12))
+    ip_t = np.log(df['INDPRO']) - np.log(df['INDPRO'].shift(12))
+    lu_t = np.log(df['UNRATE']) - np.log(df['UNRATE'].shift(12))
+
+    targets = pd.DataFrame({
+        'Infl_yoy': infl_t,
+        'IP_yoy': ip_t,
+        'Unrate_yoy': lu_t
+    })
+
+    targets = targets.loc[desired_start_date_of_samples:last_date_of_sample]
+
+    return targets

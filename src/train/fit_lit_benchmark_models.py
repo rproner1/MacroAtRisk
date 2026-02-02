@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 # import statsmodels.api as sm
 import statsmodels.formula.api as smf
-from utils import prepare_quantile_data
+from utils.utils import prepare_quantile_data
 
 from operator import itemgetter
 import argparse

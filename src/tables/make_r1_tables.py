@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from fit_naive import expanding_stats
 
-from utils import compute_oos_r1_score
+from utils.utils import compute_oos_r1_score
 
 import os
 import argparse
