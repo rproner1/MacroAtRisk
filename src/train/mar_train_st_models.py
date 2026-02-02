@@ -2,6 +2,7 @@
 from dotenv import load_dotenv
 from pathlib import Path
 import pandas as pd
+import numpy as np
 
 load_dotenv()
 
@@ -16,7 +17,8 @@ from sklearn.linear_model import LinearRegression
 from src.preprocessing.prepare_quantile_data import prepare_quantile_data
 from src.train.losses import make_tilted_loss, make_total_tilted_loss
 from src.train.models import build_dmq_v0, build_dmq_v1, build_dmq_v2
-
+from src.train.tuning import CVObjective
+from src.train.train_utils import fit_models
 
 from keras.callbacks import EarlyStopping
 from datetime import date
@@ -41,13 +43,14 @@ with open("./config/config.yaml", "r") as file:
 
 parser = argparse.ArgumentParser(description="Tune MTMQ/MQ models")
 parser.add_argument("--year", type=int, required=True, help="train cutoff year")
+parser.add_argument("--target", type=int, required=True, help="Target index 0 to 2")
 args = parser.parse_args()
 
 YEAR = args.year
+TARGET_IDX = args.target
 COUNTRY = config['country']
 HORIZON_IN_QUARTERS = config['horizon_in_quarters']
 QUANTILES = config['quantiles']
-TARGET_IDX = config['target_idx']
 RUN_LOCALLY = config['run_locally']
 K_FOLDS = config['k_folds']
 DATE = config.get('date', str(date.today()))
@@ -331,8 +334,7 @@ for model_type in mq_model_params_dict.keys():
         save_hyperparameters(
             best_params, 
             study_name, 
-            log_path=tuning_log_path,
-            overwrite=OVERWRITE_LOG
+            log_path=tuning_log_path
         )
 
     estimators = fit_models(
