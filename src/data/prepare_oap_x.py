@@ -21,7 +21,7 @@ def get_firm_level_x(
         pd.DataFrame: Prepared firm-level characteristics data ready for modeling.
     """
     df = pd.read_csv(file_path)
-    df['yyyymm'] = pd.to_datetime(df['yyyymm'], format='%Y%m')
+    df['yyyymm'] = pd.to_datetime(df['yyyymm'])
     df.rename(columns={'yyyymm': 'date'}, inplace=True)
     df.set_index('date', inplace=True)
 

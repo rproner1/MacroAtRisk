@@ -1,4 +1,9 @@
 # ******************************** Imports ********************************
+from dotenv import load_dotenv
+from pathlib import Path
+import pandas as pd
+
+load_dotenv()
 
 # Data Libraries
 import warnings
@@ -8,6 +13,10 @@ warnings.filterwarnings("ignore")
 import tensorflow as tf
 import optuna
 from sklearn.linear_model import LinearRegression
+from src.preprocessing.prepare_quantile_data import prepare_quantile_data
+from src.train.losses import make_tilted_loss, make_total_tilted_loss
+from src.train.models import build_dmq_v0, build_dmq_v1, build_dmq_v2
+
 
 from keras.callbacks import EarlyStopping
 from datetime import date
@@ -16,67 +25,58 @@ os.environ["CUDA_VISIBLE_DEVICES"] = ""  # For parallelization
 
 import argparse
 from operator import itemgetter
-from utils.utils import *
+# from utils.utils import *
+import yaml
 
 SEED = 1  # Set random seed for reproducibility
 tf.random.set_seed(SEED)  # Set TensorFlow random seed
 
-
 # ******************************** Arguments ********************************
 
-parser = argparse.ArgumentParser(description="Tune MQ models")
+from src.utils.files import check_hps_exist, save_hyperparameters, load_hyperparameters
+
+with open("./config/config.yaml", "r") as file:
+    config = yaml.safe_load(file)
+
+
+parser = argparse.ArgumentParser(description="Tune MTMQ/MQ models")
 parser.add_argument("--year", type=int, required=True, help="train cutoff year")
-parser.add_argument("--target", type=int, required=True, help="target variable index")
-parser.add_argument("--country", type=str, default="us", help="country code (us/ca)")
-parser.add_argument("--horizon", type=int, default=4, help="forecast horizon in quarters")
-parser.add_argument("--trials", type=int, default=50, help="number of trials per model/layer combination")
-parser.add_argument("--time-steps", type=int, default=12, help="number of time steps for RNN models")
-parser.add_argument("--quantiles", type=float, nargs="*", default=[0.05,0.25,0.50,0.75,0.95], help="list of quantiles to predict")
-parser.add_argument("--overwrite-log", action="store_true", help="overwrite existing log file")
-parser.add_argument("--local", action="store_true", help="run locally (use local data/DB)")
-parser.add_argument("--n-estimators", type=int, default=5, help="number of estimators per ensemble model")
-parser.add_argument("--val-years", type=int, default=5, help="number of validation years for early stopping")
-parser.add_argument("--k-folds", type=int, default=10, help="number of folds for cross-validation")
-parser.add_argument("--date", type=str, default=str(date.today()), help="date string for file paths")
 args = parser.parse_args()
 
-print(f"Arguments: {args}")
-
 YEAR = args.year
-COUNTRY = args.country
-HORIZON_IN_QUARTERS = args.horizon
-RUN_LOCALLY = args.local
-OVERWRITE_LOG = args.overwrite_log
-QUANTILES = args.quantiles
-TARGET_IDX = args.target  
-TRIALS = args.trials
-TIME_STEPS = args.time_steps
-N_ESTIMATORS = args.n_estimators
-VAL_YEARS = args.val_years
-K_FOLDS = args.k_folds
-DATE = args.date
+COUNTRY = config['country']
+HORIZON_IN_QUARTERS = config['horizon_in_quarters']
+QUANTILES = config['quantiles']
+TARGET_IDX = config['target_idx']
+RUN_LOCALLY = config['run_locally']
+K_FOLDS = config['k_folds']
+DATE = config.get('date', str(date.today()))
+
+TIME_STEPS = config['time_steps']
+TRIALS = config['trials']
+N_ESTIMATORS = config['n_estimators']
+VAL_YEARS  = config['val_years']
+
+path_quantiles = [int(q*100) for q in QUANTILES]  # Quantiles as integers (e.g., 5 for 0.05) for file names
+
 LOSS_WEIGHTS = [0.28, 0.17, 0.11, 0.17, 0.28]
 
 if RUN_LOCALLY: 
     TRIALS = 2
     N_ESTIMATORS = 2
 
-path_quantiles = [int(q*100) for q in QUANTILES]  # Quantiles as integers (e.g., 5 for 0.05) for file names
-
 # ******************************** Paths ********************************
 
 if RUN_LOCALLY:
-    DATA_DIR = "/home/rproner/Documents/Data/MacroAtRisk/"
-    MODEL_DIR = "/home/rproner/Documents/Projects/MacroAtRisk/TestModels/"
-    PRED_DIR = "/home/rproner/Documents/Projects/MacroAtRisk/TestPredictions/"
-    tuning_log_path = f"localtest_tuning_log_{DATE}.json"
+    DATA_DIR = Path(os.getenv('LOCDATADIR')) / 'processed/'
+    MODEL_DIR = Path(os.getenv('LOCMODELDIR')) / 'st_models' / f"{DATE}/"
+    PRED_DIR = Path(os.getenv('LOCPREDDIR')) /'st_preds' / f"{DATE}/"
+    tuning_log_path = Path(os.getenv('LOCTUNINGDIR')) / f"st_tuning_log_{DATE}.json" 
 else:
-    DATA_DIR = "/home/rproner/projects/rrg-camera/rproner/Data/MacroAtRisk/"
-    TUNING_LOG_DIR = "/home/rproner/projects/rrg-camera/rproner/MacroAtRisk/TuningLogs/"
-    MODEL_DIR = f"/home/rproner/projects/rrg-camera/rproner/MacroAtRisk/Models_{DATE}/"
-    PRED_DIR = f"/home/rproner/projects/rrg-camera/rproner/MacroAtRisk/ST_Predictions_{DATE}/"
-    tuning_log_path = f"{TUNING_LOG_DIR}st_tuning_log_{DATE}.json"
-    os.makedirs(TUNING_LOG_DIR, exist_ok=True)
+    DATA_DIR = Path(os.getenv('DATADIR')) / 'processed/'
+    MODEL_DIR = Path(os.getenv('MODELDIR')) / 'st_models' / f"{DATE}/"
+    PRED_DIR = Path(os.getenv('PREDDIR')) / 'st_preds' / f"{DATE}/"
+    tuning_log_path = Path(os.getenv('TUNINGDIR')) / f"st_tuning_log_{DATE}.json"
 
 storage_url = optuna.storages.InMemoryStorage()
 
@@ -84,18 +84,16 @@ for path in [MODEL_DIR, PRED_DIR]:
     os.makedirs(path, exist_ok=True)
 
 
-
 # ******************************** Data ********************************
 
-input_paths = [
-    f'{DATA_DIR}{COUNTRY}_macro_predictors_{HORIZON_IN_QUARTERS}q_1961-01--2024-12.csv'
-    # f'{DATA_DIR}{COUNTRY}_oap_firm_avg_diff_financial_predictors_{HORIZON_IN_QUARTERS}q_1961-01--2024-12.csv'
-]
+INPUT_FILES = config['input_files']
+TARGET_FILE = config['target_file']
+input_paths = [DATA_DIR / f for f in INPUT_FILES]
 
 non_rnn_data, rnn_data, meta_data = prepare_quantile_data(
     target=TARGET_IDX,
     time_steps=TIME_STEPS, 
-    targets_path=f'{DATA_DIR}{COUNTRY}_targets_1961-01--2024-12.csv', input_paths=input_paths,
+    targets_path=DATA_DIR / TARGET_FILE, input_paths=input_paths,
     start_date='1961-01-01', train_cutoff_year=YEAR, 
     n_quantiles=len(QUANTILES), val_years=VAL_YEARS
 )

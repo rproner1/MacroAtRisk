@@ -5,7 +5,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-from src.utils.utils import split_sequences
+from src.data.data_utils import split_sequences
 from pathlib import Path
 
 def prepare_quantile_data(target: int, time_steps: int, 
@@ -27,9 +27,9 @@ def prepare_quantile_data(target: int, time_steps: int,
     print(f"Test: {test_start} to {test_end}")
 
     # Read and merge data
-    inputs = [pd.read_parquet(path, index_col=0, parse_dates=True) for path in input_paths]
+    inputs = [pd.read_parquet(path) for path in input_paths]
     X = pd.concat(inputs, axis=1)
-    all_y = pd.read_parquet(targets_path, index_col=0, parse_dates=True)
+    all_y = pd.read_parquet(targets_path)
     n_targets = all_y.shape[1]
 
     # Ensure target is an integer index for array indexing

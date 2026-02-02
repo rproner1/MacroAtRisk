@@ -1,3 +1,4 @@
+from datetime import date
 import pandas as pd
 from dotenv import load_dotenv
 import logging
@@ -31,32 +32,43 @@ with open(conf_path, "r") as f:
 process_data = config.get("process_data")
 
 # Training parameters
-parser = argparse.ArgumentParser(description="Tune MQ models")
+
+parser = argparse.ArgumentParser()
 parser.add_argument("--year", type=int, required=True, help="train cutoff year")
 args = parser.parse_args()
+
 YEAR = args.year
-TARGET_IDX = config.get("target_idx")
-COUNTRY = config.get("country")
+COUNTRY = config['country']
 HORIZON_IN_QUARTERS = config['horizon_in_quarters']
+QUANTILES = config['quantiles']
+TARGET_IDX = config['target_idx']
+RUN_LOCALLY = config['run_locally']
+K_FOLDS = config['k_folds']
+DATE = config.get('date', str(date.today()))
 INPUT_FILES = config['input_files']
 TARGET_FILE = config['target_file']
 
-# Model hyperparameters
-TRIALS = config.get("trials")
-TIME_STEPS = config.get("time_steps")
-QUANTILES = config.get("quantiles")
-N_ESTIMATORS = config.get("n_estimators")
-K_FOLDS = config.get("k_folds")
+TIME_STEPS = config['time_steps']
+TRIALS = config['trials']
+N_ESTIMATORS = config['n_estimators']
+VAL_YEARS  = config['val_years']
 
-# Runtime flags
-OVERWRITE_LOG = config.get("overwrite_log")
-RUN_LOCALLY = config.get("local")
+path_quantiles = [int(q*100) for q in QUANTILES]  # Quantiles as integers (e.g., 5 for 0.05) for file names
+
+LOSS_WEIGHTS = [0.28, 0.17, 0.11, 0.17, 0.28]
+
+if RUN_LOCALLY: 
+    TRIALS = 2
+    N_ESTIMATORS = 2
+
 
 # Data construction parameters
 DESIRED_START_DATE_OF_SAMPLES = pd.to_datetime(config.get("desired_start_date_of_samples", "1961-01-01"))
 INITIAL_TRAINING_LAST_DATE = pd.to_datetime(config.get("initial_training_last_date", "1997-12-01"))
 LAST_DATE_OF_SAMPLE = pd.to_datetime(config.get("last_date_of_sample", "2024-12-01"))
 REMOVE_COLS_THRESHOLD = config.get("remove_cols_threshold", 0.3)
+CONSTRUCT_OAP_SIGNALS = config["construct_oap_signals"]
+SKIP_PROCESSED_DATA = config["skip_processed_data"]
 
 def main():
     
@@ -73,20 +85,24 @@ def main():
             horizon_in_quarters=HORIZON_IN_QUARTERS,
             initial_training_last_date=INITIAL_TRAINING_LAST_DATE,
             last_date_of_sample=LAST_DATE_OF_SAMPLE,
-            remove_cols_threshold=REMOVE_COLS_THRESHOLD
+            remove_cols_threshold=REMOVE_COLS_THRESHOLD,
+            skip_processed_data=SKIP_PROCESSED_DATA,
+            raw_data_dir=raw_data_dir,
+            processed_data_dir=processed_data_dir,
+            run_locally=RUN_LOCALLY,
+            construct_oap_signals=CONSTRUCT_OAP_SIGNALS,
+            config=config
         )    
 
-    input_paths = [
-        get_latest_file(processed_data_dir / file_name, extension=".parquet", directory=processed_data_dir)
-        for file_name in INPUT_FILES
-    ]
+    input_paths = [processed_data_dir / file for file in INPUT_FILES]
+    target_path = processed_data_dir / TARGET_FILE
 
     logging.info(f"Preprocessing data with inputs: {INPUT_FILES} and targets: {TARGET_FILE}")
 
     non_rnn_data, rnn_data, meta_data = prepare_quantile_data(
         target=TARGET_IDX,
         time_steps=TIME_STEPS, 
-        targets_path=get_latest_file(processed_data_dir / TARGET_FILE, extension=".parquet", directory=processed_data_dir),
+        targets_path=target_path,
         input_paths=input_paths,
         start_date='1961-01-01', train_cutoff_year=YEAR, 
         n_quantiles=len(QUANTILES), val_years=5
@@ -112,8 +128,6 @@ def main():
         'all_y_train' # For target names
     )(non_rnn_data)
 
-
-    
 
 
 if __name__ == "__main__":

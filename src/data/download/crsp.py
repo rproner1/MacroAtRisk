@@ -61,7 +61,7 @@ def get_crsp_monthly(
     df["permno"] = df["permno"].astype(int)
     df['yyyymm'] = df['date'].dt.strftime('%Y%m')
     df.drop(columns=['date'], inplace=True)
-    df['size'] = df['altprc'] * df['shrout'] / 1_000_000
+    df['size'] = df['altprc'] * df['shrout']
 
     conn.close()
 

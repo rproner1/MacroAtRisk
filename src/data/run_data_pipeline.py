@@ -1,4 +1,3 @@
-import os
 from src.data.prepare_ar1_x import get_ar1_x
 from src.data.prepare_fred import get_fred_md_x, get_targets
 from src.data.prepare_oap_x import get_firm_level_x
@@ -6,32 +5,8 @@ from src.data.make_oap_signals import get_firm_avg, get_firm_spread
 from src.data.prepare_lit_x import get_vg_x, get_iar_x, get_uar_x
 from src.utils.files import get_latest_file, timestamp_file
 import pandas as pd
-from dotenv import load_dotenv
 from pathlib import Path
 
-load_dotenv()
-
-DATA_DIR = Path(os.getenv("DATADIR"))
-raw_data_dir = DATA_DIR / "raw/"
-processed_data_dir = DATA_DIR / "processed/"
-os.makedirs(raw_data_dir, exist_ok=True)
-os.makedirs(processed_data_dir, exist_ok=True)
-
-ROOT_DIR = Path(os.getenv("ROOTDIR"))
-conf_path = ROOT_DIR / 'config' / 'config.yaml'
-
-# Load configuration parameters
-import yaml
-with open(conf_path, "r") as f:
-    config = yaml.safe_load(f)
-
-DESIRED_START_DATE_OF_SAMPLES = pd.to_datetime(config["desired_start_date_of_samples"])
-HORIZON_IN_QUARTERS = config["horizon_in_quarters"]
-INITIAL_TRAINING_LAST_DATE = pd.to_datetime(config["initial_training_last_date"])
-LAST_DATE_OF_SAMPLE = pd.to_datetime(config["last_date_of_sample"])
-REMOVE_COLS_THRESHOLD = config["remove_cols_threshold"]
-CONSTRUCT_OAP_SIGNALS = config.get("construct_oap_signals", False)
-SKIP_PROCESSED_DATA = config.get("skip_processed_data", False)
 
 def prepare_us_data(
         fred_file_path: Path,
@@ -41,12 +16,17 @@ def prepare_us_data(
         nrou_file_path: Path,
         lte_file_path: Path,
         ebp_file_path: Path,
-        desired_start_date_of_samples: pd.Timestamp = DESIRED_START_DATE_OF_SAMPLES,
-        horizon_in_quarters: int = HORIZON_IN_QUARTERS,
-        initial_training_last_date: pd.Timestamp = INITIAL_TRAINING_LAST_DATE,
-        last_date_of_sample: pd.Timestamp = LAST_DATE_OF_SAMPLE,
-        remove_cols_threshold: float = REMOVE_COLS_THRESHOLD,
-        skip_processed_data: bool = SKIP_PROCESSED_DATA
+        desired_start_date_of_samples: pd.Timestamp,
+        horizon_in_quarters: int,
+        initial_training_last_date: pd.Timestamp,
+        last_date_of_sample: pd.Timestamp,
+        remove_cols_threshold: float,
+        skip_processed_data: bool,
+        raw_data_dir: Path,
+        processed_data_dir: Path,
+        run_locally: bool,
+        construct_oap_signals: bool,
+        config: dict
     ) -> pd.DataFrame:
 
     print("Starting data preparation pipeline...")
@@ -66,7 +46,7 @@ def prepare_us_data(
             last_date_of_sample=last_date_of_sample,
             horizon_in_quarters=horizon_in_quarters
         )
-        vg_x.to_parquet(timestamp_file(vg_file))
+        vg_x.to_parquet(vg_file)
         print(f"VG predictors saved")
     
     # IAR benchmark
@@ -84,7 +64,7 @@ def prepare_us_data(
             last_date_of_sample=last_date_of_sample,
             horizon_in_quarters=horizon_in_quarters
         )
-        iar_x.to_parquet(timestamp_file(iar_file))
+        iar_x.to_parquet(iar_file)
         print(f"IAR predictors saved")
     
     # UAR benchmark
@@ -99,7 +79,7 @@ def prepare_us_data(
             last_date_of_sample=last_date_of_sample,
             horizon_in_quarters=horizon_in_quarters
         )
-        uar_x.to_parquet(timestamp_file(uar_file))
+        uar_x.to_parquet(uar_file)
         print(f"UAR predictors saved")
 
     # FRED-MD predictors
@@ -116,7 +96,7 @@ def prepare_us_data(
             initial_training_last_date=initial_training_last_date,
             remove_cols_threshold=remove_cols_threshold
         )
-        fred_x.to_parquet(timestamp_file(fred_file))
+        fred_x.to_parquet(fred_file)
         print(f"FRED-MD predictors saved")
     
     # AR(1) predictors
@@ -131,7 +111,7 @@ def prepare_us_data(
             horizon_in_quarters=horizon_in_quarters, 
             last_date_of_sample=last_date_of_sample
         )
-        ar1_x.to_parquet(timestamp_file(ar1_file))
+        ar1_x.to_parquet(ar1_file)
         print(f"AR(1) predictors saved")
     
     # Target variables
@@ -145,18 +125,19 @@ def prepare_us_data(
             desired_start_date_of_samples=desired_start_date_of_samples,
             last_date_of_sample=last_date_of_sample
         )
-        fred_y.to_parquet(timestamp_file(target_file))
+        fred_y.to_parquet(target_file)
         print(f"Target variables saved")
 
     # ----- Firm signals -----
-    if CONSTRUCT_OAP_SIGNALS:
+    if construct_oap_signals:
         print("Constructing OAP signals...")
         # Load the OAP data file
-        oap_panel = pd.read_csv(oap_panel_path)
+        nrows = 100000 if run_locally else None
+        oap_panel = pd.read_csv(oap_panel_path, nrows=nrows)
         size = pd.read_parquet(size_path)
 
         # Process all OAP signals from config
-        oap_signals = config.get("oap_signals", [])
+        oap_signals = config["oap_signals"]
         for signal_config in oap_signals:
             signal_type = signal_config["signal"]
             output_name = signal_config["output_name"]
@@ -167,7 +148,7 @@ def prepare_us_data(
             if signal_type == "avg":
                 print(f"Constructing {output_name}...")
                 oap_signal = get_firm_avg(oap_panel)
-            if signal_type == "vw_avg":
+            elif signal_type == "vw_avg":
                 print(f"Constructing {output_name} with value weighting...")
                 oap_signal = get_firm_avg(oap_panel, value_weight=True, size=size)
             elif signal_type == "spread":
@@ -179,19 +160,31 @@ def prepare_us_data(
                 continue
             
             # Save the signal
+            if run_locally:
+                output_name = f"{output_name}_TEST"
+                
             output_path = timestamp_file(raw_data_dir / f"{output_name}.csv")
             oap_signal.to_csv(output_path, index=False)
             print(f"{output_name} saved to {output_path}")
     
     # Process all OAP datasets from config
-    oap_datasets = config.get("oap_datasets", [])
+    oap_datasets = config["oap_datasets"]
     for oap_config in oap_datasets:
         oap_name = oap_config["name"]
         oap_filename = oap_config["file"]
+
+        if run_locally:
+            oap_filename = oap_filename.replace(".csv", "_TEST.csv")
+        
         first_diff = oap_config["first_difference"]
         output_name = oap_config["output_name"]
         
-        oap_file_path = get_latest_file(raw_data_dir / oap_filename, extension=".csv", directory=raw_data_dir)
+        oap_file_path = get_latest_file(raw_data_dir / oap_filename, extension=".csv")
+        print(f"Loading OAP data from {oap_file_path}...")
+
+        if run_locally:
+            output_name = f"{output_name}_TEST"             
+
         output_file = processed_data_dir / f"us_{h}q_{output_name}.parquet"
         
         if skip_processed_data and get_latest_file(output_file) is not None:
@@ -207,18 +200,18 @@ def prepare_us_data(
                 remove_cols_threshold=remove_cols_threshold,
                 initial_training_last_date=initial_training_last_date
             )
-            oap_data.to_parquet(timestamp_file(output_file))
+            oap_data.to_parquet(output_file)
             print(f"{oap_name} saved")
     
     return None
 
-if __name__ == "__main__":
-    prepare_us_data(
-        get_latest_file(raw_data_dir / "2025-12-MD.csv", extension=".csv", directory=raw_data_dir), 
-        get_latest_file(raw_data_dir / "signed_predictors_dl_wide.csv", extension=".csv", directory=raw_data_dir),
-        get_latest_file(raw_data_dir / "crsp_monthly.parquet", extension=".parquet", directory=raw_data_dir),
-        get_latest_file(raw_data_dir / "nfci_monthly.csv", extension=".csv", directory=raw_data_dir),
-        get_latest_file(raw_data_dir / "NROU.csv", extension=".csv", directory=raw_data_dir),
-        get_latest_file(raw_data_dir / "EXPINF10YR.csv", extension=".csv", directory=raw_data_dir),
-        get_latest_file(raw_data_dir / "ebp_csv.csv", extension=".csv", directory=raw_data_dir)
-    )    
+# if __name__ == "__main__":
+#     prepare_us_data(
+#         get_latest_file(raw_data_dir / "2025-12-MD.csv", extension=".csv", directory=raw_data_dir), 
+#         get_latest_file(raw_data_dir / "signed_predictors_dl_wide.csv", extension=".csv", directory=raw_data_dir),
+#         get_latest_file(raw_data_dir / "crsp_monthly.parquet", extension=".parquet", directory=raw_data_dir),
+#         get_latest_file(raw_data_dir / "nfci_monthly.csv", extension=".csv", directory=raw_data_dir),
+#         get_latest_file(raw_data_dir / "NROU.csv", extension=".csv", directory=raw_data_dir),
+#         get_latest_file(raw_data_dir / "EXPINF10YR.csv", extension=".csv", directory=raw_data_dir),
+#         get_latest_file(raw_data_dir / "ebp_csv.csv", extension=".csv", directory=raw_data_dir)
+#     )    

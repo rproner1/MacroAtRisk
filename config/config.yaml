@@ -7,6 +7,9 @@ matplotlib:
     serif:
       - "Computer Modern Roman"
 
+run_locally: true
+date: '2026-02-02'
+
 # ------ Main parameters -----
 process_data: false
 input_files: [
@@ -17,7 +20,7 @@ target_file: 'us_4q_fred_y.parquet'
 
 # Training parameters
 year: 1997
-target_idx: 0
+# target_idx: 0
 country: "us"
 horizon_in_quarters: 4
 
@@ -27,16 +30,15 @@ time_steps: 12
 quantiles: [0.05, 0.25, 0.50, 0.75, 0.95]
 n_estimators: 5
 k_folds: 10
+val_years: 5
 
 
 # Runtime flags
-overwrite_log: false
-local: false
 skip_processed_data: true
 
 # ----- Data construction parameters -----
 oap_release: 202510
-construct_oap_signals: true
+construct_oap_signals: false
 
 # OAP signal construction configurations
 oap_signals:
@@ -51,28 +53,28 @@ oap_signals:
 # OAP data configurations
 oap_datasets:
   - name: "oap_avg"
-    file: "oap_firm_avg.csv"
+    file: "oap_avg.csv"
     first_difference: false
     output_name: "oap_avg_x"
   - name: "oap_avg_fd"
-    file: "oap_firm_avg.csv"
+    file: "oap_avg.csv"
     first_difference: true
     output_name: "oap_avg_fd_x"
   # Add more OAP variants here as needed
   - name: "oap_vw"
-    file: "oap_firm_vw_avg.csv"
+    file: "oap_vw.csv"
     first_difference: false
     output_name: "oap_vw_x"
   - name: "oap_vw_fd"
-    file: "oap_firm_vw_avg.csv"
+    file: "oap_vw.csv"
     first_difference: true
     output_name: "oap_vw_fd_x"
   - name: "oap_spread"
-    file: "oap_firm_spread.csv"
+    file: "oap_spread.csv"
     first_difference: false
     output_name: "oap_spread_x"
   - name: "oap_spread_fd"
-    file: "oap_firm_spread.csv"
+    file: "oap_spread.csv"
     first_difference: true
     output_name: "oap_spread_fd_x"
 

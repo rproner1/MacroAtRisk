@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import warnings
 
 def get_value_weights(df: pd.DataFrame) -> pd.DataFrame:
 
@@ -33,8 +34,22 @@ def get_firm_avg(df: pd.DataFrame, value_weight: bool = False, size: pd.DataFram
     # Group by 'date' and compute the cross-sectional mean for each financial variable
     if value_weight:
         size['yyyymm'] = pd.to_datetime(size['yyyymm'], format='%Y%m')
+
+        df['permno'] = pd.to_numeric(df['permno'], errors='coerce').astype('Int64')
+        size['permno'] = pd.to_numeric(size['permno'], errors='coerce').astype('Int64')
         weights = get_value_weights(size)
-        df = df.merge(weights, on=['yyyymm', 'permno'], how='left')
+        if not weights.groupby('yyyymm')['weight'].sum().round(6).eq(1.0).all():
+            raise ValueError("Weights do not sum to 1 for all dates.")
+        before_rows = len(df)
+        df = df.merge(weights, on=['yyyymm', 'permno'], how='inner')
+        dropped_share = 1 - (len(df) / before_rows)
+        if dropped_share > 0:
+            warnings.warn(
+                f"Dropped {dropped_share:.1%} of rows due to missing weights. "
+                "Check that 'permno' and 'yyyymm' align between df and size.",
+                RuntimeWarning,
+            )
+        
         df.replace([-np.inf, np.inf], np.nan, inplace=True)
         signal_cols = df.drop(columns=['permno', 'yyyymm', 'weight']).columns 
         firm_avg_df = (
@@ -57,16 +72,6 @@ def get_firm_avg(df: pd.DataFrame, value_weight: bool = False, size: pd.DataFram
 
     return firm_avg_df
 
-def compute_xs_spread(x, quantiles: int):
-
-    # Compute the spread between the top and bottom quantile for a Series
-    bins = pd.qcut(x, quantiles, labels=False, duplicates='drop')
-    top = x[bins == quantiles - 1]
-    bottom = x[bins == 0]
-    # If multiple values in top/bottom, take mean
-    spread = top.mean() - bottom.mean()
-    return spread
-
 def get_firm_spread(df: pd.DataFrame, quantiles: int = 10) -> pd.DataFrame:
     """
     Computes the firm-level spread of financial variables from OAP data.
@@ -80,26 +85,28 @@ def get_firm_spread(df: pd.DataFrame, quantiles: int = 10) -> pd.DataFrame:
     Returns:
     pd.DataFrame: DataFrame with spread average of top quantile bin - average of bottom quantile bin of firm-level signals per date.
     """
-    # Read data
+    df = df.copy()
     df['yyyymm'] = pd.to_datetime(df['yyyymm'], format='%Y%m')
-
-    exclude = ['permno', 'yyyymm']
-
-    cols = [col for col in df.columns if col not in exclude]
-
-    # Compute cross-sectional spread for the specified column per date
-    spread_df = {}
-    for col in cols:
-        spread_df[col] = (
-            df
-            .groupby('yyyymm')[col]
-            .apply(lambda x: compute_xs_spread(
-                x.replace([-np.inf, np.inf], np.nan).dropna(), 
-                quantiles=quantiles
-            ))
-        )
+    df.replace([-np.inf, np.inf], np.nan, inplace=True)
     
-    spread_df = pd.DataFrame(spread_df)
+    exclude = ['permno', 'yyyymm']
+    signal_cols = [col for col in df.columns if col not in exclude]
+    
+    # Vectorized approach: compute quantile bins for all columns at once per date
+    def compute_spread_for_group(group):
+        result = {}
+        for col in signal_cols:
+            x = group[col].dropna()
+            if len(x) < quantiles:
+                result[col] = np.nan
+                continue
+            bins = pd.qcut(x, quantiles, labels=False, duplicates='drop')
+            top = x[bins == bins.max()].mean()
+            bottom = x[bins == 0].mean()
+            result[col] = top - bottom
+        return pd.Series(result)
+    
+    spread_df = df.groupby('yyyymm', group_keys=False).apply(compute_spread_for_group)
     spread_df.reset_index(inplace=True)
 
     return spread_df
