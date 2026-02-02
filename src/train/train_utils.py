@@ -4,10 +4,22 @@ import numpy as np
 import pandas as pd
 from keras.models import load_model
 from src.train.tuning import get_early_stopping
+from pathlib import Path
 
-def fit_models(X: Union[List[np.ndarray], pd.DataFrame, np.ndarray], y: Union[dict, pd.DataFrame, np.ndarray], 
-              builder_func: Callable, model_name: str, hps: dict, fit_params: dict, early_stopping_args: dict,
-              n_estimators: int, models_dir_path: str, custom_objects=None, save_models: bool=True, overwrite: bool=False) -> list:
+def fit_models(
+        X: Union[List[np.ndarray], pd.DataFrame, np.ndarray], 
+        y: Union[dict, pd.DataFrame, np.ndarray], 
+        builder_func: Callable, 
+        model_name: str, 
+        hps: dict, 
+        fit_params: dict, 
+        early_stopping_args: dict,
+        n_estimators: int, 
+        models_dir_path: Path, 
+        custom_objects=None, 
+        save_models: bool=True, 
+        overwrite: bool=False
+    ) -> list:
     
     """
     Fits an ensemble of estimators using builder_func(**hps).
@@ -44,12 +56,12 @@ def fit_models(X: Union[List[np.ndarray], pd.DataFrame, np.ndarray], y: Union[di
     estimators = []
 
     # Make model directory if it does not exist
-    dir_path = models_dir_path + model_name + '/'
+    dir_path = models_dir_path / model_name / ""
     os.makedirs(dir_path, exist_ok=True)
 
     for i in range(n_estimators):
 
-        model_path = dir_path + model_name + '_estimator' + str(i) + '.keras'
+        model_path = dir_path / (model_name + '_estimator' + str(i) + '.keras')
         
         # Check if the model is already trained, if not, train it
         if not os.path.isfile(model_path) or overwrite:
@@ -70,7 +82,7 @@ def fit_models(X: Union[List[np.ndarray], pd.DataFrame, np.ndarray], y: Union[di
         
         else:
             print('Existing model found, loading...')
-            model = load_model(model_path, custom_objects, safe_mode=False)
+            model = load_model(model_path, custom_objects=custom_objects, safe_mode=False)
             
         # Save estimator
         estimators.append(model)
@@ -141,10 +153,10 @@ def fit_models_par(X: Union[List[np.ndarray], pd.DataFrame, np.ndarray], y: Unio
         
         else:
             print('Existing model found, loading...')
-            model = load_model(model_path, custom_objects)
+            model = load_model(model_path, custom_objects=custom_objects, safe_mode=False)
 
         return model
 
-    estimators = Parallel(delayed(train_estimator)(hps, f"{dir_path}{model_name}_estimator{i}.keras") for i in range(n_estimators))
+    estimators = Parallel(delayed(train_estimator)(hps, dir_path / (model_name + f"_estimator{i}.keras")) for i in range(n_estimators))
     
     return estimators
