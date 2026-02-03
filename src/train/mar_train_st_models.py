@@ -72,13 +72,13 @@ if RUN_LOCALLY:
 
 if RUN_LOCALLY:
     DATA_DIR = Path(os.getenv('LOCDATADIR')) / 'processed/'
-    MODEL_DIR = Path(os.getenv('LOCMODELDIR')) / 'st_models' / f"{DATE}/"
-    PRED_DIR = Path(os.getenv('LOCPREDDIR')) /'st_preds' / f"{DATE}/"
+    MODEL_DIR = Path(os.getenv('LOCMODELDIR')) / 'st_models' / DATE
+    PRED_DIR = Path(os.getenv('LOCPREDDIR')) /'st_preds' / DATE
     tuning_log_path = Path(os.getenv('LOCTUNINGDIR')) / f"st_tuning_log_{DATE}.json" 
 else:
     DATA_DIR = Path(os.getenv('DATADIR')) / 'processed/'
-    MODEL_DIR = Path(os.getenv('MODELDIR')) / 'st_models' / f"{DATE}/"
-    PRED_DIR = Path(os.getenv('PREDDIR')) / 'st_preds' / f"{DATE}/"
+    MODEL_DIR = Path(os.getenv('MODELDIR')) / 'st_models' / DATE
+    PRED_DIR = Path(os.getenv('PREDDIR')) / 'st_preds' / DATE
     tuning_log_path = Path(os.getenv('TUNINGDIR')) / f"st_tuning_log_{DATE}.json"
 
 storage_url = optuna.storages.InMemoryStorage()
@@ -375,7 +375,7 @@ dmqe_preds = np.mean(all_dmq_preds, axis=2)
 dmqe_all_preds_df = pd.DataFrame(dmqe_preds, columns=[f'DMQe_all_Q{Q}' for Q in [5,25,50,75,95]], index=all_model_preds_df.index)
 
 all_model_preds_df = pd.concat([all_model_preds_df, dmqe_all_preds_df], axis=1)
-all_model_preds_df.to_csv(f"{PRED_DIR}st_model_predictions_{COUNTRY}_{HORIZON_IN_QUARTERS}q_{target_name}_{YEAR}.csv")
+all_model_preds_df.to_csv(PRED_DIR / f"st_model_predictions_{COUNTRY}_{HORIZON_IN_QUARTERS}q_{target_name}_{YEAR}.csv")
 
 
 print('COMPLETE.')

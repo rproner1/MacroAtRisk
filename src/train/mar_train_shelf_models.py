@@ -66,13 +66,13 @@ path_quantiles = [int(q*100) for q in QUANTILES]  # Quantiles as integers (e.g.,
 
 if RUN_LOCALLY:
     DATA_DIR = Path(os.getenv('LOCDATADIR')) / 'processed/'
-    MODEL_DIR = Path(os.getenv('LOCMODELDIR')) / 'shelf_models' / f"{DATE}/"
-    PRED_DIR = Path(os.getenv('LOCPREDDIR')) / 'shelf_preds' / f"{DATE}/"
+    MODEL_DIR = Path(os.getenv('LOCMODELDIR')) / 'shelf_models' / DATE
+    PRED_DIR = Path(os.getenv('LOCPREDDIR')) / 'shelf_preds' / DATE
     tuning_log_path = Path(os.getenv('LOCTUNINGDIR')) / f"shelf_tuning_log_{DATE}.json" 
 else:
     DATA_DIR = Path(os.getenv('DATADIR')) / 'processed/'
-    MODEL_DIR = Path(os.getenv('MODELDIR')) / 'shelf_models' / f"{DATE}/"
-    PRED_DIR = Path(os.getenv('PREDDIR')) / 'shelf_preds' / f"{DATE}/"
+    MODEL_DIR = Path(os.getenv('MODELDIR')) / 'shelf_models' / DATE
+    PRED_DIR = Path(os.getenv('PREDDIR')) / 'shelf_preds' / DATE
     tuning_log_path = Path(os.getenv('TUNINGDIR')) / f"shelf_tuning_log_{DATE}.json"
 
 storage_url = optuna.storages.InMemoryStorage()
