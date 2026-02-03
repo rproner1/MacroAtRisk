@@ -221,7 +221,7 @@ for q in QUANTILES:
             q=q
         )
 
-        np.save(f'{MODEL_DIR}{study_name}_bestsubset.npy', np.array(best_subset))
+        np.save(MODEL_DIR / f'{study_name}_bestsubset.npy', np.array(best_subset))
 
     else:
 
