@@ -56,6 +56,8 @@ QUANTILES = config['quantiles']
 RUN_LOCALLY = config['run_locally']
 K_FOLDS = config['k_folds']
 DATE = config.get('date', str(date.today()))
+OVERWRITE_MODELS = config['overwrite_models']
+OVERWRITE_HYPERPARAMS = config['overwrite_hyperparams']
 
 if RUN_LOCALLY: 
     QUANTILES = [0.50]  # Only median for local testing
@@ -86,6 +88,8 @@ for path in [MODEL_DIR, PRED_DIR, tuning_log_path.parent]:
 input_files = config['input_files']
 INPUT_PATHS = [DATA_DIR / file for file in input_files]
 TARGETS_PATH = DATA_DIR / config['target_file']
+
+print(input_files)
 
 non_rnn_data, rnn_data, meta_data = prepare_quantile_data(
     target=TARGET_IDX,

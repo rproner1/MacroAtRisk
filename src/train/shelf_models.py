@@ -4,7 +4,6 @@ import numpy as np
 from sklearn.model_selection import GridSearchCV
 import os
 from pathlib import Path
-from figures.make_quantile_plots import QUANTILES
 from src.utils.files import check_hps_exist, load_hyperparameters, save_hyperparameters
 from sklearn.linear_model import LinearRegression, QuantileRegressor
 from sklearn.ensemble import GradientBoostingRegressor
@@ -13,9 +12,37 @@ from statsmodels.regression.quantile_regression import QuantReg
 from statsmodels.tools import add_constant
 from sklearn.dummy import DummyRegressor
 
+def fit_lit_bench_model(
+        X_train: pd.DataFrame, 
+        y_train: pd.DataFrame, 
+        X_test: pd.DataFrame, 
+        quantiles: list[float], 
+        model_name: str
+    ) -> dict:
+
+    train_preds_dict = {}
+    preds_dict = {}
+
+    for q in quantiles:
+
+        Q = int(q*100)
+
+        model = QuantReg(y_train.values, add_constant(X_train.values, has_constant='skip'))
+        res = model.fit(q=q)
+        print(f"Quantile: {q}, Params: {res.params}")
+
+        # predict
+        preds = res.predict(add_constant(X_test.values, has_constant='skip'))
+        train_preds = res.predict(add_constant(X_train.values, has_constant='skip'))
+        preds_dict[f'{model_name}_Q{Q}'] = preds
+        train_preds_dict[f'{model_name}_Q{Q}'] = train_preds
+
+    return train_preds_dict, preds_dict
+
+
 def fit_linear_models(
-        X_train_full: pd.DataFrame, 
-        y_train_full: pd.Series,
+        X_train: pd.DataFrame, 
+        y_train: pd.Series,
         X_test: pd.DataFrame,
         quantiles: list[float],
         target_name: str,
@@ -41,7 +68,7 @@ def fit_linear_models(
         model_name = f"{model}_{target_name}_{year}"
         grid = grids[model.split('_')[0]]
 
-        X_tr, y_tr = (X_train_full, y_train_full)
+        X_tr, y_tr = (X_train, y_train)
         X_te = X_test
 
         if check_hps_exist(model_name, tuning_log_path):
@@ -64,8 +91,8 @@ def fit_linear_models(
     return preds
 
 def fit_qgb(
-    X_train_full: pd.DataFrame, 
-    y_train_full: pd.Series,
+    X_train: pd.DataFrame, 
+    y_train: pd.Series,
     X_test: pd.DataFrame,
     quantiles: list[float],
     target_name: str,
@@ -87,13 +114,13 @@ def fit_qgb(
             print(f"Study {study_name} already exists. Loading...")
             best_params = load_hyperparameters(study_name, tuning_log_path)
             gbt.set_params(**best_params)
-            best_fit = gbt.fit(X_train_full, y_train_full.values.flatten())
+            best_fit = gbt.fit(X_train, y_train.values.flatten())
         else:
             print(f'Tuning {study_name}...')
             grid_search = GridSearchCV(gbt, grid, refit=True, cv=k_folds, n_jobs=-1)
 
             # Perform grid search and refit with best params
-            best_fit = grid_search.fit(X_train_full, y_train_full.values.flatten())
+            best_fit = grid_search.fit(X_train, y_train.values.flatten())
 
             # Save hps
             best_params = best_fit.best_params_
@@ -103,8 +130,8 @@ def fit_qgb(
     return preds
 
 def fit_qrf(
-        X_train_full: pd.DataFrame, 
-        y_train_full: pd.Series,
+        X_train: pd.DataFrame, 
+        y_train: pd.Series,
         X_test: pd.DataFrame,
         quantiles: list[float],
         target_name: str,
@@ -129,14 +156,14 @@ def fit_qrf(
 
         grid_search = GridSearchCV(qrf, grid, refit=True, cv=k_folds, n_jobs=-1)
 
-        best_fit = grid_search.fit(X_train_full, y_train_full.values.flatten())
+        best_fit = grid_search.fit(X_train, y_train.values.flatten())
 
         # Save hps
         best_params = best_fit.best_params_
         save_hyperparameters(best_params, study_name, tuning_log_path)
 
     qrf.set_params(**best_params)
-    qrf.fit(X_train_full, y_train_full.values.flatten())
+    qrf.fit(X_train, y_train.values.flatten())
     preds_array = qrf.predict(X_test, quantiles=quantiles).reshape(-1,len(quantiles))  # Shape (n_samples, n_quantiles)
     
     for i, Q in enumerate(path_quantiles):
@@ -145,8 +172,8 @@ def fit_qrf(
     return preds
 
 def fit_qpcr(
-        X_train_full: pd.DataFrame, 
-        y_train_full: pd.Series,
+        X_train: pd.DataFrame, 
+        y_train: pd.Series,
         X_test: pd.DataFrame,
         quantiles: list[float],
         target_idx: int, 
@@ -166,8 +193,8 @@ def fit_qpcr(
             print(f'Training {study_name}...')
 
             qpcr, best_subset = fit_qpcr(
-                X=X_train_full.values, # Constant added inside function
-                y=y_train_full.values, 
+                X=X_train.values, # Constant added inside function
+                y=y_train.values, 
                 q=q
             )
 
@@ -179,8 +206,8 @@ def fit_qpcr(
 
             best_subset = list(np.load(f'{models_dir}{study_name}_bestsubset.npy', allow_pickle=True).flatten())
 
-            X_train_subset = X_train_full.values[:, best_subset]
-            qpcr = QuantReg(y_train_full.values, add_constant(X_train_subset, has_constant='skip')).fit(q=q)
+            X_train_subset = X_train.values[:, best_subset]
+            qpcr = QuantReg(y_train.values, add_constant(X_train_subset, has_constant='skip')).fit(q=q)
 
         # print(f"best_subset: {best_subset}")
 
@@ -189,30 +216,35 @@ def fit_qpcr(
 
         preds_dict[f'QPCR_Q{Q}'] = preds
 
-def fit_ar1(X_train_full: pd.DataFrame, y_train_full: pd.DataFrame, X_test: pd.DataFrame, quantiles: list[float], target_name: str, year: int):
+def fit_ar1(
+        X_train: pd.DataFrame, 
+        y_train: pd.DataFrame, 
+        X_test: pd.DataFrame, 
+        quantiles: list[float], 
+        target_name: str, 
+        year: int,
+        verbose: bool=True
+    ):
 
     preds_dict = {}
-    # X_ar_1 = pd.read_parquet(ar1_x_path)
-    # X_ar_1_train = X_ar_1.loc['1961-02-01':f'{year}-12-01', f"{target_name}_t-1"]
-    # X_ar_1_test = X_ar_1.loc[f'{year+1}-01-01': f'{year+1}-12-01', f"{target_name}_t-1"]
-    # y_train_full_ar = y_train_full.loc['1961-02-01':f'{year}-12-01'] # Get rid of first date because NaN from lag
 
-    for q in quantiles: 
+    for q in quantiles:
+        if verbose: print(f'Fitting quantile {q}') 
         ar_1 = QuantileRegressor(quantile=q)
-        ar_1.fit(X_train_full.values.reshape(-1,1), y_train_full.values)
+        ar_1.fit(X_train.values.reshape(-1,1), y_train.values)
         preds = ar_1.predict(X_test.values.reshape(-1,1)) # Shape (n_samples,)
         preds_dict[f'AR1_Q{int(q*100)}'] = preds
 
     # Train an AR(1) specifically for the mean
     ar1_mean = LinearRegression()
-    ar1_mean.fit(X_train_full.values.reshape(-1,1), y_train_full.values)
+    ar1_mean.fit(X_train.values.reshape(-1,1), y_train.values)
     mean_preds = ar1_mean.predict(X_test.values.reshape(-1,1))
     preds_dict['AR1_Mean'] = mean_preds
 
     return preds_dict
 
-def fit_dummy(X_train_full: pd.DataFrame, 
-              y_train_full: pd.Series,
+def fit_dummy(X_train: pd.DataFrame, 
+              y_train: pd.Series,
               X_test: pd.DataFrame,
               quantiles: list[float]):
     
@@ -222,13 +254,13 @@ def fit_dummy(X_train_full: pd.DataFrame,
         Q = int(q*100)
         naive = DummyRegressor(strategy='quantile', quantile=q)
         # X does not matter for DummyRegressor but required for consistency
-        naive.fit(X_train_full, y_train_full)
+        naive.fit(X_train, y_train)
         preds = naive.predict(X_test)
         preds_dict[f'Naive_Q{Q}'] = preds
 
     # Naive Mean Regressor
     naive_mean = DummyRegressor(strategy='mean')
-    naive_mean.fit(X_train_full, y_train_full)
+    naive_mean.fit(X_train, y_train)
     mean_preds = naive_mean.predict(X_test)
     preds_dict['Naive_Mean'] = mean_preds
 

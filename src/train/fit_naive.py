@@ -2,12 +2,12 @@ import pandas as pd
 import numpy as np
 import os
 import sys
-from utils.utils import prepare_quantile_data
+from src.preprocessing.prepare_quantile_data import prepare_quantile_data
 from operator import itemgetter
 
 
 DATA_DIR = "/home/rproner/Documents/Data/MacroAtRisk/"
-PRED_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/USNaivePredictions/"
+PRED_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/naive_predictions/"
 
 os.makedirs(PRED_DIR, exist_ok=True)
 

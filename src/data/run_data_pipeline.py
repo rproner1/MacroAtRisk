@@ -169,6 +169,7 @@ def prepare_us_data(
     
     # Process all OAP datasets from config
     oap_datasets = config["oap_datasets"]
+    
     for oap_config in oap_datasets:
         oap_name = oap_config["name"]
         oap_filename = oap_config["file"]
@@ -201,7 +202,7 @@ def prepare_us_data(
                 initial_training_last_date=initial_training_last_date
             )
             oap_data.to_parquet(output_file)
-            print(f"{oap_name} saved")
+            print(f"{oap_name} saved to {output_file}")
     
     return None
 

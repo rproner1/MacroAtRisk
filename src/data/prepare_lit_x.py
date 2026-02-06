@@ -157,7 +157,8 @@ def get_iar_x(
 
     # Backcast LTE for missing periods using GS10
     backcast_data = pd.concat([gs10, lte], axis=1).dropna()
-    backcast_predict = gs10.loc[:lte.index.min()]
+    # Exclude the first date of actual LTE data to avoid duplicates
+    backcast_predict = gs10.loc[gs10.index < lte.index.min()]
     backcast_predict_df = backcast_predict.to_frame(name='GS10')
 
     backcast_model = smf.ols('EXPINF10YR ~ GS10', data=backcast_data).fit()

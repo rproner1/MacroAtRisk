@@ -70,6 +70,10 @@ def get_firm_avg(df: pd.DataFrame, value_weight: bool = False, size: pd.DataFram
             .reset_index()
         )
 
+    # Replace zeros with NaN. Zeros arise when there are too few firms in a month to populate bins. 
+    # Some signals are sparse and this is frequent. Such signals will later be removed.
+    firm_avg_df.replace(0, np.nan, inplace=True)
+
     return firm_avg_df
 
 def get_firm_spread(df: pd.DataFrame, quantiles: int = 10) -> pd.DataFrame:
@@ -108,5 +112,9 @@ def get_firm_spread(df: pd.DataFrame, quantiles: int = 10) -> pd.DataFrame:
     
     spread_df = df.groupby('yyyymm', group_keys=False).apply(compute_spread_for_group)
     spread_df.reset_index(inplace=True)
+
+    # Replace zeros with NaN. Zeros arise when there are too few firms in a month to populate bins. 
+    # Some signals are sparse and this is frequent. Such signals will later be removed.
+    spread_df.replace(0, np.nan, inplace=True)
 
     return spread_df
