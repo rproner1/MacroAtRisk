@@ -1,0 +1,108 @@
+logging_level: 20
+matplotlib:
+  font:
+    family: serif
+    sans_serif:
+      - Helvetica
+    serif:
+      - "Computer Modern Roman"
+
+
+# ========== Data Processing ==========
+oap_release: 202510
+construct_oap_signals: false
+skip_processed_data: false
+desired_start_date_of_samples: "1961-01-01"
+desired_end_date_of_samples: "2024-12-01"
+initial_training_last_date: "1997-12-01"
+last_date_of_sample: "2024-12-01"
+remove_cols_threshold: 0.3
+
+# OAP signal construction configurations
+oap_signals:
+  - signal: "avg"
+    output_name: "oap_avg"
+  - signal: "vw_avg"
+    output_name: "oap_vw"
+  - signal: "spread"
+    quantiles: 10
+    output_name: "oap_spread"
+
+# OAP data configurations
+oap_datasets:
+  - name: "oap_avg"
+    file: "oap_avg.csv"
+    first_difference: false
+    output_name: "oap_avg_x"
+  - name: "oap_avg_fd"
+    file: "oap_avg.csv"
+    first_difference: true
+    output_name: "oap_avg_fd_x"
+  # Add more OAP variants here as needed
+  - name: "oap_vw"
+    file: "oap_vw.csv"
+    first_difference: false
+    output_name: "oap_vw_x"
+  - name: "oap_vw_fd"
+    file: "oap_vw.csv"
+    first_difference: true
+    output_name: "oap_vw_fd_x"
+  - name: "oap_spread"
+    file: "oap_spread.csv"
+    first_difference: false
+    output_name: "oap_spread_x"
+  - name: "oap_spread_fd"
+    file: "oap_spread.csv"
+    first_difference: true
+    output_name: "oap_spread_fd_x"
+
+
+# ========== Model Training ==========
+fit_models: true
+input_files: [
+  "us_4q_fred_x.parquet",
+  "us_4q_oap_spread_x.parquet"
+]
+target_file: 'us_4q_fred_y.parquet'
+
+trials: 50
+time_steps: 12
+quantiles: [0.05, 0.25, 0.50, 0.75, 0.95]
+n_estimators: 5
+k_folds: 10 # Number of folds for cross-validation
+val_size: 0.1 # Proportion of training data to use for validation in cross-validation
+val_years: 5  # Number of years for early stopping 
+loss_weights: [0.28, 0.17, 0.11, 0.17, 0.28]
+epochs: 200
+batch_size: 4
+
+# ========== Shared Settings ==========
+year: 1997
+country: "us"
+horizon_in_quarters: 4
+run_locally: true
+date: '2026-02-02'
+
+
+# ========== Evaluation ==========
+make_results: true
+make_r1_tables: true
+base_models_subset: [
+  'LR',
+  'LAS',
+  'QRF',
+  'QGB',
+  'DMQv0c',
+  'DMQv1c',
+  'DMQv2c'
+]
+test_start: "1998-01-01"
+test_end: "2024-12-01"
+start_year: 1997
+end_year: 2023
+concatenate_predictions: true
+
+
+
+
+
