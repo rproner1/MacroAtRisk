@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.1.12)  4 MAR 2026 15:47
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.1.12)  4 MAR 2026 16:01
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -206,20 +206,20 @@ File: l3backend-pdftex.def 2024-01-04 L3 backend support: PDF output (pdfTeX)
 ) (./results.aux)
 \openout1 = `results.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 25.
-LaTeX Font Info:    ... okay on input line 25.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 25.
-LaTeX Font Info:    ... okay on input line 25.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 25.
-LaTeX Font Info:    ... okay on input line 25.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 25.
-LaTeX Font Info:    ... okay on input line 25.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 25.
-LaTeX Font Info:    ... okay on input line 25.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 25.
-LaTeX Font Info:    ... okay on input line 25.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 25.
-LaTeX Font Info:    ... okay on input line 25.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 35.
+LaTeX Font Info:    ... okay on input line 35.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 35.
+LaTeX Font Info:    ... okay on input line 35.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 35.
+LaTeX Font Info:    ... okay on input line 35.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 35.
+LaTeX Font Info:    ... okay on input line 35.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 35.
+LaTeX Font Info:    ... okay on input line 35.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 35.
+LaTeX Font Info:    ... okay on input line 35.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 35.
+LaTeX Font Info:    ... okay on input line 35.
  (/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count286
@@ -275,53 +275,38 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
 
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 27.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 37.
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 27.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 37.
  (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 
 LaTeX Warning: No \author given.
 
-<../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Infl_yoy.png, id=1, 860.013pt x 425.4294pt>
-File: ../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Infl_yoy.png Graphic file (type png)
-<use ../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Infl_yoy.png>
-Package pdftex.def Info: ../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Infl_yoy.png  used on input line 33.
-(pdftex.def)             Requested size: 362.37569pt x 179.25687pt.
-<../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_IP_yoy.png, id=3, 860.013pt x 425.4294pt>
-File: ../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_IP_yoy.png Graphic file (type png)
-<use ../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_IP_yoy.png>
-Package pdftex.def Info: ../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_IP_yoy.png  used on input line 40.
-(pdftex.def)             Requested size: 362.37569pt x 179.25687pt.
-<../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png, id=4, 860.013pt x 425.4294pt>
-File: ../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png Graphic file (type png)
-<use ../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png>
-Package pdftex.def Info: ../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png  used on input line 47.
-(pdftex.def)             Requested size: 362.37569pt x 179.25687pt.
 [1
 
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-t1.enc} <../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Infl_yoy.png> <../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_IP_yoy.png>] [2 <../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png>] (../results_tables/2026-02-05/r1_Infl_yoy.tex) (../results_tables/2026-02-05/r2_Infl_yoy.tex) (../results_tables/2026-02-05/r1_IP_yoy.tex) (../results_tables/2026-02-05/r2_IP_yoy.tex) (../results_tables/2026-02-05/r1_Unrate_yoy.tex) (../results_tables/2026-02-05/r2_Unrate_yoy.tex) [3] [4] (./results.aux)
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-t1.enc}] (../results_tables/2026-02-09_avg_fd/r1_Infl_yoy.tex) (../results_tables/2026-02-09_avg_fd/r2_Infl_yoy.tex) (../results_tables/2026-02-09_avg_fd/r1_IP_yoy.tex) (../results_tables/2026-02-09_avg_fd/r2_IP_yoy.tex) (../results_tables/2026-02-09_avg_fd/r1_Unrate_yoy.tex) (../results_tables/2026-02-09_avg_fd/r2_Unrate_yoy.tex) [2] [3] (./results.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 5115 strings out of 474222
- 82732 string characters out of 5748733
+ 5089 strings out of 474222
+ 81234 string characters out of 5748733
  1947975 words of memory out of 5000000
- 27307 multiletter control sequences out of 15000+600000
+ 27281 multiletter control sequences out of 15000+600000
  568869 words of font info for 66 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  57i,11n,65p,295b,506s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texmf/fonts/type1/public/cm-super/sfbx1440.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1000.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1095.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1200.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1728.pfb>
-Output written on results.pdf (4 pages, 1729429 bytes).
+Output written on results.pdf (3 pages, 69683 bytes).
 PDF statistics:
- 50 PDF objects out of 1000 (max. 8388607)
- 27 compressed objects within 1 object stream
+ 40 PDF objects out of 1000 (max. 8388607)
+ 24 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 16 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

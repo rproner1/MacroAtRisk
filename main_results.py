@@ -37,6 +37,8 @@ parser.add_argument("--start-year", type=int, default=None,
                     help="First prediction year (default: from config)")
 parser.add_argument("--end-year", type=int, default=None,
                     help="Last prediction year (default: from config)")
+parser.add_argument("--plot_quantiles", action="store_true", help="Whether to generate quantile plots")
+parser.add_argument("--plot_means", action="store_true", help="Whether to generate mean plots")
 args = parser.parse_args()
 
 # Use config values as defaults, allow CLI overrides
@@ -50,7 +52,8 @@ TEST_END = args.test_end if args.test_end is not None else config['test_end']
 START_YEAR = args.start_year if args.start_year is not None else config['start_year']
 END_YEAR = args.end_year if args.end_year is not None else config['end_year']
 TARGET_FILE = config['target_file']
-
+PLOT_QUANTILES = args.plot_quantiles
+PLOT_MEANS = args.plot_means
 RUN_LOCALLY = config['run_locally']
 ROOT_DIR = Path(os.getenv("LOCROOTDIR" if RUN_LOCALLY else "ROOTDIR"))
 
@@ -129,33 +132,35 @@ def main():
         date_str=DATE
     )
     
-    print("\nStep 4: Generating quantile plots...")
-    make_quantile_plots(
-        target_idx=TARGET_IDX,
-        targets_path=target_path,
-        pred_path=PRED_DIR / f'all_models_predictions_{COUNTRY}_{HORIZON}q_{target_name}.csv',
-        fig_dir=FIGURES_DIR,
-        country=COUNTRY,
-        horizon_in_quarters=HORIZON,
-        quantiles=QUANTILES,
-        test_start=TEST_START,
-        test_end=TEST_END,
-        date_str=DATE
-    )
+    if PLOT_QUANTILES:
+        print("\nStep 4: Generating quantile plots...")
+        make_quantile_plots(
+            target_idx=TARGET_IDX,
+            targets_path=target_path,
+            pred_path=PRED_DIR / f'all_models_predictions_{COUNTRY}_{HORIZON}q_{target_name}.csv',
+            fig_dir=FIGURES_DIR,
+            country=COUNTRY,
+            horizon_in_quarters=HORIZON,
+            quantiles=QUANTILES,
+            test_start=TEST_START,
+            test_end=TEST_END,
+            date_str=DATE
+        )
     
-    print("\nStep 5: Generating mean plots...")
-    make_mean_plots(
-        target_idx=TARGET_IDX,
-        targets_path=target_path,
-        pred_path=PRED_DIR / f'all_models_predictions_{COUNTRY}_{HORIZON}q_{target_name}.csv',
-        fig_dir=FIGURES_DIR,
-        country=COUNTRY,
-        horizon_in_quarters=HORIZON,
-        quantiles=QUANTILES,
-        test_start=TEST_START,
-        test_end=TEST_END,
-        date_str=DATE
-    )
+    if PLOT_MEANS:
+        print("\nStep 5: Generating mean plots...")
+        make_mean_plots(
+            target_idx=TARGET_IDX,
+            targets_path=target_path,
+            pred_path=PRED_DIR / f'all_models_predictions_{COUNTRY}_{HORIZON}q_{target_name}.csv',
+            fig_dir=FIGURES_DIR,
+            country=COUNTRY,
+            horizon_in_quarters=HORIZON,
+            quantiles=QUANTILES,
+            test_start=TEST_START,
+            test_end=TEST_END,
+            date_str=DATE
+        )
     
     print(f"\nResults complete. Tables saved to {TABLES_DIR}, Figures saved to {FIGURES_DIR}")
 

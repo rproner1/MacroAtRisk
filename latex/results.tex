@@ -18,16 +18,28 @@
 
 \title{Sample}
 \date{\today}
-
+\author{Robert Proner}
 % Date variable for results paths
-\newcommand{\resultdate}{2026-02-05}
+\newcommand{\resultdate}{2026-02-09_avg_fd}
+
+% Toggle to show/hide figures. Default shows figures.
+% To override from the command line, pass e.g.:
+%   pdflatex "\def\NoFigures{}\input{latex/results.tex}"
+\newif\ifshowfigures
+% \showfigurestrue
+% If the user defined \NoFigures (via command line), hide figures
+\ifdefined\NoFigures
+    \showfiguresfalse
+\fi
+
 
 \begin{document}
 
 \maketitle
 
 \section{Figures}
-
+% Figures can be toggled with the `\ifshowfigures` conditional
+\ifshowfigures
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{../results_figures/\resultdate/DMQv0c_quantile_plot_us_4q_Infl_yoy.png}
@@ -48,6 +60,7 @@
     \caption{Forecasts for Unrate\_yoy using DMQv0c}
     \label{fig:unrate_yoy_dmqv0c}
 \end{figure}
+\fi
 
 
 \newpage
