@@ -19,6 +19,9 @@
 \title{Sample}
 \date{\today}
 
+% Date variable for results paths
+\newcommand{\resultdate}{2026-02-05}
+
 \begin{document}
 
 \maketitle
@@ -27,26 +30,25 @@
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{../ResultsFigures/DMQe_quantile_plot_us_4q_Infl_yoy.png}
-    \caption{Forecasts for Infl\_yoy using DMQe}
-    \label{fig:infl_yoy_dmqe}
+    \includegraphics[width=0.8\textwidth]{../results_figures/\resultdate/DMQv0c_quantile_plot_us_4q_Infl_yoy.png}
+    \caption{Forecasts for Infl\_yoy using DMQv0c}
+    \label{fig:infl_yoy_dmqv0c}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{../ResultsFigures/DMQe_quantile_plot_us_4q_IP_yoy.png}
-    \caption{Forecasts for IP\_yoy using DMQe}
-    \label{fig:ip_yoy_dmqe}
+    \includegraphics[width=0.8\textwidth]{../results_figures/\resultdate/DMQv0c_quantile_plot_us_4q_IP_yoy.png}
+    \caption{Forecasts for IP\_yoy using DMQv0c}
+    \label{fig:ip_yoy_dmqv0c}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{../ResultsFigures/DMQe_quantile_plot_us_4q_Unrate_yoy.png}
-    \caption{Forecasts for Unrate\_yoy using DMQe}
-    \label{fig:unrate_yoy_dmqe}
+    \includegraphics[width=0.8\textwidth]{../results_figures/\resultdate/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png}
+    \caption{Forecasts for Unrate\_yoy using DMQv0c}
+    \label{fig:unrate_yoy_dmqv0c}
 \end{figure}
 
-\newpage
 
 \newpage
 
@@ -60,7 +62,7 @@
 \centering
 \caption*{Panel A: R1 --- Infl\_yoy}
 \resizebox{\textwidth}{!}{%
-\input{../ResultsTables/r1_Infl_yoy.tex}
+\input{../results_tables/\resultdate/r1_Infl_yoy.tex}
 }
 \end{subtable}
 
@@ -70,7 +72,7 @@
 \centering
 \caption*{Panel B: R2 --- Infl\_yoy}
 \resizebox{\textwidth}{!}{%
-\input{../ResultsTables/r2_Infl_yoy.tex}
+\input{../results_tables/\resultdate/r2_Infl_yoy.tex}
 }
 \end{subtable}
 \end{table}
@@ -84,7 +86,7 @@
 \centering
 \caption*{Panel A: R1 --- IP\_yoy}
 \resizebox{\textwidth}{!}{%
-\input{../ResultsTables/r1_IP_yoy.tex}
+\input{../results_tables/\resultdate/r1_IP_yoy.tex}
 }
 \end{subtable}
 
@@ -94,7 +96,7 @@
 \centering
 \caption*{Panel B: R2 --- IP\_yoy}
 \resizebox{\textwidth}{!}{%
-\input{../ResultsTables/r2_IP_yoy.tex}
+\input{../results_tables/\resultdate/r2_IP_yoy.tex}
 }
 \end{subtable}
 \end{table}
@@ -108,7 +110,7 @@
 \centering
 \caption*{Panel A: R1 --- Unrate\_yoy}
 \resizebox{\textwidth}{!}{%
-\input{../ResultsTables/r1_Unrate_yoy.tex}
+\input{../results_tables/\resultdate/r1_Unrate_yoy.tex}
 }
 \end{subtable}
 
@@ -118,7 +120,7 @@
 \centering
 \caption*{Panel B: R2 --- Unrate\_yoy}
 \resizebox{\textwidth}{!}{%
-\input{../ResultsTables/r2_Unrate_yoy.tex}
+\input{../results_tables/\resultdate/r2_Unrate_yoy.tex}
 }
 \end{subtable}
 \end{table}

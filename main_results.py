@@ -10,7 +10,8 @@ from pathlib import Path
 from datetime import date
 
 from src.data.concat_preds import concat_predictions
-from src.tables.make_r1_tables import make_r1_tables
+from src.eval.make_tables import make_r1_tables, make_r2_tables
+from src.figures.make_figures import make_quantile_plots, make_mean_plots
 
 load_dotenv()
 
@@ -69,6 +70,7 @@ else:
 
 RESULTS_DIR = ROOT_DIR / "results" / DATE
 TABLES_DIR = ROOT_DIR / "results_tables" / DATE
+FIGURES_DIR = ROOT_DIR / "results_figures" / DATE
 
 target_path = DATA_DIR / TARGET_FILE
 
@@ -78,10 +80,11 @@ target_name = target_name_dict[TARGET_IDX]
 os.makedirs(PRED_DIR, exist_ok=True)
 os.makedirs(RESULTS_DIR, exist_ok=True)
 os.makedirs(TABLES_DIR, exist_ok=True)
+os.makedirs(FIGURES_DIR, exist_ok=True)
 
 
 def main():
-    """Combine predictions and generate evaluation tables."""
+    """Combine predictions and generate evaluation tables and figures."""
     
     print("Step 1: Concatenating predictions...")
     concat_predictions(
@@ -108,10 +111,53 @@ def main():
         quantiles=QUANTILES,
         test_start=TEST_START,
         test_end=TEST_END,
-        date=DATE
+        date_str=DATE
     )
     
-    print(f"\nResults complete. Tables saved to {TABLES_DIR}")
+    print("\nStep 3: Generating R2 tables...")
+    make_r2_tables(
+        target_idx=TARGET_IDX,
+        targets_path=target_path,
+        pred_path=PRED_DIR / f'all_models_predictions_{COUNTRY}_{HORIZON}q_{target_name}.csv',
+        results_dir=RESULTS_DIR,
+        tables_dir=TABLES_DIR,
+        country=COUNTRY,
+        horizon_in_quarters=HORIZON,
+        quantiles=QUANTILES,
+        test_start=TEST_START,
+        test_end=TEST_END,
+        date_str=DATE
+    )
+    
+    print("\nStep 4: Generating quantile plots...")
+    make_quantile_plots(
+        target_idx=TARGET_IDX,
+        targets_path=target_path,
+        pred_path=PRED_DIR / f'all_models_predictions_{COUNTRY}_{HORIZON}q_{target_name}.csv',
+        fig_dir=FIGURES_DIR,
+        country=COUNTRY,
+        horizon_in_quarters=HORIZON,
+        quantiles=QUANTILES,
+        test_start=TEST_START,
+        test_end=TEST_END,
+        date_str=DATE
+    )
+    
+    print("\nStep 5: Generating mean plots...")
+    make_mean_plots(
+        target_idx=TARGET_IDX,
+        targets_path=target_path,
+        pred_path=PRED_DIR / f'all_models_predictions_{COUNTRY}_{HORIZON}q_{target_name}.csv',
+        fig_dir=FIGURES_DIR,
+        country=COUNTRY,
+        horizon_in_quarters=HORIZON,
+        quantiles=QUANTILES,
+        test_start=TEST_START,
+        test_end=TEST_END,
+        date_str=DATE
+    )
+    
+    print(f"\nResults complete. Tables saved to {TABLES_DIR}, Figures saved to {FIGURES_DIR}")
 
 
 if __name__ == "__main__":
