@@ -99,14 +99,18 @@ Standard macro-fin toolkit: GDP-at-risk \parencite{Adrian2019}; unemployment-at-
 
 \begin{frame}{Closest paper to us: \textcite{Adrian2025}}
 
-	\textbf{What they do:} forecast the tails ($\tau=0.05$ and $\tau=0.95$) of monthly industrial production growth, one-month ahead using Quantile Random Forest (QRF), Quantile Gradiant Boosting (QGB), Quantile Partial Correlation Regression (QPCR), GARCH, Quantile Regressions (QR)
+	\textbf{What they do:} forecast the tails ($\tau=0.05$ and $\tau=0.95$) of 
+    monthly industrial production growth, one-month ahead using various regularization techniques such as LASSO, as well as 
+    Quantile Random Forest (QRF), quantile neural networks, 
+    Quantile Partial Correlation Regression (QPCR), and 
+    GARCH.
     
     \vspace{.4cm}
 	\textbf{How we differ:} 
 	\begin{itemize}
 		\item Add deep learning
         \item Introduce multi-task learning
-        \item Introduce no-quantile crossing
+        \item Implement quantile spacings in a neural network architecture
         \item Explore industrial production, inflation and unemployment
         \item We consider 5 quantiles and explore possible (shared) drivers
         \item We explore shorter and longer horizon (1 and 4 quarters ahead)

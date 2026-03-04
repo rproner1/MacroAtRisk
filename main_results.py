@@ -57,7 +57,7 @@ ROOT_DIR = Path(os.getenv("LOCROOTDIR" if RUN_LOCALLY else "ROOTDIR"))
 if RUN_LOCALLY:
     DATA_DIR = Path(os.getenv("LOCDATADIR")) / "processed"
     ST_PRED_DIR = Path(os.getenv('LOCPREDDIR')) / 'st_preds' / DATE
-    LIT_BENCH_PRED_DIR = Path(os.getenv('LOCPREDDIR')) / 'lit_bench_preds' / DATE
+    LIT_BENCH_PRED_DIR = Path(os.getenv('LOCROOTDIR')) / 'lit_benchmark_predictions'
     SHELF_PRED_DIR = Path(os.getenv('LOCPREDDIR')) / 'shelf_preds' / DATE
     PRED_DIR = Path(os.getenv('LOCPREDDIR')) / 'concatenated' / DATE
 else:

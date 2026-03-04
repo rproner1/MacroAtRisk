@@ -111,7 +111,11 @@ def make_r1_tables(
 
     r1_results_df = pd.DataFrame(results).pivot(index='Model', columns='Quantile', values='R1').reset_index().apply(lambda x: round(x, 1) if x.name!='Model' else x)
     r1_results_df['Mean'] = r1_results_df.loc[:, quantiles].mean(axis=1)
-    r1_results_df.sort_values('Mean', ascending=False).to_csv(f"{results_dir}oos_r1_{country}_{horizon_in_quarters}q_{target_dict[target_idx]}_{test_start}-{test_end}.csv", index=False)
+    r1_results_df = r1_results_df.sort_values('Mean', ascending=False)
+    r1_results_df.to_csv(
+       results_dir / f"oos_r1_{country}_{horizon_in_quarters}q_{target_dict[target_idx]}_{test_start}-{test_end}.csv", 
+       index=False
+    )
 
     # Make latex table
     r1_results_df = r1_results_df.set_index(['Model'])
