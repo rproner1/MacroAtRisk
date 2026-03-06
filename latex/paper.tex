@@ -1,0 +1,158 @@
+\documentclass[12pt]{article}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{amssymb}
+\usepackage{amsfonts} 
+\usepackage{amsmath}
+\usepackage{natbib}
+\usepackage{hyperref}
+\usepackage{mathabx} %to get widebar
+\hypersetup{
+  colorlinks,
+  citecolor=blue,
+  linkcolor=red,
+  urlcolor=blue}
+\usepackage{rotating} %to rotate text 90 degrees
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{comment}
+\usepackage{float}
+\usepackage{dcolumn}
+\usepackage{setspace}
+\usepackage[flushleft]{threeparttable}
+\usepackage[symbol]{footmisc}
+\usepackage{url}
+\usepackage{subcaption}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{color, colortbl}
+\usepackage{bbm}
+\usepackage{lscape}
+\definecolor{Gray}{gray}{0.9}
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\setcounter{MaxMatrixCols}{10}
+\newtheorem{theorem}{Theorem}
+\newtheorem{acknowledgement}[theorem]{Acknowledgement}
+\newtheorem{algorithm}[theorem]{Algorithm}
+\newtheorem{axiom}[theorem]{Axiom}
+\newtheorem{case}[theorem]{Case}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{conclusion}[theorem]{Conclusion}
+\newtheorem{condition}[theorem]{Condition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{criterion}[theorem]{Criterion}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{exercise}[theorem]{Exercise}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{notation}[theorem]{Notation}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{solution}[theorem]{Solution}
+\newtheorem{summary}[theorem]{Summary}
+\newenvironment{proof}[1][Proof]{\noindent\textbf{#1.} }{\ \rule{0.5em}{0.5em}}
+\geometry{top=1.2in,bottom=1.2in,left=1.2in,right=1.2in}
+%\geometry{top=1.425in,bottom=1.425in,left=1.5in,right=1.5in}
+%\geometry{top=1.5in,bottom=1.5in,left=1.35in,right=1.35in}
+\renewcommand{\rmdefault}{ptm}
+\setcounter{topnumber}{2}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{4}
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\bottomfraction}{0.85}
+\renewcommand{\textfraction}{0.15}
+\renewcommand{\floatpagefraction}{0.7}
+\usepackage{setspace} 
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\setlength{\bibsep}{3.9pt}
+\linespread{1.5}
+\usepackage{chngcntr}
+\usepackage{etoolbox}
+\makeatletter
+\AtBeginDocument{\preto\@title{\singlespacing}}% in case it isn't single spaced
+\makeatother
+\usepackage{tikz} %to draw figures in latex
+\usepackage{ragged2e}
+
+\begin{document}
+
+
+\title{{\bf \Large Deep in the Tails: Multi-Task Learning for Macroeconomic Tail Risk}\thanks{The views expressed in this paper are those of the authors and do not necessarily reflect those of the Bank of Canada. We thank ...}}
+
+%Alternative titles:
+%Deep in the Tails: Multi-Task Learning for Macroeconomic Tail Risk
+%Don't be mean, get into shape! Multi-task neural network for macroeconomic risks
+
+\author{Robert \textsc{Proner}\thanks{University of Toronto. Email: \texttt{robert.proner@mail.utoronto.ca}.}} 
+% \qquad Thibaut \textsc{Duprey}\thanks{Bank of Canada, 234 Wellington Street West, Ottawa, ON K1A0G9, Canada. Email: \texttt{tduprey@bank-banque-canada.ca}. Corresponding author.} \qquad Fred \textsc{Liu}\thanks{University of Guelph. Email: \texttt{fred.liu@uoguelph.ca}.}}
+
+\date{\today}
+%\date{}
+\maketitle
+\begin{abstract}
+\noindent 
+We develop a deep multi-task neural network (DMQ) to forecast the conditional distribution of inflation, industrial production, and unemployment from 1998-2024. As benchmarks, we use quantile regressions from the latest macroeconomic risk literature and a large set of popular machine-learning methods. We find DMQ provides substantial gains in forecast accuracy for the conditional distribution as well as the conditional mean, especially during the GFC and Covid.   
+\end{abstract}
+\textbf{Keywords}: \\
+\textbf{JEL Codes}: 
+
+
+\section{Introduction}
+
+In recent years policy makers have become increasinly concerned with uncertainty surrounding macroeconomic forecasts. 
+For example, the Federal Open Market Committee (FOMC) regularly includes distributions around its predictions for 
+key macroeconomic indicators within its outlook publications. Distributions around forecasts are important because
+point forecasts fail to paint an accurate picture of the level of risk in the economy. 
+Policy makers are particularly concerned with tail risks and economic uncertainty clearly is factored in their decisions
+\citep{andradeTAILSINFLATIONFORECASTS2012}. It is therefore important to have accurate forecasts of the 
+conditional distribution of important macroeconomic indicators. 
+
+Forecasting the conditional distribution of macroeconoic indicators is challenging for several reasons. First, 
+the conditional distribution is highly time-varying, both in location, scale, and shape \citep{adrianVulnerableGrowth2019,lopez-salidoInflationRisk2024,kileyUnemploymentRisk2022,clarkRealTimeDensityForecasts2011,pruserNonlinearitiesMacroeconomicTail2024,andradeTAILSINFLATIONFORECASTS2012}.
+Second, the functional form linking the quantiles of the conditional distribution to the predictors is likely 
+non-linear \citep{adrianVulnerableGrowth2019,lopez-salidoInflationRisk2024,pruserNonlinearitiesMacroeconomicTail2024},
+and depends on a large number of macroeconomic and financial predictors \citep{pruserNonlinearitiesMacroeconomicTail2024,adrianMachinelearningGrowthRisk2025}.
+Third, linear models, specifically quantile regressions (QR) are susceptible to overfitting and quantile crossing \citep{schmidt_quantile_nodate}.
+In this paper we remedy these issues by developing a deep multi-quantile neural network (DMQ) to forecast the conditional distribution 
+of inflation, industrial productions (IP) growth, and percent change in unemployment. We demonstrate 
+that DMQ provides significant gains in out-of-sample forecast accuracy in both the conditional quantiles 
+as well as the conditional mean, especially during the GFC and Covid.
+
+
+
+\section{Method}\label{section:data}
+\subsection{...}
+
+
+
+
+
+%\clearpage
+
+\section{Conclusion} \label{section:conclusion}
+
+
+
+\newpage
+\singlespacing
+
+%%% BibTeX style.
+\bibliographystyle{ecta}%{aer}
+%% BibTeX database file.
+\bibliography{references.bib}
+
+\clearpage
+\appendix
+\counterwithin{figure}{section}
+\counterwithin{table}{section}
+
+
+\appendix
+
+\section{Appendix}
+
+
+
+\end{document}

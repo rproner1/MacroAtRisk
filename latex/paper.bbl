@@ -1,0 +1,8 @@
+\begin{thebibliography}{1}
+\newcommand{\enquote}[1]{``#1''}
+\expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
+
+\bibitem[\protect\citeauthoryear{Andrade, Ghysels, and Idier}{Andrade et~al.}{2012}]{andradeTAILSINFLATIONFORECASTS2012}
+\textsc{Andrade, P., E.~Ghysels, and J.~Idier} (2012): \enquote{{TAILS} {OF} {INFLATION} {FORECASTS} {AND} {TALES} {OF} {MONETARY} {POLICY},} \emph{MONETARY POLICY}.
+
+\end{thebibliography}
