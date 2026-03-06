@@ -113,12 +113,14 @@ Forecasting the conditional distribution of macroeconoic indicators is challengi
 the conditional distribution is highly time-varying, both in location, scale, and shape \citep{adrianVulnerableGrowth2019,lopez-salidoInflationRisk2024,kileyUnemploymentRisk2022,clarkRealTimeDensityForecasts2011,pruserNonlinearitiesMacroeconomicTail2024,andradeTAILSINFLATIONFORECASTS2012}.
 Second, the functional form linking the quantiles of the conditional distribution to the predictors is likely 
 non-linear \citep{adrianVulnerableGrowth2019,lopez-salidoInflationRisk2024,pruserNonlinearitiesMacroeconomicTail2024},
-and depends on a large number of macroeconomic and financial predictors \citep{pruserNonlinearitiesMacroeconomicTail2024,adrianMachinelearningGrowthRisk2025}.
+and depends on a large number of macroeconomic and financial predictors \citep{pruserNonlinearitiesMacroeconomicTail2024,carriero_specification_2025,adrianMachinelearningGrowthRisk2025}.
 Third, linear models, specifically quantile regressions (QR) are susceptible to overfitting and quantile crossing \citep{schmidt_quantile_nodate}.
 In this paper we remedy these issues by developing a deep multi-quantile neural network (DMQ) to forecast the conditional distribution 
 of inflation, industrial productions (IP) growth, and percent change in unemployment. We demonstrate 
 that DMQ provides significant gains in out-of-sample forecast accuracy in both the conditional quantiles 
-as well as the conditional mean, especially during the GFC and Covid.
+as well as the conditional mean, especially during the GFC and Covid. We find [INSERT RESULTS ABOUT FEATURE IMPORTANCE].
+We also show that forecasting the entire conditional distribution ointly eliminates the need for quantile-crossing
+corrections and provides more accurate forecasts than forecasting each quantile separately.
 
 
 
