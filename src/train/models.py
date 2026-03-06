@@ -1301,7 +1301,7 @@ def build_dmq_v1(
     ):
 
     """
-    DMQv0 + quantile spacing
+    DMQv0 + quantile spacing + task layers for tails and median
     """
 
     initializer = GlorotUniform(seed=seed)
