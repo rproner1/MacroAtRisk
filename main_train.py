@@ -43,20 +43,24 @@ parser = argparse.ArgumentParser(description="Train models")
 parser.add_argument("--year", type=int, required=True, help="Training cutoff year")
 parser.add_argument("--target", type=int, required=True, help="Target index (0=Infl, 1=IP, 2=Unrate)")
 parser.add_argument("--model-type", type=str, default="all", 
-                    choices=["shelf", "lit_bench", "deep", "all"],
+                    choices=["shelf", "deep", "all"],
                     help="Type of models to train")
+parser.add_argument("--date", type=str, default=str(date.today()), help="Date for organizing outputs (default: today's date)")
+parser.add_argument("--run-locally", action="store_true", help="Whether to run locally (reduces hyperparameter tuning for quick testing)")
+parser.add_argument("--fit-lit-bench", action="store_true", help="Fit models from the literature. Only needs to be run once.")
 args = parser.parse_args()
 
 YEAR = args.year
 TARGET_IDX = args.target
 MODEL_TYPE = args.model_type
+RUN_LOCALLY = args.run_locally
+FIT_LIT_BENCH = args.fit_lit_bench
 
 COUNTRY = config['country']
 HORIZON_IN_QUARTERS = config['horizon_in_quarters']
 QUANTILES = config['quantiles']
-RUN_LOCALLY = config['run_locally']
 K_FOLDS = config['k_folds']
-DATE = config.get('date', str(date.today()))
+DATE = args.date
 INPUT_FILES = config['input_files']
 TARGET_FILE = config['target_file']
 TIME_STEPS = config['time_steps']
@@ -120,8 +124,24 @@ def train_shelf_models():
         val_years=VAL_YEARS
     )
     
-    (X_train_full, y_train_full, X_test, all_y_train) = itemgetter(
-        'X_train_full', 'y_train_full', 'X_test', 'all_y_train'
+    (
+        X_train,
+        y_train,
+        X_val,
+        y_val,
+        X_train_full, 
+        y_train_full, 
+        X_test, 
+        all_y_train
+    ) = itemgetter(
+        'X_train',
+        'y_train',
+        'X_val',
+        'y_val',
+        'X_train_full', 
+        'y_train_full', 
+        'X_test', 
+        'all_y_train'
     )(non_rnn_data)
     
     target_name = target_name_dict[TARGET_IDX]
@@ -142,13 +162,50 @@ def train_shelf_models():
     all_preds.update(ar1_preds)
     
     # Linear models
-    linear_grids = {'LR': {}, 'LAS': {'alpha': [1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0]}}
-    if RUN_LOCALLY:
-        linear_grids['LAS']['alpha'] = [1.0]  # Reduce for local runs
+    # linear_grids = {'LR': {}, 'LAS': {'alpha': [1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0]}}
+    # if RUN_LOCALLY:
+    #     linear_grids['LAS']['alpha'] = [1.0]  # Reduce for local runs
+
+    # linear_preds = fit_linear_models(
+    #     X_train_full, y_train_full, X_test, quantiles, 
+    #     target_name, YEAR, linear_grids, K_FOLDS, SHELF_TUNING_LOG_PATH
+    # )
+
+    early_stopping_args = {
+        'monitor': 'val_loss',
+        'min_delta': 1e-3,
+        'patience': 5,
+        'restore_best_weights': True,
+        'verbose': 0
+    }
+    fit_params = {
+        'epochs': 1 if RUN_LOCALLY else EPOCHS,
+        'batch_size': 32 if RUN_LOCALLY else BATCH_SIZE,
+        'validation_data': (X_val, y_val),
+        'verbose': 0,
+        'shuffle': False
+    }
+
     linear_preds = fit_linear_models(
-        X_train_full, y_train_full, X_test, quantiles, 
-        target_name, YEAR, linear_grids, K_FOLDS, SHELF_TUNING_LOG_PATH
+        X_train,
+        y_train,
+        X_train_full,
+        y_train_full,
+        X_test,
+        QUANTILES,
+        target_name,
+        YEAR,
+        val_size=config['val_size'],
+        k_folds=K_FOLDS,
+        tuning_path=SHELF_TUNING_LOG_PATH,
+        early_stopping_args=early_stopping_args,
+        fit_params=fit_params,
+        seed=SEED,
+        trials=1 if RUN_LOCALLY else config['trials'],
+        n_estimators= 1 if RUN_LOCALLY else config['n_estimators'],
+        model_dir_path=SHELF_MODEL_DIR
     )
+
     all_preds.update(linear_preds)
     
     # QRF
@@ -553,11 +610,12 @@ def train_deep_models():
 
 def main():
     """Run model training based on specified type."""
+
+    if FIT_LIT_BENCH:
+        train_lit_bench_models()
+
     if MODEL_TYPE == "shelf" or MODEL_TYPE == "all":
         train_shelf_models()
-    
-    if MODEL_TYPE == "lit_bench" or MODEL_TYPE == "all":
-        train_lit_bench_models()
     
     if MODEL_TYPE == "deep" or MODEL_TYPE == "all":
         train_deep_models()

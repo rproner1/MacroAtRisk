@@ -1,10 +1,10 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.1.12)  13 JAN 2026 10:04
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.1.12)  10 MAR 2026 12:23
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**/home/rproner/Documents/Projects/MacroAtRisk/Latex/eco4060_presentation.tex
-(/home/rproner/Documents/Projects/MacroAtRisk/Latex/eco4060_presentation.tex
+**/home/rproner/Documents/Projects/MacroAtRisk/latex/eco4060_presentation.tex
+(/home/rproner/Documents/Projects/MacroAtRisk/latex/eco4060_presentation.tex
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
 (/usr/share/texlive/texmf-dist/tex/latex/beamer/beamer.cls
@@ -866,24 +866,24 @@ Package caption Info: New subtype `subtable' on input line 238.
  (./eco4060_presentation.aux)
 \openout1 = `eco4060_presentation.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 40.
-LaTeX Font Info:    ... okay on input line 40.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 40.
-LaTeX Font Info:    ... okay on input line 40.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 40.
-LaTeX Font Info:    ... okay on input line 40.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 40.
-LaTeX Font Info:    ... okay on input line 40.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 40.
-LaTeX Font Info:    ... okay on input line 40.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 40.
-LaTeX Font Info:    ... okay on input line 40.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 40.
-LaTeX Font Info:    ... okay on input line 40.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 40.
-LaTeX Font Info:    ... okay on input line 40.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 40.
-LaTeX Font Info:    ... okay on input line 40.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 42.
+LaTeX Font Info:    ... okay on input line 42.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 42.
+LaTeX Font Info:    ... okay on input line 42.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 42.
+LaTeX Font Info:    ... okay on input line 42.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 42.
+LaTeX Font Info:    ... okay on input line 42.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 42.
+LaTeX Font Info:    ... okay on input line 42.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 42.
+LaTeX Font Info:    ... okay on input line 42.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 42.
+LaTeX Font Info:    ... okay on input line 42.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 42.
+LaTeX Font Info:    ... okay on input line 42.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 42.
+LaTeX Font Info:    ... okay on input line 42.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -938,60 +938,60 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 48
  (/usr/share/texlive/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
 ))
-Package hyperref Info: Link coloring OFF on input line 40.
+Package hyperref Info: Link coloring OFF on input line 42.
  (./eco4060_presentation.out) (./eco4060_presentation.out)
 \@outlinefile=\write6
 \openout6 = `eco4060_presentation.out'.
 
 LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
-(Font)                  OT1/cmr/m/n --> OT1/cmss/m/n on input line 40.
+(Font)                  OT1/cmr/m/n --> OT1/cmss/m/n on input line 42.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
-(Font)                  OT1/cmr/bx/n --> OT1/cmss/b/n on input line 40.
+(Font)                  OT1/cmr/bx/n --> OT1/cmss/b/n on input line 42.
 \symnumbers=\mathgroup6
 \sympureletters=\mathgroup7
 LaTeX Font Info:    Overwriting math alphabet `\mathrm' in version `normal'
-(Font)                  OT1/cmss/m/n --> OT1/cmr/m/n on input line 40.
-LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 40.
+(Font)                  OT1/cmss/m/n --> OT1/cmr/m/n on input line 42.
+LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 42.
 LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
-(Font)                  OT1/cmr/bx/n --> OT1/cmss/b/n on input line 40.
+(Font)                  OT1/cmr/bx/n --> OT1/cmss/b/n on input line 42.
 LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `bold'
-(Font)                  OT1/cmr/bx/n --> OT1/cmss/b/n on input line 40.
-LaTeX Font Info:    Redeclaring math alphabet \mathsf on input line 40.
+(Font)                  OT1/cmr/bx/n --> OT1/cmss/b/n on input line 42.
+LaTeX Font Info:    Redeclaring math alphabet \mathsf on input line 42.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `normal'
-(Font)                  OT1/cmss/m/n --> OT1/cmss/m/n on input line 40.
+(Font)                  OT1/cmss/m/n --> OT1/cmss/m/n on input line 42.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
-(Font)                  OT1/cmss/bx/n --> OT1/cmss/m/n on input line 40.
-LaTeX Font Info:    Redeclaring math alphabet \mathit on input line 40.
+(Font)                  OT1/cmss/bx/n --> OT1/cmss/m/n on input line 42.
+LaTeX Font Info:    Redeclaring math alphabet \mathit on input line 42.
 LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `normal'
-(Font)                  OT1/cmr/m/it --> OT1/cmss/m/it on input line 40.
+(Font)                  OT1/cmr/m/it --> OT1/cmss/m/it on input line 42.
 LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
-(Font)                  OT1/cmr/bx/it --> OT1/cmss/m/it on input line 40.
-LaTeX Font Info:    Redeclaring math alphabet \mathtt on input line 40.
+(Font)                  OT1/cmr/bx/it --> OT1/cmss/m/it on input line 42.
+LaTeX Font Info:    Redeclaring math alphabet \mathtt on input line 42.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `normal'
-(Font)                  OT1/cmtt/m/n --> OT1/cmtt/m/n on input line 40.
+(Font)                  OT1/cmtt/m/n --> OT1/cmtt/m/n on input line 42.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
-(Font)                  OT1/cmtt/m/n --> OT1/cmtt/m/n on input line 40.
+(Font)                  OT1/cmtt/m/n --> OT1/cmtt/m/n on input line 42.
 LaTeX Font Info:    Overwriting symbol font `numbers' in version `bold'
-(Font)                  OT1/cmss/m/n --> OT1/cmss/b/n on input line 40.
+(Font)                  OT1/cmss/m/n --> OT1/cmss/b/n on input line 42.
 LaTeX Font Info:    Overwriting symbol font `pureletters' in version `bold'
-(Font)                  OT1/cmss/m/it --> OT1/cmss/b/it on input line 40.
+(Font)                  OT1/cmss/m/it --> OT1/cmss/b/it on input line 42.
 LaTeX Font Info:    Overwriting math alphabet `\mathrm' in version `bold'
-(Font)                  OT1/cmss/b/n --> OT1/cmr/b/n on input line 40.
+(Font)                  OT1/cmss/b/n --> OT1/cmr/b/n on input line 42.
 LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `bold'
-(Font)                  OT1/cmss/b/n --> OT1/cmss/b/n on input line 40.
+(Font)                  OT1/cmss/b/n --> OT1/cmss/b/n on input line 42.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
-(Font)                  OT1/cmss/m/n --> OT1/cmss/b/n on input line 40.
+(Font)                  OT1/cmss/m/n --> OT1/cmss/b/n on input line 42.
 LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
-(Font)                  OT1/cmss/m/it --> OT1/cmss/b/it on input line 40.
+(Font)                  OT1/cmss/m/it --> OT1/cmss/b/it on input line 42.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
-(Font)                  OT1/cmtt/m/n --> OT1/cmtt/b/n on input line 40.
-LaTeX Font Info:    Redeclaring symbol font `pureletters' on input line 40.
+(Font)                  OT1/cmtt/m/n --> OT1/cmtt/b/n on input line 42.
+LaTeX Font Info:    Redeclaring symbol font `pureletters' on input line 42.
 LaTeX Font Info:    Overwriting symbol font `pureletters' in version `normal'
-(Font)                  OT1/cmss/m/it --> OT1/mathkerncmss/m/sl on input line 40.
+(Font)                  OT1/cmss/m/it --> OT1/mathkerncmss/m/sl on input line 42.
 LaTeX Font Info:    Overwriting symbol font `pureletters' in version `bold'
-(Font)                  OT1/cmss/b/it --> OT1/mathkerncmss/m/sl on input line 40.
+(Font)                  OT1/cmss/b/it --> OT1/mathkerncmss/m/sl on input line 42.
 LaTeX Font Info:    Overwriting symbol font `pureletters' in version `bold'
-(Font)                  OT1/mathkerncmss/m/sl --> OT1/mathkerncmss/bx/sl on input line 40.
+(Font)                  OT1/mathkerncmss/m/sl --> OT1/mathkerncmss/bx/sl on input line 42.
  (/usr/share/texlive/texmf-dist/tex/latex/translator/translator-basic-dictionary-English.dict
 Dictionary: translator-basic-dictionary, Language: English 
 ) (/usr/share/texlive/texmf-dist/tex/latex/translator/translator-bibliography-dictionary-English.dict
@@ -1018,29 +1018,41 @@ Package biblatex Info: Automatic encoding selection.
 Package biblatex Info: Trying to load bibliographic data...
 Package biblatex Info: ... file 'eco4060_presentation.bbl' found.
  (./eco4060_presentation.bbl)
-Package biblatex Info: Reference section=0 on input line 40.
-Package biblatex Info: Reference segment=0 on input line 40.
+Package biblatex Info: Reference section=0 on input line 42.
+Package biblatex Info: Reference segment=0 on input line 42.
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
  (./eco4060_presentation.nav) [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
-LaTeX Font Info:    Trying to load font information for U+msa on input line 71.
+<Figures/forecast_fan_example_distFalse.png, id=78, 867.24pt x 433.62pt>
+File: Figures/forecast_fan_example_distFalse.png Graphic file (type png)
+<use Figures/forecast_fan_example_distFalse.png>
+Package pdftex.def Info: Figures/forecast_fan_example_distFalse.png  used on input line 51.
+(pdftex.def)             Requested size: 318.67209pt x 159.33855pt.
+ [2
+
+ <./Figures/forecast_fan_example_distFalse.png>]
+<Figures/forecast_fan_example_distTrue.png, id=107, 867.24pt x 433.62pt>
+File: Figures/forecast_fan_example_distTrue.png Graphic file (type png)
+<use Figures/forecast_fan_example_distTrue.png>
+Package pdftex.def Info: Figures/forecast_fan_example_distTrue.png  used on input line 59.
+(pdftex.def)             Requested size: 318.67209pt x 159.33855pt.
+ [3
+
+ <./Figures/forecast_fan_example_distTrue.png>]
+LaTeX Font Info:    Trying to load font information for U+msa on input line 90.
  (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 71.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 90.
  (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-LaTeX Font Info:    Trying to load font information for OT1+mathkerncmss on input line 71.
+LaTeX Font Info:    Trying to load font information for OT1+mathkerncmss on input line 90.
  (/usr/share/texlive/texmf-dist/tex/latex/sansmathaccent/ot1mathkerncmss.fd
 File: ot1mathkerncmss.fd 2020/01/31 Fontinst v1.933 font definitions for OT1/mathkerncmss.
-) [2
-
-] [3
-
-] [4
+) [4
 
 ] [5
 
@@ -1048,109 +1060,103 @@ File: ot1mathkerncmss.fd 2020/01/31 Fontinst v1.933 font definitions for OT1/mat
 
 ] [7
 
+] [8
+
+] [9
+
 ]
-<./Figures/DMQv1.png, id=275, 963.6pt x 722.7pt>
-File: ./Figures/DMQv1.png Graphic file (type png)
-<use ./Figures/DMQv1.png>
-Package pdftex.def Info: ./Figures/DMQv1.png  used on input line 162.
+<./Figures/DMQv0.png, id=334, 963.6pt x 722.7pt>
+File: ./Figures/DMQv0.png Graphic file (type png)
+<use ./Figures/DMQv0.png>
+Package pdftex.def Info: ./Figures/DMQv0.png  used on input line 184.
 (pdftex.def)             Requested size: 278.83578pt x 209.1255pt.
 
-Overfull \vbox (10.3242pt too high) detected at line 162
+Overfull \vbox (10.3242pt too high) detected at line 184
  []
 
-[8
+[10
 
- <./Figures/DMQv1.png>] (../ResultsTables/r1_Infl_yoy.tex) (../ResultsTables/r2_Infl_yoy.tex) [9
-
-]
-<../ResultsFigures/IAR_quantile_plot_us_4q_Infl_yoy.png, id=333, 455.301pt x 338.7054pt>
-File: ../ResultsFigures/IAR_quantile_plot_us_4q_Infl_yoy.png Graphic file (type png)
-<use ../ResultsFigures/IAR_quantile_plot_us_4q_Infl_yoy.png>
-Package pdftex.def Info: ../ResultsFigures/IAR_quantile_plot_us_4q_Infl_yoy.png  used on input line 214.
-(pdftex.def)             Requested size: 131.01959pt x 97.46748pt.
-<../ResultsFigures/QRF_quantile_plot_us_4q_Infl_yoy.png, id=334, 455.301pt x 338.7054pt>
-File: ../ResultsFigures/QRF_quantile_plot_us_4q_Infl_yoy.png Graphic file (type png)
-<use ../ResultsFigures/QRF_quantile_plot_us_4q_Infl_yoy.png>
-Package pdftex.def Info: ../ResultsFigures/QRF_quantile_plot_us_4q_Infl_yoy.png  used on input line 214.
-(pdftex.def)             Requested size: 131.01959pt x 97.46748pt.
-<../ResultsFigures/DMQv1c_quantile_plot_us_4q_Infl_yoy.png, id=335, 455.301pt x 338.7054pt>
-File: ../ResultsFigures/DMQv1c_quantile_plot_us_4q_Infl_yoy.png Graphic file (type png)
-<use ../ResultsFigures/DMQv1c_quantile_plot_us_4q_Infl_yoy.png>
-Package pdftex.def Info: ../ResultsFigures/DMQv1c_quantile_plot_us_4q_Infl_yoy.png  used on input line 214.
-(pdftex.def)             Requested size: 131.01959pt x 97.46748pt.
-<../ResultsFigures/DMQv1c_mean_plot_us_4q_Infl_yoy.png, id=336, 462.528pt x 346.896pt>
-File: ../ResultsFigures/DMQv1c_mean_plot_us_4q_Infl_yoy.png Graphic file (type png)
-<use ../ResultsFigures/DMQv1c_mean_plot_us_4q_Infl_yoy.png>
-Package pdftex.def Info: ../ResultsFigures/DMQv1c_mean_plot_us_4q_Infl_yoy.png  used on input line 214.
-(pdftex.def)             Requested size: 129.95863pt x 97.46898pt.
- [10
-
- <../ResultsFigures/IAR_quantile_plot_us_4q_Infl_yoy.png> <../ResultsFigures/QRF_quantile_plot_us_4q_Infl_yoy.png> <../ResultsFigures/DMQv1c_quantile_plot_us_4q_Infl_yoy.png> <../ResultsFigures/DMQv1c_mean_plot_us_4q_Infl_yoy.png>] (../ResultsTables/r1_IP_yoy.tex) (../ResultsTables/r2_IP_yoy.tex) [11
+ <./Figures/DMQv0.png (PNG copy)>] (../results_tables/2026-02-05/r1_Infl_yoy.tex) (../results_tables/2026-02-05/r2_Infl_yoy.tex) [11
 
 ]
-<../ResultsFigures/VG_quantile_plot_us_4q_IP_yoy.png, id=396, 455.301pt x 338.7054pt>
-File: ../ResultsFigures/VG_quantile_plot_us_4q_IP_yoy.png Graphic file (type png)
-<use ../ResultsFigures/VG_quantile_plot_us_4q_IP_yoy.png>
-Package pdftex.def Info: ../ResultsFigures/VG_quantile_plot_us_4q_IP_yoy.png  used on input line 263.
-(pdftex.def)             Requested size: 131.01959pt x 97.46748pt.
-<../ResultsFigures/QRF_quantile_plot_us_4q_IP_yoy.png, id=397, 455.301pt x 338.7054pt>
-File: ../ResultsFigures/QRF_quantile_plot_us_4q_IP_yoy.png Graphic file (type png)
-<use ../ResultsFigures/QRF_quantile_plot_us_4q_IP_yoy.png>
-Package pdftex.def Info: ../ResultsFigures/QRF_quantile_plot_us_4q_IP_yoy.png  used on input line 263.
-(pdftex.def)             Requested size: 131.01959pt x 97.46748pt.
-<../ResultsFigures/DMQv2c_quantile_plot_us_4q_IP_yoy.png, id=398, 455.301pt x 338.7054pt>
-File: ../ResultsFigures/DMQv2c_quantile_plot_us_4q_IP_yoy.png Graphic file (type png)
-<use ../ResultsFigures/DMQv2c_quantile_plot_us_4q_IP_yoy.png>
-Package pdftex.def Info: ../ResultsFigures/DMQv2c_quantile_plot_us_4q_IP_yoy.png  used on input line 263.
-(pdftex.def)             Requested size: 131.01959pt x 97.46748pt.
-<../ResultsFigures/DMQv2c_mean_plot_us_4q_IP_yoy.png, id=399, 462.528pt x 346.896pt>
-File: ../ResultsFigures/DMQv2c_mean_plot_us_4q_IP_yoy.png Graphic file (type png)
-<use ../ResultsFigures/DMQv2c_mean_plot_us_4q_IP_yoy.png>
-Package pdftex.def Info: ../ResultsFigures/DMQv2c_mean_plot_us_4q_IP_yoy.png  used on input line 263.
-(pdftex.def)             Requested size: 129.95863pt x 97.46898pt.
+<../results_figures/2026-02-05/IAR_quantile_plot_us_4q_Infl_yoy.png, id=391, 860.013pt x 425.4294pt>
+File: ../results_figures/2026-02-05/IAR_quantile_plot_us_4q_Infl_yoy.png Graphic file (type png)
+<use ../results_figures/2026-02-05/IAR_quantile_plot_us_4q_Infl_yoy.png>
+Package pdftex.def Info: ../results_figures/2026-02-05/IAR_quantile_plot_us_4q_Infl_yoy.png  used on input line 236.
+(pdftex.def)             Requested size: 179.24329pt x 88.66768pt.
+<../results_figures/2026-02-05/QRF_quantile_plot_us_4q_Infl_yoy.png, id=392, 860.013pt x 425.4294pt>
+File: ../results_figures/2026-02-05/QRF_quantile_plot_us_4q_Infl_yoy.png Graphic file (type png)
+<use ../results_figures/2026-02-05/QRF_quantile_plot_us_4q_Infl_yoy.png>
+Package pdftex.def Info: ../results_figures/2026-02-05/QRF_quantile_plot_us_4q_Infl_yoy.png  used on input line 236.
+(pdftex.def)             Requested size: 179.24329pt x 88.66768pt.
+<../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Infl_yoy.png, id=393, 860.013pt x 425.4294pt>
+File: ../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Infl_yoy.png Graphic file (type png)
+<use ../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Infl_yoy.png>
+Package pdftex.def Info: ../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Infl_yoy.png  used on input line 236.
+(pdftex.def)             Requested size: 179.24329pt x 88.66768pt.
+<../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_Infl_yoy.png, id=394, 867.24pt x 433.62pt>
+File: ../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_Infl_yoy.png Graphic file (type png)
+<use ../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_Infl_yoy.png>
+Package pdftex.def Info: ../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_Infl_yoy.png  used on input line 236.
+(pdftex.def)             Requested size: 179.24098pt x 89.62048pt.
  [12
 
- <../ResultsFigures/VG_quantile_plot_us_4q_IP_yoy.png> <../ResultsFigures/QRF_quantile_plot_us_4q_IP_yoy.png> <../ResultsFigures/DMQv2c_quantile_plot_us_4q_IP_yoy.png> <../ResultsFigures/DMQv2c_mean_plot_us_4q_IP_yoy.png>] (../ResultsTables/r1_Unrate_yoy.tex) (../ResultsTables/r2_Unrate_yoy.tex) [13
+ <../results_figures/2026-02-05/IAR_quantile_plot_us_4q_Infl_yoy.png> <../results_figures/2026-02-05/QRF_quantile_plot_us_4q_Infl_yoy.png> <../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Infl_yoy.png> <../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_Infl_yoy.png>] (../results_tables/2026-02-05/r1_IP_yoy.tex) (../results_tables/2026-02-05/r2_IP_yoy.tex) [13
 
 ]
-<../ResultsFigures/UAR_quantile_plot_us_4q_Unrate_yoy.png, id=459, 455.301pt x 338.7054pt>
-File: ../ResultsFigures/UAR_quantile_plot_us_4q_Unrate_yoy.png Graphic file (type png)
-<use ../ResultsFigures/UAR_quantile_plot_us_4q_Unrate_yoy.png>
-Package pdftex.def Info: ../ResultsFigures/UAR_quantile_plot_us_4q_Unrate_yoy.png  used on input line 313.
-(pdftex.def)             Requested size: 131.01959pt x 97.46748pt.
-<../ResultsFigures/QRF_quantile_plot_us_4q_Unrate_yoy.png, id=460, 455.301pt x 338.7054pt>
-File: ../ResultsFigures/QRF_quantile_plot_us_4q_Unrate_yoy.png Graphic file (type png)
-<use ../ResultsFigures/QRF_quantile_plot_us_4q_Unrate_yoy.png>
-Package pdftex.def Info: ../ResultsFigures/QRF_quantile_plot_us_4q_Unrate_yoy.png  used on input line 313.
-(pdftex.def)             Requested size: 131.01959pt x 97.46748pt.
-<../ResultsFigures/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png, id=461, 455.301pt x 338.7054pt>
-File: ../ResultsFigures/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png Graphic file (type png)
-<use ../ResultsFigures/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png>
-Package pdftex.def Info: ../ResultsFigures/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png  used on input line 313.
-(pdftex.def)             Requested size: 131.01959pt x 97.46748pt.
-<../ResultsFigures/DMQv0c_mean_plot_us_4q_Unrate_yoy.png, id=462, 462.528pt x 346.896pt>
-File: ../ResultsFigures/DMQv0c_mean_plot_us_4q_Unrate_yoy.png Graphic file (type png)
-<use ../ResultsFigures/DMQv0c_mean_plot_us_4q_Unrate_yoy.png>
-Package pdftex.def Info: ../ResultsFigures/DMQv0c_mean_plot_us_4q_Unrate_yoy.png  used on input line 313.
-(pdftex.def)             Requested size: 129.95863pt x 97.46898pt.
+<../results_figures/2026-02-05/VG_quantile_plot_us_4q_IP_yoy.png, id=454, 860.013pt x 425.4294pt>
+File: ../results_figures/2026-02-05/VG_quantile_plot_us_4q_IP_yoy.png Graphic file (type png)
+<use ../results_figures/2026-02-05/VG_quantile_plot_us_4q_IP_yoy.png>
+Package pdftex.def Info: ../results_figures/2026-02-05/VG_quantile_plot_us_4q_IP_yoy.png  used on input line 285.
+(pdftex.def)             Requested size: 179.24329pt x 88.66768pt.
+<../results_figures/2026-02-05/QRF_quantile_plot_us_4q_IP_yoy.png, id=455, 860.013pt x 425.4294pt>
+File: ../results_figures/2026-02-05/QRF_quantile_plot_us_4q_IP_yoy.png Graphic file (type png)
+<use ../results_figures/2026-02-05/QRF_quantile_plot_us_4q_IP_yoy.png>
+Package pdftex.def Info: ../results_figures/2026-02-05/QRF_quantile_plot_us_4q_IP_yoy.png  used on input line 285.
+(pdftex.def)             Requested size: 179.24329pt x 88.66768pt.
+<../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_IP_yoy.png, id=456, 860.013pt x 425.4294pt>
+File: ../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_IP_yoy.png Graphic file (type png)
+<use ../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_IP_yoy.png>
+Package pdftex.def Info: ../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_IP_yoy.png  used on input line 285.
+(pdftex.def)             Requested size: 179.24329pt x 88.66768pt.
+<../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_IP_yoy.png, id=457, 867.24pt x 433.62pt>
+File: ../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_IP_yoy.png Graphic file (type png)
+<use ../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_IP_yoy.png>
+Package pdftex.def Info: ../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_IP_yoy.png  used on input line 285.
+(pdftex.def)             Requested size: 179.24098pt x 89.62048pt.
  [14
 
- <../ResultsFigures/UAR_quantile_plot_us_4q_Unrate_yoy.png> <../ResultsFigures/QRF_quantile_plot_us_4q_Unrate_yoy.png> <../ResultsFigures/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png> <../ResultsFigures/DMQv0c_mean_plot_us_4q_Unrate_yoy.png>] [15
+ <../results_figures/2026-02-05/VG_quantile_plot_us_4q_IP_yoy.png> <../results_figures/2026-02-05/QRF_quantile_plot_us_4q_IP_yoy.png> <../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_IP_yoy.png> <../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_IP_yoy.png>] (../results_tables/2026-02-05/r1_Unrate_yoy.tex) (../results_tables/2026-02-05/r2_Unrate_yoy.tex) [15
+
+]
+<../results_figures/2026-02-05/UAR_quantile_plot_us_4q_Unrate_yoy.png, id=517, 860.013pt x 425.4294pt>
+File: ../results_figures/2026-02-05/UAR_quantile_plot_us_4q_Unrate_yoy.png Graphic file (type png)
+<use ../results_figures/2026-02-05/UAR_quantile_plot_us_4q_Unrate_yoy.png>
+Package pdftex.def Info: ../results_figures/2026-02-05/UAR_quantile_plot_us_4q_Unrate_yoy.png  used on input line 335.
+(pdftex.def)             Requested size: 179.24329pt x 88.66768pt.
+<../results_figures/2026-02-05/QRF_quantile_plot_us_4q_Unrate_yoy.png, id=518, 860.013pt x 425.4294pt>
+File: ../results_figures/2026-02-05/QRF_quantile_plot_us_4q_Unrate_yoy.png Graphic file (type png)
+<use ../results_figures/2026-02-05/QRF_quantile_plot_us_4q_Unrate_yoy.png>
+Package pdftex.def Info: ../results_figures/2026-02-05/QRF_quantile_plot_us_4q_Unrate_yoy.png  used on input line 335.
+(pdftex.def)             Requested size: 179.24329pt x 88.66768pt.
+<../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png, id=519, 860.013pt x 425.4294pt>
+File: ../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png Graphic file (type png)
+<use ../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png>
+Package pdftex.def Info: ../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png  used on input line 335.
+(pdftex.def)             Requested size: 179.24329pt x 88.66768pt.
+<../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_Unrate_yoy.png, id=520, 867.24pt x 433.62pt>
+File: ../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_Unrate_yoy.png Graphic file (type png)
+<use ../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_Unrate_yoy.png>
+Package pdftex.def Info: ../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_Unrate_yoy.png  used on input line 335.
+(pdftex.def)             Requested size: 179.24098pt x 89.62048pt.
+ [16
+
+ <../results_figures/2026-02-05/UAR_quantile_plot_us_4q_Unrate_yoy.png> <../results_figures/2026-02-05/QRF_quantile_plot_us_4q_Unrate_yoy.png> <../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png> <../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_Unrate_yoy.png>] [17
 
 ]
 
 LaTeX Font Warning: Font shape `OT1/cmss/m/sc' in size <10.95> not available
-(Font)              Font shape `OT1/cmr/m/sc' tried instead on input line 345.
-
-[16
-
-] [17
-
-
-]
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\translate ' on input line 347.
+(Font)              Font shape `OT1/cmr/m/sc' tried instead on input line 365.
 
 [18
 
@@ -1158,6 +1164,19 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 
 
 ] [20
+
+
+]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\translate ' on input line 367.
+
+[21
+
+] [22
+
+
+] [23
 
 ]
 \tf@nav=\write7
@@ -1175,24 +1194,24 @@ LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
  ***********
 Package rerunfilecheck Info: File `eco4060_presentation.out' has not changed.
-(rerunfilecheck)             Checksum: B7DD392906C34AA57F78DF304CAE0BBC;715.
+(rerunfilecheck)             Checksum: 328E5A0D7F98678FD19471E207DF05E5;716.
 Package logreq Info: Writing requests to 'eco4060_presentation.run.xml'.
 \openout1 = `eco4060_presentation.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 33520 strings out of 474222
- 670058 string characters out of 5748733
+ 33574 strings out of 474222
+ 673689 string characters out of 5748733
  1943975 words of memory out of 5000000
- 55135 multiletter control sequences out of 15000+600000
+ 55183 multiletter control sequences out of 15000+600000
  571685 words of font info for 85 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 128i,14n,123p,1347b,1722s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 128i,14n,123p,1602b,1722s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmcsc10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmssbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on eco4060_presentation.pdf (20 pages, 3714964 bytes).
+Output written on eco4060_presentation.pdf (23 pages, 6859732 bytes).
 PDF statistics:
- 756 PDF objects out of 1000 (max. 8388607)
- 658 compressed objects within 7 object streams
- 57 named destinations out of 1000 (max. 500000)
- 164 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 855 PDF objects out of 1000 (max. 8388607)
+ 750 compressed objects within 8 object streams
+ 63 named destinations out of 1000 (max. 500000)
+ 174 words of extra memory for PDF output out of 10000 (max. 10000000)
 

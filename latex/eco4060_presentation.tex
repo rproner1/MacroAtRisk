@@ -20,6 +20,8 @@
 %   \insertframenumber/\inserttotalframenumber\hspace{2em}
 % }
 
+% Allows choice of results
+\newcommand{\resultdate}{2026-02-05}
 
 \title{Beyond Point Forecasts: \\Multi-Task Learning for Macroeconomic Tail Risk}
 % Authors and affiliations
@@ -41,29 +43,46 @@
 
 \maketitle
 
+\begin{frame}{Motivation}
+    \centering
+    \begin{figure}
+        \includegraphics[width=0.8\textwidth]{Figures/forecast_fan_example_distFalse.png}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Motivation}
+    \centering
+    \begin{figure}
+        \includegraphics[width=0.8\textwidth]{Figures/forecast_fan_example_distTrue.png}
+    \end{figure}
+    Moral of the story: point forecasts can be misleading.
+\end{frame}
+
 \section{Introduction}
+
+
 
 \begin{frame}{Assessing macro-financial tail risks still challenging}
 
-Standard macro-fin toolkit: GDP-at-risk \parencite{Adrian2019}; unemployment-at-risk \parencite{Kiley2022}; inflation-at-risk \parencite{Lopez-Salido2024}
+Standard macro-fin toolkit: GDP-at-risk \parencite{adrianVulnerableGrowth2019}; unemployment-at-risk \parencite{kileyUnemploymentRisk2022}; inflation-at-risk \parencite{lopez-salidoInflationRisk2024}
     \vspace{.4cm}
 
     \begin{enumerate}
         \item \textbf{How to fully capture non-linearity and possible skewness?}
         \begin{itemize}
-            \item \textcite{Adrian2019}, \textcite{Kiley2022}, and \textcite{Lopez-Salido2024} use quantile regression (conditional linear)
+            \item \textcite{adrianVulnerableGrowth2019}, \textcite{kileyUnemploymentRisk2022}, and \textcite{lopez-salidoInflationRisk2024} use quantile regression (conditional linear)
         \end{itemize}
         \vspace{.4cm}
         \item \textbf{How to allow for big data?}
         \begin{itemize}
-            \item \textcite{Adrian2019} assume only an index of financial conditions matter
-            \item \textcite{Adrian2025} and \textcite{Giannone2025} use Quantile ML
+            \item \textcite{adrianVulnerableGrowth2019} assume only an index of financial conditions matter
+            \item \textcite{adrianMachinelearningGrowthRisk2025} and \textcite{chiMacroeconomicForecastingMachine2025} use Quantile ML
         \end{itemize}            
         \vspace{.4cm}
         \item \textbf{How to ensure coherent joint movement of tails?}
         \begin{itemize}
-            \item Quantile VAR \parencite{Chavleishvili2024} %ensure same process drives all quantiles
-            \item Modelling quantile spacing \parencite{Schmidt2016} prevents quantile crossing
+            \item Quantile VAR \parencite{chavleishviliForecastingStressTesting2024} %ensure same process drives all quantiles
+            \item Modelling quantile spacing \parencite{schmidtQuantileSpacingsSimple2016} prevents quantile crossing
         \end{itemize}
         \vspace{.4cm}
     \end{enumerate}
@@ -73,9 +92,9 @@ Standard macro-fin toolkit: GDP-at-risk \parencite{Adrian2019}; unemployment-at-
 \begin{frame}{How do we assess macro-financial tail risks in this paper?}
     $\Rightarrow$ \textbf{Deep learning}: allows for high degree of time-varying complexity and high-dimensional data \\
     \vspace{.2cm}
-    $\Rightarrow$ \textbf{Multi-task}: use info learned by each task to learn other tasks \parencite{Caruana1997} \\% reduces overfitting (Ruder 2017)\\
+    $\Rightarrow$ \textbf{Multi-task}: use info learned by each task to learn other tasks \parencite{caruanaMultitaskLearning1997} \\% reduces overfitting (Ruder 2017)\\
     \vspace{.2cm}
-    $\Rightarrow$ \textbf{No-crossing architecture}: implement quantile spacings \parencite{Schmidt2016}\\
+    $\Rightarrow$ \textbf{No-crossing architecture}: implement quantile spacings \parencite{schmidtQuantileSpacingsSimple2016}\\
     \vspace{.7cm}
 \end{frame}
 
@@ -97,7 +116,7 @@ Standard macro-fin toolkit: GDP-at-risk \parencite{Adrian2019}; unemployment-at-
 	\end{enumerate}    
 \end{frame}
 
-\begin{frame}{Closest paper to us: \textcite{Adrian2025}}
+\begin{frame}{Closest paper to us: \textcite{adrianMachinelearningGrowthRisk2025}}
 
 	\textbf{What they do:} forecast the tails ($\tau=0.05$ and $\tau=0.95$) of 
     monthly industrial production growth, one-month ahead using various regularization techniques such as LASSO, as well as 
@@ -108,8 +127,7 @@ Standard macro-fin toolkit: GDP-at-risk \parencite{Adrian2019}; unemployment-at-
     \vspace{.4cm}
 	\textbf{How we differ:} 
 	\begin{itemize}
-		\item Add deep learning
-        \item Introduce multi-task learning
+		\item Develop a novel deep multi-task learning framework. 
         \item Implement quantile spacings in a neural network architecture
         \item Explore industrial production, inflation and unemployment
         \item We consider 5 quantiles and explore possible (shared) drivers
@@ -128,9 +146,9 @@ Standard macro-fin toolkit: GDP-at-risk \parencite{Adrian2019}; unemployment-at-
         \item 116 stationary predictors from FRED-MD over Jan 1961--Dec 2024.
         \item Response variables: 
             \begin{itemize}
-                \item Inflation: $\pi_{t+h} = \ln(CPI_{t+h}) - \ln(CPI_{t})$.
-                \item Industrial Production growth: $IP_{t+h} = \ln(IP_{t+h}) - \ln(IP_{t})$.
-                \item Pct change in unemployment rate: $UR_{t+h} = \ln(UR_{t+h}) - \ln(UR_{t})$.
+                \item Inflation: $\pi_{t+h} := \ln(CPI_{t+h}) - \ln(CPI_{t})$.
+                \item Industrial Production growth: $y_{t+h} := \ln(IP_{t+h}) - \ln(IP_{t})$.
+                \item Pct change in unemployment rate: $u_{t+h} := \ln(UR_{t+h}) - \ln(UR_{t})$.
             \end{itemize} 
         \item Annual expanding window training procedure beginning with Jan 1961--Dec 1997 to forecast Jan 1998--Dec 1998.
     \end{itemize}
@@ -148,7 +166,7 @@ Standard macro-fin toolkit: GDP-at-risk \parencite{Adrian2019}; unemployment-at-
         $$
         R^2_{oos} = 1- \frac{\sum_{t=1}^{T_{oos}}  (y_{t+h} - \bar Q_{t+h})^2 }{\sum_{t=1}^{T_{oos}} (y_{t+h} - \bar y)^2 }
         $$
-        where $\bar y$ is the expanding historical mean \\and $\bar Q$ is the robust estimate of the mean taken from \textcite{Liu2023}:
+        where $\bar y$ is the expanding historical mean \\and $\bar Q$ is the robust estimate of the mean \parencite{liuStockDistributionRisk2023}:
         $$
         \bar Q = 0.15 Q_{0.05} + 0.225Q_{0.25} + 0.25Q_{0.5} + 0.75Q_{0.75} + 0.15Q_{0.95}
         $$
@@ -160,8 +178,8 @@ Standard macro-fin toolkit: GDP-at-risk \parencite{Adrian2019}; unemployment-at-
     %Total trainable parameters: 29,349
     \begin{figure}
 		\centering
-		\includegraphics[width=0.7\textwidth]{./Figures/DMQv1.png}
-		\caption{DMQv1 architecture (total trainable parameters 29,349)}
+		\includegraphics[width=0.7\textwidth]{./Figures/DMQv0.png}
+		\caption{DMQv0 architecture}
 	\end{figure}
 \end{frame}
 
@@ -173,7 +191,7 @@ Standard macro-fin toolkit: GDP-at-risk \parencite{Adrian2019}; unemployment-at-
     \caption{Year-over-year Inflation 4 quarters ahead $R_{oos}^1$ (\%) for Jan 1998--Dec 2024}
     %\vspace{-.5cm}
     \resizebox{\textwidth}{!}{
-        \input{../ResultsTables/r1_Infl_yoy.tex}
+        \input{../results_tables/\resultdate/r1_Infl_yoy.tex}
     }
     \end{table}
 
@@ -181,7 +199,7 @@ Standard macro-fin toolkit: GDP-at-risk \parencite{Adrian2019}; unemployment-at-
     \caption{$R_{oos}^2$ (\%) for Jan 1998--Dec 2024}
     % \vspace{-.5cm}
     \resizebox{\textwidth}{!}{
-        \input{../ResultsTables/r2_Infl_yoy.tex}
+        \input{../results_tables/\resultdate/r2_Infl_yoy.tex}
     }
     \end{table}
 \end{frame}
@@ -191,13 +209,13 @@ Standard macro-fin toolkit: GDP-at-risk \parencite{Adrian2019}; unemployment-at-
 
         \begin{subfigure}{0.45\textwidth}
             \centering
-            \includegraphics[width=\textwidth,height=0.4\textheight,keepaspectratio]{../ResultsFigures/IAR_quantile_plot_us_4q_Infl_yoy.png}
+            \includegraphics[width=\textwidth,height=0.4\textheight,keepaspectratio]{../results_figures/\resultdate/IAR_quantile_plot_us_4q_Infl_yoy.png}
             % \caption{Plot 1}
         \end{subfigure}
         % \hfill
         \begin{subfigure}{0.45\textwidth}
             \centering
-            \includegraphics[width=\textwidth,height=0.4\textheight,keepaspectratio]{../ResultsFigures/QRF_quantile_plot_us_4q_Infl_yoy.png}
+            \includegraphics[width=\textwidth,height=0.4\textheight,keepaspectratio]{../results_figures/\resultdate/QRF_quantile_plot_us_4q_Infl_yoy.png}
             % \caption{Plot 2}
         \end{subfigure}
 
@@ -205,13 +223,13 @@ Standard macro-fin toolkit: GDP-at-risk \parencite{Adrian2019}; unemployment-at-
 
         \begin{subfigure}{0.45\textwidth}
             \centering
-            \includegraphics[width=\textwidth,height=0.4\textheight,keepaspectratio]{../ResultsFigures/DMQv1c_quantile_plot_us_4q_Infl_yoy.png}
+            \includegraphics[width=\textwidth,height=0.4\textheight,keepaspectratio]{../results_figures/\resultdate/DMQv0c_quantile_plot_us_4q_Infl_yoy.png}
             % \caption{Plot 3}
         \end{subfigure}
         % \hfill
         \begin{subfigure}{0.45\textwidth}
             \centering
-            \includegraphics[width=\textwidth,height=0.4\textheight,keepaspectratio]{../ResultsFigures/DMQv1c_mean_plot_us_4q_Infl_yoy.png}
+            \includegraphics[width=\textwidth,height=0.4\textheight,keepaspectratio]{../results_figures/\resultdate/DMQv0c_mean_plot_us_4q_Infl_yoy.png}
             % \caption{Plot 4}
         \end{subfigure}
     \end{figure}
@@ -222,7 +240,7 @@ Standard macro-fin toolkit: GDP-at-risk \parencite{Adrian2019}; unemployment-at-
     \caption{Year-over-year IP growth 4 quarters ahead $R_{oos}^1$ (\%) for Jan 1998--Dec 2024}
     %\vspace{-.5cm}
     \resizebox{\textwidth}{!}{
-        \input{../ResultsTables/r1_IP_yoy.tex}
+        \input{../results_tables/\resultdate/r1_IP_yoy.tex}
     }
     \end{table}
 
@@ -230,7 +248,7 @@ Standard macro-fin toolkit: GDP-at-risk \parencite{Adrian2019}; unemployment-at-
     \caption{$R_{oos}^2$ (\%) for Jan 1998--Dec 2024}
     % \vspace{-.5cm}
     \resizebox{\textwidth}{!}{
-        \input{../ResultsTables/r2_IP_yoy.tex}
+        \input{../results_tables/\resultdate/r2_IP_yoy.tex}
     }
     \end{table}
 \end{frame}
@@ -240,13 +258,13 @@ Standard macro-fin toolkit: GDP-at-risk \parencite{Adrian2019}; unemployment-at-
 
         \begin{subfigure}{0.45\textwidth}
             \centering
-            \includegraphics[width=\textwidth,height=0.4\textheight,keepaspectratio]{../ResultsFigures/VG_quantile_plot_us_4q_IP_yoy.png}
+            \includegraphics[width=\textwidth,height=0.4\textheight,keepaspectratio]{../results_figures/\resultdate/VG_quantile_plot_us_4q_IP_yoy.png}
             % \caption{Plot 1}
         \end{subfigure}
         % \hfill
         \begin{subfigure}{0.45\textwidth}
             \centering
-            \includegraphics[width=\textwidth,height=0.4\textheight,keepaspectratio]{../ResultsFigures/QRF_quantile_plot_us_4q_IP_yoy.png}
+            \includegraphics[width=\textwidth,height=0.4\textheight,keepaspectratio]{../results_figures/\resultdate/QRF_quantile_plot_us_4q_IP_yoy.png}
             % \caption{Plot 2}
         \end{subfigure}
 
@@ -254,13 +272,13 @@ Standard macro-fin toolkit: GDP-at-risk \parencite{Adrian2019}; unemployment-at-
 
         \begin{subfigure}{0.45\textwidth}
             \centering
-            \includegraphics[width=\textwidth,height=0.4\textheight,keepaspectratio]{../ResultsFigures/DMQv2c_quantile_plot_us_4q_IP_yoy.png}
+            \includegraphics[width=\textwidth,height=0.4\textheight,keepaspectratio]{../results_figures/\resultdate/DMQv0c_quantile_plot_us_4q_IP_yoy.png}
             % \caption{Plot 3}
         \end{subfigure}
         % \hfill
         \begin{subfigure}{0.45\textwidth}
             \centering
-            \includegraphics[width=\textwidth,height=0.4\textheight,keepaspectratio]{../ResultsFigures/DMQv2c_mean_plot_us_4q_IP_yoy.png}
+            \includegraphics[width=\textwidth,height=0.4\textheight,keepaspectratio]{../results_figures/\resultdate/DMQv0c_mean_plot_us_4q_IP_yoy.png}
             % \caption{Plot 4}
         \end{subfigure}
     \end{figure}
@@ -271,7 +289,7 @@ Standard macro-fin toolkit: GDP-at-risk \parencite{Adrian2019}; unemployment-at-
     \caption{Year-over-year Unemployment rate "growth" 4 quarters ahead $R_{oos}^1$ (\%) for Jan 1998--Dec 2024}
     %\vspace{-.5cm}
     \resizebox{\textwidth}{!}{
-        \input{../ResultsTables/r1_Unrate_yoy.tex}
+        \input{../results_tables/\resultdate/r1_Unrate_yoy.tex}
     }
     \end{table}
 
@@ -279,7 +297,7 @@ Standard macro-fin toolkit: GDP-at-risk \parencite{Adrian2019}; unemployment-at-
     \caption{$R_{oos}^2$ (\%) for Jan 1998--Dec 2024}
     % \vspace{-.5cm}
     \resizebox{\textwidth}{!}{
-        \input{../ResultsTables/r2_Unrate_yoy.tex}
+        \input{../results_tables/\resultdate/r2_Unrate_yoy.tex}
     }
     \end{table}
     
@@ -290,13 +308,13 @@ Standard macro-fin toolkit: GDP-at-risk \parencite{Adrian2019}; unemployment-at-
 
         \begin{subfigure}{0.45\textwidth}
             \centering
-            \includegraphics[width=\textwidth,height=0.4\textheight,keepaspectratio]{../ResultsFigures/UAR_quantile_plot_us_4q_Unrate_yoy.png}
+            \includegraphics[width=\textwidth,height=0.4\textheight,keepaspectratio]{../results_figures/\resultdate/UAR_quantile_plot_us_4q_Unrate_yoy.png}
             % \caption{Plot 1}
         \end{subfigure}
         % \hfill
         \begin{subfigure}{0.45\textwidth}
             \centering
-            \includegraphics[width=\textwidth,height=0.4\textheight,keepaspectratio]{../ResultsFigures/QRF_quantile_plot_us_4q_Unrate_yoy.png}
+            \includegraphics[width=\textwidth,height=0.4\textheight,keepaspectratio]{../results_figures/\resultdate/QRF_quantile_plot_us_4q_Unrate_yoy.png}
             % \caption{Plot 2}
         \end{subfigure}
 
@@ -304,13 +322,13 @@ Standard macro-fin toolkit: GDP-at-risk \parencite{Adrian2019}; unemployment-at-
 
         \begin{subfigure}{0.45\textwidth}
             \centering
-            \includegraphics[width=\textwidth,height=0.4\textheight,keepaspectratio]{../ResultsFigures/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png}
+            \includegraphics[width=\textwidth,height=0.4\textheight,keepaspectratio]{../results_figures/\resultdate/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png}
             % \caption{Plot 3}
         \end{subfigure}
         % \hfill
         \begin{subfigure}{0.45\textwidth}
             \centering
-            \includegraphics[width=\textwidth,height=0.4\textheight,keepaspectratio]{../ResultsFigures/DMQv0c_mean_plot_us_4q_Unrate_yoy.png}
+            \includegraphics[width=\textwidth,height=0.4\textheight,keepaspectratio]{../results_figures/\resultdate/DMQv0c_mean_plot_us_4q_Unrate_yoy.png}
             % \caption{Plot 4}
         \end{subfigure}
     \end{figure}
@@ -336,8 +354,6 @@ Standard macro-fin toolkit: GDP-at-risk \parencite{Adrian2019}; unemployment-at-
         \item Does it hold for other shorter horizon
         \vspace{.1cm}
         \item Include non-traditional data (news-based features)
-        \vspace{.1cm}
-        \item Allow for gradual learning of the model parameters after 1997
     \end{itemize}
     % \vspace{.3cm}
     % \textrm{\textbf{THANK YOU} !!!}

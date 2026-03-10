@@ -154,7 +154,7 @@ def fit_qpcr(X: np.ndarray, y: np.ndarray, q: float, n_updates: int=None, max_pr
 
 
 
-def build_qlr(q: Union[float, int]=0.5, l1: float=0.0, l2: float=0.0, lr: float=0.001):
+def build_qlr(q: float=0.5, l1: float=0.0, l2: float=0.0, lr: float=0.001):
     model = Sequential()
     model.add(Dense(int(1), activation = 'linear', kernel_regularizer=L1L2(l1=l1,l2=l2)))
     opt = Adam(learning_rate=lr)

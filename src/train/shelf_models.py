@@ -1,4 +1,7 @@
 
+import logging
+
+import optuna
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import GridSearchCV
@@ -11,6 +14,11 @@ from quantile_forest import RandomForestQuantileRegressor
 from statsmodels.regression.quantile_regression import QuantReg
 from statsmodels.tools import add_constant
 from sklearn.dummy import DummyRegressor
+
+from src.train.losses import make_tilted_loss
+from src.train.models import build_qlr
+from src.train.train_utils import fit_models
+from src.train.tuning import CVObjective
 
 def fit_lit_bench_model(
         X_train: pd.DataFrame, 
@@ -39,8 +47,146 @@ def fit_lit_bench_model(
 
     return train_preds_dict, preds_dict
 
-
 def fit_linear_models(
+        X_train: np.ndarray,
+        y_train: np.ndarray,
+        X_train_full: np.ndarray,
+        y_train_full: np.ndarray,
+        X_test: np.ndarray,
+        quantiles: list[float],
+        target_name: str,
+        year: int,
+        val_size: float,
+        k_folds: int,
+        tuning_path: Path,
+        early_stopping_args: dict,
+        fit_params: dict,
+        seed: int,
+        trials: int,
+        n_estimators: int,
+        model_dir_path: Path
+    ):
+
+    path_quantiles = [int(q*100) for q in quantiles]
+    custom_objects = {
+        **{f'tilted_loss_{Q}': make_tilted_loss(Q) for Q in path_quantiles}
+    }
+    
+    models = ['QR','RID', 'LAS', 'EN']
+    
+    # Optuna storage
+    storage_url = optuna.storages.InMemoryStorage()
+
+    all_model_preds = {}
+    # Train each model variant
+    for model in models:
+        for q,Q in zip(quantiles, path_quantiles):
+            study_name = f'{model}_Q{Q}_{target_name}_{year}'
+            
+            logging.info(f"Training {model}_Q{Q}...")
+        
+            # Check if hyperparameters already exist
+            if check_hps_exist(study_name, tuning_path):
+                logging.info(f"Hyperparameters for {study_name} already exist. Loading...")
+                best_params = load_hyperparameters(study_name, tuning_path)
+            else:
+                logging.info(f"No existing hyperparameters for {study_name}, optimizing...")
+
+                builder_params = {'q': q}
+
+                if model=='QR':
+                    tune_l1 = False
+                    tune_l2 = False
+                elif model=='RID':
+                    tune_l1 = False
+                    tune_l2 = True
+                elif model=='LAS':
+                    tune_l1 = True
+                    tune_l2 = False
+                elif model=='EN':
+                    tune_l1 = True
+                    tune_l2 = True
+
+                objective = CVObjective(
+                    X_tr=X_train_full,
+                    y_tr=y_train_full,
+                    val_size=val_size,
+                    n_splits=k_folds,
+                    builder_func=build_qlr,
+                    fit_params=fit_params,
+                    early_stopping_args=early_stopping_args,
+                    n_jobs=os.cpu_count(),
+                    tune_l1=tune_l1,
+                    tune_l2=tune_l2,
+                    tune_lr=True,
+                    tune_rec_drop=False,
+                    tune_dropout=False,
+                    tune_n_layers=False,
+                    tune_n_nodes=False,
+                    tune_norm=False,
+                    tune_recurrent_layer_type=False,
+                    **builder_params
+                )
+                
+                study = optuna.create_study(
+                    direction="minimize",
+                    study_name=study_name,
+                    storage=storage_url,
+                    load_if_exists=True,
+                    sampler=optuna.samplers.RandomSampler(seed),
+                    pruner=None
+                )
+                
+                study.optimize(
+                    objective,
+                    n_trials=trials,
+                    n_jobs=os.cpu_count()
+                )
+                
+                best_params = study.best_params
+                best_params.update(builder_params)
+                
+                save_hyperparameters(
+                    best_params,
+                    study_name,
+                    log_path=tuning_path
+                )
+            
+            # Fit models with best hyperparameters
+            estimators = fit_models(
+                X_train,
+                y_train,
+                build_qlr,
+                model_name=study_name,
+                hps=best_params,
+                fit_params=fit_params,
+                early_stopping_args=early_stopping_args,
+                n_estimators=n_estimators,
+                models_dir_path=model_dir_path,
+                save_models=True,
+                custom_objects=custom_objects
+            )
+            
+            # Generate predictions
+            preds = []
+            for e in estimators:
+                e_preds = np.asarray(e.predict(X_test)).reshape(-1)
+                preds.append(e_preds[:, np.newaxis])
+            
+            preds = np.concatenate(preds, axis=1).mean(axis=1) # Take the mean over estimators
+
+            # Store predictions for the current quantile
+            all_model_preds[f'{model}_Q{Q}'] = preds
+    
+    # # Save predictions
+    # all_model_preds_df = pd.DataFrame(
+    #     all_model_preds,
+    #     index=pd.date_range(start=meta_data['test_start'], end=meta_data['test_end'], freq='MS')
+    # )
+
+    return all_model_preds
+
+def fit_sklearn_linear_models(
         X_train: pd.DataFrame, 
         y_train: pd.Series,
         X_test: pd.DataFrame,

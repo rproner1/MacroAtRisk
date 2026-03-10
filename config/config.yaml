@@ -61,7 +61,7 @@ oap_datasets:
 fit_models: true
 input_files: [
   "us_4q_fred_x.parquet",
-  "us_4q_oap_spread_x.parquet"
+  "us_4q_oap_vw_x.parquet"
 ]
 target_file: 'us_4q_fred_y.parquet'
 
@@ -80,8 +80,6 @@ batch_size: 4
 year: 1997
 country: "us"
 horizon_in_quarters: 4
-run_locally: true
-date: '2026-02-02'
 
 
 # ========== Evaluation ==========

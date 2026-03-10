@@ -3,6 +3,24 @@ from joblib import Parallel, delayed
 from sklearn.model_selection import KFold
 import numpy as np
 from typing import Tuple
+import inspect
+
+
+def _take_rows(data, indices):
+    if hasattr(data, 'iloc'):
+        return data.iloc[indices]
+    return np.asarray(data)[indices]
+
+
+def _filter_builder_kwargs(builder_func, params):
+    signature = inspect.signature(builder_func)
+    if any(parameter.kind == inspect.Parameter.VAR_KEYWORD for parameter in signature.parameters.values()):
+        return params
+    accepted = {
+        name for name, parameter in signature.parameters.items()
+        if parameter.kind in (inspect.Parameter.POSITIONAL_OR_KEYWORD, inspect.Parameter.KEYWORD_ONLY)
+    }
+    return {name: value for name, value in params.items() if name in accepted}
 
 def get_early_stopping(**kwargs):
     return EarlyStopping(**kwargs)
@@ -19,20 +37,20 @@ def grid_search(param_grid: dict, builder_func: callable, X_tr: np.ndarray, y_tr
         params = dict(zip(keys, hps))
         kwargs.update(params)
 
-        model = builder_func(**kwargs)
+        model = builder_func(**_filter_builder_kwargs(builder_func, kwargs))
 
         es = get_early_stopping(**early_stopping_args)
-        fit_params.update({'callbacks': [es]})
+        local_fit_params = {**fit_params, 'callbacks': [es]}
 
-        model.fit(X_tr, y_tr, **fit_params)
+        model.fit(X_tr, y_tr, **local_fit_params)
 
-        val_score = model.evaluate(*fit_params['validation_data'])
+        val_score = model.evaluate(*local_fit_params['validation_data'])
         if isinstance(val_score, list):
             val_score = val_score[0]  # If multiple metrics, take the total val loss
 
         return params, val_score
 
-    results = Parallel(n_jobs=n_jobs)(delayed(evaluate_candidate)(hps) for hps in candidates)
+    results = Parallel(n_jobs=n_jobs, prefer='threads')(delayed(evaluate_candidate)(hps) for hps in candidates)
     params, scores = zip(*results)
     best_params = params[np.argmin(scores)] 
 
@@ -148,14 +166,14 @@ class Objective:
             }
         )
 
-        model = self.builder_func(**self.kwargs)
+        model = self.builder_func(**_filter_builder_kwargs(self.builder_func, self.kwargs))
 
         es = get_early_stopping(**self.early_stopping_args)
-        self.fit_params.update({'callbacks': [es]})
+        fit_params = {**self.fit_params, 'callbacks': [es]}
 
-        model.fit(self.X_tr, self.y_tr, **self.fit_params)
+        model.fit(self.X_tr, self.y_tr, **fit_params)
 
-        val_score = model.evaluate(*self.fit_params['validation_data'])
+        val_score = model.evaluate(*fit_params['validation_data'])
         if isinstance(val_score, list):
             val_score = val_score[0]  # If multiple metrics, take the total val loss
 
@@ -291,22 +309,22 @@ class CVObjective:
             X_train_split, X_val_split = X_train[:split_idx], X_train[split_idx:]
             y_train_split, y_val_split = y_train[:split_idx], y_train[split_idx:]
 
-            model = self.builder_func(**self.kwargs)
+            model = self.builder_func(**_filter_builder_kwargs(self.builder_func, self.kwargs))
 
             es = get_early_stopping(**self.early_stopping_args)
-            self.fit_params.update({'callbacks': [es], 'validation_data': (X_test, y_test)})
+            fit_params = {**self.fit_params, 'callbacks': [es], 'validation_data': (X_test, y_test)}
 
-            model.fit(X_train_split, y_train_split, **self.fit_params)
+            model.fit(X_train_split, y_train_split, **fit_params)
             val_score = model.evaluate(X_val_split, y_val_split)
             if isinstance(val_score, list):
                 val_score = val_score[0]  # If multiple metrics, take the total val loss
             return val_score
         
-        cv_losses = Parallel(n_jobs=self.n_jobs, return_as='generator')(delayed(fit_and_evaluate_on_split)(
-            self.X_tr[train_idx],
-            self.y_tr[train_idx],
-            self.X_tr[test_idx],
-            self.y_tr[test_idx]
+        cv_losses = Parallel(n_jobs=self.n_jobs, return_as='generator', prefer='threads')(delayed(fit_and_evaluate_on_split)(
+            _take_rows(self.X_tr, train_idx),
+            _take_rows(self.y_tr, train_idx),
+            _take_rows(self.X_tr, test_idx),
+            _take_rows(self.y_tr, test_idx)
         ) for train_idx, test_idx in KFold(n_splits=self.n_splits).split(self.X_tr))
 
         mean_cv_loss = np.mean(list(cv_losses))
@@ -382,22 +400,22 @@ class CVObjectiveTest:
             X_train_split, X_val_split = X_train[:split_idx], X_train[split_idx:]
             y_train_split, y_val_split = y_train[:split_idx], y_train[split_idx:]
 
-            model = self.builder_func(**self.kwargs)
+            model = self.builder_func(**_filter_builder_kwargs(self.builder_func, self.kwargs))
 
             es = get_early_stopping(**self.early_stopping_args)
-            self.fit_params.update({'callbacks': [es], 'validation_data': (X_test, y_test)})
+            fit_params = {**self.fit_params, 'callbacks': [es], 'validation_data': (X_test, y_test)}
 
-            model.fit(X_train_split, y_train_split, **self.fit_params)
+            model.fit(X_train_split, y_train_split, **fit_params)
             val_score = model.evaluate(X_val_split, y_val_split)
             if isinstance(val_score, list):
                 val_score = val_score[0]  # If multiple metrics, take the total val loss
             return val_score
         
-        cv_losses = Parallel(n_jobs=self.n_jobs)(delayed(fit_and_evaluate_on_split)(
-            self.X_tr[train_idx],
-            self.y_tr[train_idx],
-            self.X_tr[test_idx],
-            self.y_tr[test_idx]
+        cv_losses = Parallel(n_jobs=self.n_jobs, prefer='threads')(delayed(fit_and_evaluate_on_split)(
+            _take_rows(self.X_tr, train_idx),
+            _take_rows(self.y_tr, train_idx),
+            _take_rows(self.X_tr, test_idx),
+            _take_rows(self.y_tr, test_idx)
         ) for train_idx, test_idx in KFold(n_splits=self.n_splits).split(self.X_tr))
 
         mean_cv_loss = np.mean(cv_losses)
