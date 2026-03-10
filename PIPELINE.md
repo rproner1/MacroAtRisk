@@ -108,6 +108,8 @@ for year in {1997..2023}; do
   done
 done
 
+- You will need to run this in parallel on an HPC cluster.
+
 # 3. Generate results
 python main_results.py --date $(date +%Y-%m-%d)
 ```
@@ -133,7 +135,7 @@ sbatch train_shelf.sh    # Trains shelf models
 sbatch train_litbench.sh # Trains literature benchmarks
 sbatch train_deep.sh     # Trains deep models
 
-# Once all complete, combine results
+# Once all complete, download predictions locally and combine results
 python main_results.py --date 2026-02-04
 ```
 
