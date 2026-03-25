@@ -64,7 +64,8 @@ def fit_linear_models(
         seed: int,
         trials: int,
         n_estimators: int,
-        model_dir_path: Path
+        model_dir_path: Path,
+        linear_grids: dict | None = None,
     ):
 
     path_quantiles = [int(q*100) for q in quantiles]
@@ -72,7 +73,27 @@ def fit_linear_models(
         **{f'tilted_loss_{Q}': make_tilted_loss(Q) for Q in path_quantiles}
     }
     
-    models = ['QR','RID', 'LAS', 'EN']
+    if linear_grids is None:
+        linear_grids = {
+            'QR': {
+                'lr': {'type': 'float', 'values': [5e-4, 2e-3], 'log_scale': True}
+            },
+            'RID': {
+                'l2': {'type': 'float', 'values': [1e-5, 1e-4], 'log_scale': True},
+                'lr': {'type': 'float', 'values': [5e-4, 2e-3], 'log_scale': True},
+            },
+            'LAS': {
+                'l1': {'type': 'float', 'values': [1e-7, 1e-5], 'log_scale': True},
+                'lr': {'type': 'float', 'values': [5e-4, 2e-3], 'log_scale': True},
+            },
+            'EN': {
+                'l1': {'type': 'float', 'values': [1e-7, 1e-5], 'log_scale': True},
+                'l2': {'type': 'float', 'values': [1e-5, 1e-4], 'log_scale': True},
+                'lr': {'type': 'float', 'values': [5e-4, 2e-3], 'log_scale': True},
+            },
+        }
+
+    models = [m for m in ['QR', 'RID', 'LAS', 'EN'] if m in linear_grids]
     
     # Optuna storage
     storage_url = optuna.storages.InMemoryStorage()
@@ -94,25 +115,7 @@ def fit_linear_models(
 
                 builder_params = {'q': q}
 
-                grid = {
-                    'lr': {
-                        'type': 'float',
-                        'values': [5e-4, 2e-3],
-                        'log_scale': True,
-                    }
-                }
-                if model in ('LAS', 'EN'):
-                    grid['l1'] = {
-                        'type': 'float',
-                        'values': [1e-7, 1e-5],
-                        'log_scale': True,
-                    }
-                if model in ('RID', 'EN'):
-                    grid['l2'] = {
-                        'type': 'float',
-                        'values': [1e-5, 1e-4],
-                        'log_scale': True,
-                    }
+                grid = linear_grids[model]
 
                 objective = CVObjective(
                     X_tr=X_train_full,

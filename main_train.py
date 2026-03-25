@@ -8,6 +8,7 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 import os
+from copy import deepcopy
 import yaml
 import argparse
 from datetime import date
@@ -195,13 +196,14 @@ def train_shelf_models():
         seed=SEED,
         trials=1 if RUN_LOCALLY else config['trials'],
         n_estimators= 1 if RUN_LOCALLY else config['n_estimators'],
-        model_dir_path=SHELF_MODEL_DIR
+        model_dir_path=SHELF_MODEL_DIR,
+        linear_grids=config['tuning']['linear_grids']
     )
 
     all_preds.update(linear_preds)
     
     # QRF
-    qrf_grid = {'n_estimators': [100, 500, 1000], 'max_depth': list(range(1, 13))}
+    qrf_grid = deepcopy(config['tuning']['qrf_grid'])
     if RUN_LOCALLY:
         qrf_grid = {'n_estimators': [50], 'max_depth': [3]}
     qrf_preds = fit_qrf(
@@ -211,12 +213,7 @@ def train_shelf_models():
     all_preds.update(qrf_preds)
     
     # QGB
-    qgb_grid = {
-        'learning_rate' : [0.1, 0.01, 0.001],
-        'n_estimators' : [50, 100, 200],
-        'subsample' : [0.25, 0.5, 1.0], 
-        'max_depth' : list(range(1, 6+1))
-    }
+    qgb_grid = deepcopy(config['tuning']['qgb_grid'])
     if RUN_LOCALLY:
         qgb_grid['n_estimators'] = [10]  # Reduce for local runs
         qgb_grid['learning_rate'] = [0.1]  
@@ -280,7 +277,7 @@ def train_lit_bench_models():
 
 
 def train_deep_models():
-    """Train deep learning models (DMQv0, DMQv1, DMQv2)."""
+    """Train deep learning models"""
     logging.info(f"Training deep models for {target_name_dict[TARGET_IDX]} ({YEAR})...")
     
     # Adjust parameters for local runs
@@ -334,167 +331,45 @@ def train_deep_models():
         'verbose': 0
     }
     
-    # Define model configurations
-    mq_model_params_dict = {
-        'DMQv0': {
-            'X_tr': X_train_full_rnn,
-            'y_tr': mq_y_train_full_rnn,
-            'validation_data': (X_val_rnn, mq_y_val_rnn),
-            'X_te': X_test_rnn,
-            'builder_fn': build_dmq_v0,
-            'builder_params': { 
-                'input_shape': X_train_rnn.shape[1:],
-                'n_recurrent_layers': 3,
-                'n_shared_layers': 2,
-                'n_qtask_layers': 2,
-                'n_recurrent_nodes': 64,
-                'n_shared_nodes': 32,
-                'n_task_nodes': 16,
-                'recurrent_layer_type': 'lstm',
-                'norm_fn': 'layer',
-                'quantiles': QUANTILES,
-                'loss_weights': LOSS_WEIGHTS,
-                'seed': SEED
-            }
-        },
-        'DMQv0c': {
-            'X_tr': X_train_full_rnn,
-            'y_tr': mq_y_train_full_rnn,
-            'validation_data': (X_val_rnn, mq_y_val_rnn),
-            'X_te': X_test_rnn,
-            'builder_fn': build_dmq_v0,
-            'builder_params': { 
-                'input_shape': X_train_rnn.shape[1:],
-                'n_recurrent_layers': 3,
-                'n_shared_layers': 2,
-                'n_qtask_layers': 2,
-                'n_recurrent_nodes': 32,
-                'n_shared_nodes': 32,
-                'n_task_nodes': 32,
-                'recurrent_layer_type': 'lstm',
-                'norm_fn': 'layer',
-                'quantiles': QUANTILES,
-                'loss_weights': LOSS_WEIGHTS,
-                'seed': SEED
-            }
-        },
-        'DMQv1': {
-            'X_tr': X_train_full_rnn,
-            'y_tr': mq_y_train_full_rnn,
-            'validation_data': (X_val_rnn, mq_y_val_rnn),
-            'X_te': X_test_rnn,
-            'builder_fn': build_dmq_v1,
-            'builder_params': { 
-                'input_shape': X_train_rnn.shape[1:],
-                'n_recurrent_layers': 3,
-                'n_shared_layers': 2,
-                'n_qtask_layers': 2,
-                'n_recurrent_nodes': 64,
-                'n_shared_nodes': 32,
-                'n_task_nodes': 16,
-                'recurrent_layer_type': 'lstm',
-                'norm_fn': 'layer',
-                'lower_quantiles': [q for q in QUANTILES if q < 0.5],
-                'upper_quantiles': [q for q in QUANTILES if q > 0.5],
-                'loss_weights': LOSS_WEIGHTS,
-                'seed': SEED
-            }
-        },
-        'DMQv1c': {
-            'X_tr': X_train_full_rnn,
-            'y_tr': mq_y_train_full_rnn,
-            'validation_data': (X_val_rnn, mq_y_val_rnn),
-            'X_te': X_test_rnn,
-            'builder_fn': build_dmq_v1,
-            'builder_params': { 
-                'input_shape': X_train_rnn.shape[1:],
-                'n_recurrent_layers': 3,
-                'n_shared_layers': 2,
-                'n_qtask_layers': 2,
-                'n_recurrent_nodes': 32,
-                'n_shared_nodes': 32,
-                'n_task_nodes': 32,
-                'recurrent_layer_type': 'lstm',
-                'norm_fn': 'layer',
-                'lower_quantiles': [q for q in QUANTILES if q < 0.5],
-                'upper_quantiles': [q for q in QUANTILES if q > 0.5],
-                'loss_weights': LOSS_WEIGHTS,
-                'seed': SEED
-            }
-        },
-        'DMQv2': {
-            'X_tr': X_train_full_rnn,
-            'y_tr': mq_y_train_full_rnn,
-            'validation_data': (X_val_rnn, mq_y_val_rnn),
-            'X_te': X_test_rnn,
-            'builder_fn': build_dmq_v2,
-            'builder_params': { 
-                'input_shape': X_train_rnn.shape[1:],
-                'n_recurrent_layers': 3,
-                'n_shared_layers': 2,
-                'n_qtask_layers': 2,
-                'n_recurrent_nodes': 64,
-                'n_shared_nodes': 32,
-                'n_task_nodes': 16,
-                'recurrent_layer_type': 'lstm',
-                'norm_fn': 'layer',
-                'lower_quantiles': [q for q in QUANTILES if q < 0.5],
-                'upper_quantiles': [q for q in QUANTILES if q > 0.5],
-                'loss_weights': LOSS_WEIGHTS,
-                'seed': SEED
-            }
-        },
-        'DMQv2c': {
-            'X_tr': X_train_full_rnn,
-            'y_tr': mq_y_train_full_rnn,
-            'validation_data': (X_val_rnn, mq_y_val_rnn),
-            'X_te': X_test_rnn,
-            'builder_fn': build_dmq_v2,
-            'builder_params': { 
-                'input_shape': X_train_rnn.shape[1:],
-                'n_recurrent_layers': 3,
-                'n_shared_layers': 2,
-                'n_qtask_layers': 2,
-                'n_recurrent_nodes': 32,
-                'n_shared_nodes': 32,
-                'n_task_nodes': 32,
-                'recurrent_layer_type': 'lstm',
-                'norm_fn': 'layer',
-                'lower_quantiles': [q for q in QUANTILES if q < 0.5],
-                'upper_quantiles': [q for q in QUANTILES if q > 0.5],
-                'loss_weights': LOSS_WEIGHTS,
-                'seed': SEED
-            }
-        }
+    builder_fn_map = {
+        'DMQv0': build_dmq_v0,
+        'DMQv1': build_dmq_v1,
+        'DMQv2': build_dmq_v2,
     }
+
+    model_builder_params_cfg = config['builder_params']['deep_models']
+    model_names = list(model_builder_params_cfg.keys())
     
     # Optuna storage
     storage_url = optuna.storages.InMemoryStorage()
     all_model_preds = {}
-    deep_tuning_grid = {
-        'l2': {
-            'type': 'float',
-            'values': [1e-5, 1e-4],
-            'log_scale': True,
-        },
-        'lr': {
-            'type': 'float',
-            'values': [5e-4, 2e-3],
-            'log_scale': True,
-        },
-    }
+    deep_tuning_grid = config['tuning']['deep_grid']
     
     # Train each model variant
-    for model_type in mq_model_params_dict.keys():
+    for model_type in model_names:
         study_name = f'{model_type}_{target_name}_{YEAR}'
         logging.info(f"Training {model_type}...")
-        
-        X_tr = mq_model_params_dict[model_type]['X_tr']
-        y_tr = mq_model_params_dict[model_type]['y_tr']
-        validation_data = mq_model_params_dict[model_type]['validation_data']
-        X_te = mq_model_params_dict[model_type]['X_te']
-        builder_fn = mq_model_params_dict[model_type]['builder_fn']
-        builder_params = mq_model_params_dict[model_type]['builder_params']
+
+        base_model_type = model_type.rstrip('c')
+        builder_fn = builder_fn_map[base_model_type]
+        builder_params = dict(model_builder_params_cfg[model_type])
+        builder_params.update(
+            {
+                'input_shape': X_train_rnn.shape[1:],
+                'loss_weights': LOSS_WEIGHTS,
+                'seed': SEED,
+            }
+        )
+        if base_model_type == 'DMQv0':
+            builder_params['quantiles'] = QUANTILES
+        else:
+            builder_params['lower_quantiles'] = [q for q in QUANTILES if q < 0.5]
+            builder_params['upper_quantiles'] = [q for q in QUANTILES if q > 0.5]
+
+        X_tr = X_train_full_rnn
+        y_tr = mq_y_train_full_rnn
+        validation_data = (X_val_rnn, mq_y_val_rnn)
+        X_te = X_test_rnn
         
         fit_params = {
             'epochs': 1 if RUN_LOCALLY else EPOCHS,
