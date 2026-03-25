@@ -24,6 +24,15 @@ python main_data.py
 - `construct_oap_signals`: Build firm-level signals
 - `skip_processed_data`: Skip if files exist
 
+**Data sources:**
+- FRED-MD: https://www.stlouisfed.org/research/economists/mccracken/fred-databases
+- OAP: https://drive.google.com/file/d/1avFIMjz_7LoF3p3nO26eqLW5KdRTOdhW/view?usp=drive_link from https://www.openassetpricing.com/data/
+- CRSP: from CRSP (see src.data.download.crsp.get_crsp_monthly)
+- NFCI: https://fred.stlouisfed.org/series/NFCI
+- NROU: https://fred.stlouisfed.org/series/NROU
+- Inflation expectations: https://fred.stlouisfed.org/series/EXPINF10YR
+- Excess bond premium (EBP): https://www.federalreserve.gov/econres/notes/feds-notes/updating-the-recession-risk-and-the-excess-bond-premium-20161006.html
+
 ---
 
 ### 2. Model Training: `main_train.py`

@@ -94,18 +94,25 @@ def fit_linear_models(
 
                 builder_params = {'q': q}
 
-                if model=='QR':
-                    tune_l1 = False
-                    tune_l2 = False
-                elif model=='RID':
-                    tune_l1 = False
-                    tune_l2 = True
-                elif model=='LAS':
-                    tune_l1 = True
-                    tune_l2 = False
-                elif model=='EN':
-                    tune_l1 = True
-                    tune_l2 = True
+                grid = {
+                    'lr': {
+                        'type': 'float',
+                        'values': [5e-4, 2e-3],
+                        'log_scale': True,
+                    }
+                }
+                if model in ('LAS', 'EN'):
+                    grid['l1'] = {
+                        'type': 'float',
+                        'values': [1e-7, 1e-5],
+                        'log_scale': True,
+                    }
+                if model in ('RID', 'EN'):
+                    grid['l2'] = {
+                        'type': 'float',
+                        'values': [1e-5, 1e-4],
+                        'log_scale': True,
+                    }
 
                 objective = CVObjective(
                     X_tr=X_train_full,
@@ -116,15 +123,7 @@ def fit_linear_models(
                     fit_params=fit_params,
                     early_stopping_args=early_stopping_args,
                     n_jobs=os.cpu_count(),
-                    tune_l1=tune_l1,
-                    tune_l2=tune_l2,
-                    tune_lr=True,
-                    tune_rec_drop=False,
-                    tune_dropout=False,
-                    tune_n_layers=False,
-                    tune_n_nodes=False,
-                    tune_norm=False,
-                    tune_recurrent_layer_type=False,
+                    grid=grid,
                     **builder_params
                 )
                 

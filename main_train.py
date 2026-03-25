@@ -471,6 +471,18 @@ def train_deep_models():
     # Optuna storage
     storage_url = optuna.storages.InMemoryStorage()
     all_model_preds = {}
+    deep_tuning_grid = {
+        'l2': {
+            'type': 'float',
+            'values': [1e-5, 1e-4],
+            'log_scale': True,
+        },
+        'lr': {
+            'type': 'float',
+            'values': [5e-4, 2e-3],
+            'log_scale': True,
+        },
+    }
     
     # Train each model variant
     for model_type in mq_model_params_dict.keys():
@@ -507,15 +519,7 @@ def train_deep_models():
                 fit_params=fit_params,
                 early_stopping_args=early_stopping_args,
                 n_jobs=os.cpu_count(),
-                tune_l1=False,
-                tune_l2=True,
-                tune_lr=True,
-                tune_rec_drop=False,
-                tune_dropout=False,
-                tune_n_layers=False,
-                tune_n_nodes=False,
-                tune_norm=False,
-                tune_recurrent_layer_type=False,
+                grid=deep_tuning_grid,
                 **builder_params
             )
             
