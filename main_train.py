@@ -70,24 +70,16 @@ BATCH_SIZE = config['batch_size']
 
 path_quantiles = [int(q*100) for q in QUANTILES]
 
-if RUN_LOCALLY:
-    DATA_DIR = Path(os.getenv('LOCDATADIR')) / 'processed'
-    SHELF_MODEL_DIR = Path(os.getenv('LOCMODELDIR')) / 'shelf_models' / DATE
-    SHELF_PRED_DIR = Path(os.getenv('LOCPREDDIR')) / 'shelf_preds' / DATE
-    SHELF_TUNING_LOG_PATH = Path(os.getenv('LOCTUNINGDIR')) / f"shelf_tuning_log_{DATE}.json"
-    LIT_BENCH_PRED_DIR = Path(os.getenv('LOCPREDDIR')) / 'lit_bench_preds' / DATE
-    DEEP_MODEL_DIR = Path(os.getenv('LOCMODELDIR')) / 'st_models' / DATE
-    DEEP_PRED_DIR = Path(os.getenv('LOCPREDDIR')) / 'st_preds' / DATE
-    DEEP_TUNING_LOG_PATH = Path(os.getenv('LOCTUNINGDIR')) / f"st_tuning_log_{DATE}.json"
-else:
-    DATA_DIR = Path(os.getenv('DATADIR')) / 'processed'
-    SHELF_MODEL_DIR = Path(os.getenv('MODELDIR')) / 'shelf_models' / DATE
-    SHELF_PRED_DIR = Path(os.getenv('PREDDIR')) / 'shelf_preds' / DATE
-    SHELF_TUNING_LOG_PATH = Path(os.getenv('TUNINGDIR')) / f"shelf_tuning_log_{DATE}.json"
-    LIT_BENCH_PRED_DIR = Path(os.getenv('PREDDIR')) / 'lit_bench_preds' / DATE
-    DEEP_MODEL_DIR = Path(os.getenv('MODELDIR')) / 'st_models' / DATE
-    DEEP_PRED_DIR = Path(os.getenv('PREDDIR')) / 'st_preds' / DATE
-    DEEP_TUNING_LOG_PATH = Path(os.getenv('TUNINGDIR')) / f"st_tuning_log_{DATE}.json"
+BASE_DIR = Path(os.getenv('REMOTE_BASE_DIR')) if not RUN_LOCALLY else Path(os.getenv('LOCAL_BASE_DIR'))
+
+DATA_DIR = BASE_DIR / 'data' / 'processed'
+SHELF_MODEL_DIR = BASE_DIR / 'models' / 'shelf_models' / DATE
+SHELF_PRED_DIR = BASE_DIR / 'predictions' / 'shelf_preds' / DATE
+SHELF_TUNING_LOG_PATH = BASE_DIR / 'tuning_logs' / f"shelf_tuning_log_{DATE}.json"
+LIT_BENCH_PRED_DIR = BASE_DIR / 'predictions' / 'lit_bench_preds' / DATE
+DEEP_MODEL_DIR = BASE_DIR / 'models' / 'st_models' / DATE 
+DEEP_PRED_DIR = BASE_DIR / 'st_preds' / DATE
+DEEP_TUNING_LOG_PATH =BASE_DIR / f"st_tuning_log_{DATE}.json"
 
 for path in [SHELF_MODEL_DIR, SHELF_PRED_DIR, SHELF_TUNING_LOG_PATH.parent, LIT_BENCH_PRED_DIR, DEEP_MODEL_DIR, DEEP_PRED_DIR, DEEP_TUNING_LOG_PATH.parent]:
     os.makedirs(path, exist_ok=True)
