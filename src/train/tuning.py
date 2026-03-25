@@ -192,6 +192,7 @@ class CVObjective:
             early_stopping_args: dict, 
             builder_func: callable, 
             n_jobs: int, 
+            grid: dict | None = None,
             tune_l1: bool=False,
             tune_l2: bool=True,
             tune_lr: bool=True,
@@ -212,123 +213,78 @@ class CVObjective:
         self.n_jobs = n_jobs
         self.kwargs = kwargs
         self.early_stopping_args = early_stopping_args
-        self.tune_l1 = tune_l1
-        self.tune_l2 = tune_l2
-        self.tune_lr = tune_lr
-        self.tune_rec_drop = tune_rec_drop
-        self.tune_dropout = tune_dropout
-        self.tune_n_layers = tune_n_layers
-        self.tune_n_nodes = tune_n_nodes
-        self.tune_norm = tune_norm
-        self.tune_recurrent_layer_type = tune_recurrent_layer_type
+        self.grid = grid
+
+    def _sample_trial_kwargs(self, trial):
+        trial_kwargs = self.kwargs.copy()
+
+        for param_name, param_config in self.grid.items():
+            if isinstance(param_config, dict):
+                param_type = param_config.get('type', 'categorical')
+                param_values = param_config.get('values', [])
+                log_scale = param_config.get('log_scale', False)
+            else:
+                param_type = 'categorical'
+                param_values = param_config
+                log_scale = False
+
+            if param_type == 'categorical':
+                trial_kwargs[param_name] = trial.suggest_categorical(param_name, param_values)
+            elif param_type == 'float':
+                low = float(min(param_values))
+                high = float(max(param_values))
+                if low == high:
+                    trial_kwargs[param_name] = low
+                else:
+                    trial_kwargs[param_name] = trial.suggest_float(param_name, low, high, log=log_scale)
+            elif param_type == 'int':
+                low = int(min(param_values))
+                high = int(max(param_values))
+                if low == high:
+                    trial_kwargs[param_name] = low
+                else:
+                    trial_kwargs[param_name] = trial.suggest_int(param_name, low, high, log=log_scale)
+            else:
+                raise ValueError(f"Unknown parameter type '{param_type}' for '{param_name}'")
+
+        return trial_kwargs
+
+    def _fit_and_evaluate_on_split(self, trial_kwargs, train_idx, test_idx):
+        X_train = _take_rows(self.X_tr, train_idx)
+        y_train = _take_rows(self.y_tr, train_idx)
+        X_test = _take_rows(self.X_tr, test_idx)
+        y_test = _take_rows(self.y_tr, test_idx)
+
+        split_idx = int(len(X_train) * (1 - self.val_size))
+        X_train_split, X_val_split = X_train[:split_idx], X_train[split_idx:]
+        y_train_split, y_val_split = y_train[:split_idx], y_train[split_idx:]
+
+        model = self.builder_func(**_filter_builder_kwargs(self.builder_func, trial_kwargs))
+
+        es = get_early_stopping(**self.early_stopping_args)
+        fit_params = {
+            **self.fit_params,
+            'callbacks': [es],
+            'validation_data': (X_val_split, y_val_split),
+        }
+
+        model.fit(X_train_split, y_train_split, **fit_params)
+        val_score = model.evaluate(X_test, y_test)
+        if isinstance(val_score, list):
+            val_score = val_score[0]
+
+        return val_score
 
     def __call__(self, trial):
+        trial_kwargs = self._sample_trial_kwargs(trial)
 
-        l1_choices = list(np.logspace(-7, -5, num=50))
-        l2_choices = list(np.logspace(-5, -4, num=50))
-        rec_drop_choices = [0.0, 0.02, 0.05, 0.1]
-        dropout_choices = [0.0, 0.02, 0.05, 0.1]
-        layer_choices = [1, 2, 3]
-        node_choices = [16, 32, 64]
-        norm_choices = [False, True]
-        recurrent_layer_type_choices = ['gru', 'lstm']
-
-        if self.tune_l1:
-            l1 = trial.suggest_categorical('l1', l1_choices)
-        else:
-            l1 = 0.0
-        if self.tune_l2:
-            l2 = trial.suggest_categorical('l2', l2_choices)
-        else: 
-            l2 = 1e-4
-        if self.tune_lr:
-            lr = trial.suggest_float('lr', 5e-4, 2e-3, log=True)
-        else: 
-            lr=5e-4
-        if self.tune_rec_drop:
-            rec_drop = trial.suggest_categorical('rec_drop', rec_drop_choices)
-        else:
-            rec_drop = 0.0
-        if self.tune_dropout:
-            dropout = trial.suggest_categorical('dropout', dropout_choices)
-        else:
-            dropout=0.0
-        if self.tune_n_layers:
-            n_recurrent_layers = trial.suggest_categorical('n_recurrent_layers', layer_choices)
-            n_shared_layers = trial.suggest_categorical('n_shared_layers', layer_choices)
-            n_qtask_layers = trial.suggest_categorical('n_qtask_layers', layer_choices)
-        else:
-            n_recurrent_layers = self.kwargs.get('n_recurrent_layers', 3)
-            n_shared_layers = self.kwargs.get('n_shared_layers', 3)
-            n_qtask_layers = self.kwargs.get('n_qtask_layers', 2)
-        if self.tune_n_nodes:
-            n_recurrent_nodes = trial.suggest_categorical('n_recurrent_nodes', node_choices)
-            n_shared_nodes = trial.suggest_categorical('n_shared_nodes', node_choices)
-            n_task_nodes = trial.suggest_categorical('n_task_nodes', node_choices)
-        else: 
-            n_recurrent_nodes = self.kwargs.get('n_recurrent_nodes', 32)
-            n_shared_nodes = self.kwargs.get('n_shared_nodes', 32)
-            n_task_nodes = self.kwargs.get('n_task_nodes', 32)
-        if self.tune_norm:
-            recurrent_norm = trial.suggest_categorical('recurrent_norm', norm_choices)
-            shared_norm = trial.suggest_categorical('shared_norm', norm_choices)
-            task_norm = trial.suggest_categorical('task_specific_norm', norm_choices)
-        else:
-            recurrent_norm = self.kwargs.get('recurrent_norm', False)
-            shared_norm = self.kwargs.get('shared_norm', False)
-            task_norm = self.kwargs.get('task_specific_norm', False)
-        if self.tune_recurrent_layer_type:
-            recurrent_layer_type = trial.suggest_categorical('recurrent_layer_type', recurrent_layer_type_choices)
-        else:
-            recurrent_layer_type = self.kwargs.get('recurrent_layer_type', 'lstm')
-
-        self.kwargs.update(
-            {
-                'l1': l1,
-                'l2': l2,
-                'lr': lr,
-                'rec_drop': rec_drop,
-                'dropout': dropout,
-                'n_recurrent_layers': n_recurrent_layers,
-                'n_shared_layers': n_shared_layers,
-                'n_qtask_layers': n_qtask_layers,
-                'n_recurrent_nodes': n_recurrent_nodes,
-                'n_shared_nodes': n_shared_nodes,
-                'n_task_nodes': n_task_nodes,
-                'recurrent_norm': recurrent_norm,
-                'shared_norm': shared_norm,
-                'task_specific_norm': task_norm,
-                'recurrent_layer_type': recurrent_layer_type
-            }
+        cv_losses = Parallel(n_jobs=self.n_jobs, return_as='generator', prefer='threads')(
+            delayed(self._fit_and_evaluate_on_split)(trial_kwargs.copy(), train_idx, test_idx)
+            for train_idx, test_idx in KFold(n_splits=self.n_splits).split(self.X_tr)
         )
 
-        def fit_and_evaluate_on_split(X_train, y_train, X_test, y_test):
-
-            # reserve val_size fraction of training data for monitoring early stopping
-            split_idx = int(len(X_train) * (1-self.val_size))
-            X_train_split, X_val_split = X_train[:split_idx], X_train[split_idx:]
-            y_train_split, y_val_split = y_train[:split_idx], y_train[split_idx:]
-
-            model = self.builder_func(**_filter_builder_kwargs(self.builder_func, self.kwargs))
-
-            es = get_early_stopping(**self.early_stopping_args)
-            fit_params = {**self.fit_params, 'callbacks': [es], 'validation_data': (X_test, y_test)}
-
-            model.fit(X_train_split, y_train_split, **fit_params)
-            val_score = model.evaluate(X_val_split, y_val_split)
-            if isinstance(val_score, list):
-                val_score = val_score[0]  # If multiple metrics, take the total val loss
-            return val_score
-        
-        cv_losses = Parallel(n_jobs=self.n_jobs, return_as='generator', prefer='threads')(delayed(fit_and_evaluate_on_split)(
-            _take_rows(self.X_tr, train_idx),
-            _take_rows(self.y_tr, train_idx),
-            _take_rows(self.X_tr, test_idx),
-            _take_rows(self.y_tr, test_idx)
-        ) for train_idx, test_idx in KFold(n_splits=self.n_splits).split(self.X_tr))
-
         mean_cv_loss = np.mean(list(cv_losses))
-        return mean_cv_loss
+        return float(mean_cv_loss)
 
 
 class CVObjectiveTest:
