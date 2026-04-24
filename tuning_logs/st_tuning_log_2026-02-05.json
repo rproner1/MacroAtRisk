@@ -1,0 +1,72 @@
+{
+  "DMQv0_Infl_yoy_2020": {
+    "l2": 2.6122937099604327e-05,
+    "lr": 0.0013572147242714482,
+    "n_recurrent_layers": 3,
+    "n_shared_layers": 2,
+    "n_qtask_layers": 2,
+    "n_recurrent_nodes": 64,
+    "n_shared_nodes": 32,
+    "n_task_nodes": 16,
+    "recurrent_layer_type": "lstm",
+    "norm_fn": "layer",
+    "recurrent_norm": true,
+    "shared_norm": true,
+    "task_norm": false,
+    "input_shape": [
+      12,
+      122
+    ],
+    "loss_weights": [
+      0.28,
+      0.17,
+      0.11,
+      0.17,
+      0.28
+    ],
+    "seed": 1,
+    "lower_quantiles": [
+      0.05,
+      0.25
+    ],
+    "upper_quantiles": [
+      0.75,
+      0.95
+    ]
+  },
+  "DMQv1_Infl_yoy_2020": {
+    "l2": 2.6122937099604327e-05,
+    "lr": 0.0013572147242714482,
+    "n_recurrent_layers": 3,
+    "n_shared_layers": 2,
+    "n_qtask_layers": 2,
+    "n_recurrent_nodes": 64,
+    "n_shared_nodes": 32,
+    "n_task_nodes": 16,
+    "recurrent_layer_type": "lstm",
+    "norm_fn": "layer",
+    "recurrent_norm": true,
+    "shared_norm": true,
+    "task_norm": false,
+    "input_shape": [
+      12,
+      122
+    ],
+    "loss_weights": [
+      0.28,
+      0.17,
+      0.11,
+      0.17,
+      0.28
+    ],
+    "seed": 1,
+    "lower_quantiles": [
+      0.05,
+      0.25
+    ],
+    "upper_quantiles": [
+      0.75,
+      0.95
+    ]
+  }
+}
