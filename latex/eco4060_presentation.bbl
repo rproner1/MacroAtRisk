@@ -1,0 +1,549 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{nyt/global//global/global/global}
+    \entry{adrianVulnerableGrowth2019}{article}{}{}
+      \name{author}{3}{}{%
+        {{un=0,uniquepart=base,hash=481f61173b27efd5969e65c8de80a573}{%
+           family={Adrian},
+           familyi={A\bibinitperiod},
+           given={Tobias},
+           giveni={T\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=52bb9c3897265ffda88761a285c6fa8b}{%
+           family={Boyarchenko},
+           familyi={B\bibinitperiod},
+           given={Nina},
+           giveni={N\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=5bd75a97c4a951e753c86c8edbc8a560}{%
+           family={Giannone},
+           familyi={G\bibinitperiod},
+           given={Domenico},
+           giveni={D\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{language}{1}{%
+        {en}%
+      }
+      \strng{namehash}{dde24d0be07fba65bbcd1fe2d29da830}
+      \strng{fullhash}{dde24d0be07fba65bbcd1fe2d29da830}
+      \strng{fullhashraw}{dde24d0be07fba65bbcd1fe2d29da830}
+      \strng{bibnamehash}{dde24d0be07fba65bbcd1fe2d29da830}
+      \strng{authorbibnamehash}{dde24d0be07fba65bbcd1fe2d29da830}
+      \strng{authornamehash}{dde24d0be07fba65bbcd1fe2d29da830}
+      \strng{authorfullhash}{dde24d0be07fba65bbcd1fe2d29da830}
+      \strng{authorfullhashraw}{dde24d0be07fba65bbcd1fe2d29da830}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{We study the conditional distribution of GDP growth as a function of economic and financial conditions. Deteriorating financial conditions are associated with an increase in the conditional volatility and a decline in the conditional mean of GDP growth, leading the lower quantiles of GDP growth to vary with financial conditions and the upper quantiles to be stable over time. Upside risks to GDP growth are low in most periods while downside risks increase as financial conditions become tighter. We argue that amplification mechanisms in the financial sector generate the observed growth vulnerability dynamics. (JEL C53, E23, E27, E32, E44)}
+      \field{issn}{0002-8282}
+      \field{journaltitle}{American Economic Review}
+      \field{month}{4}
+      \field{number}{4}
+      \field{title}{Vulnerable {Growth}}
+      \field{urlday}{24}
+      \field{urlmonth}{2}
+      \field{urlyear}{2026}
+      \field{volume}{109}
+      \field{year}{2019}
+      \field{urldateera}{ce}
+      \field{pages}{1263\bibrangedash 1289}
+      \range{pages}{27}
+      \verb{doi}
+      \verb 10.1257/aer.20161923
+      \endverb
+      \verb{file}
+      \verb PDF:/home/rproner/Zotero/storage/JXH6UBCD/Adrian et al. - 2019 - Vulnerable Growth.pdf:application/pdf
+      \endverb
+      \verb{urlraw}
+      \verb https://pubs.aeaweb.org/doi/10.1257/aer.20161923
+      \endverb
+      \verb{url}
+      \verb https://pubs.aeaweb.org/doi/10.1257/aer.20161923
+      \endverb
+      \keyw{read}
+    \endentry
+    \entry{adrianMachinelearningGrowthRisk2025}{misc}{}{}
+      \name{author}{4}{ul=2}{%
+        {{un=0,uniquepart=base,hash=481f61173b27efd5969e65c8de80a573}{%
+           family={Adrian},
+           familyi={A\bibinitperiod},
+           given={Tobias},
+           giveni={T\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=cb4022b80a384724e20ebc99c85862ae}{%
+           family={Chen},
+           familyi={C\bibinitperiod},
+           given={Hongqi},
+           giveni={H\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=098895eea6d8cfae15e07fcd0b25a549}{%
+           family={Dovì},
+           familyi={D\bibinitperiod},
+           given={Max-Sebastian},
+           giveni={M\bibinithyphendelim S\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=c652fd4443823bab614272375bde18b3}{%
+           family={Lee},
+           familyi={L\bibinitperiod},
+           given={Ji\bibnamedelima Hyung},
+           giveni={J\bibinitperiod\bibinitdelim H\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{language}{1}{%
+        {en}%
+      }
+      \list{publisher}{1}{%
+        {arXiv}%
+      }
+      \strng{namehash}{b9fc0ae0e8c3cebec25b843b697dfce4}
+      \strng{fullhash}{46a1e7c5b605c728b8f8bcff6134e8cb}
+      \strng{fullhashraw}{46a1e7c5b605c728b8f8bcff6134e8cb}
+      \strng{bibnamehash}{b9fc0ae0e8c3cebec25b843b697dfce4}
+      \strng{authorbibnamehash}{b9fc0ae0e8c3cebec25b843b697dfce4}
+      \strng{authornamehash}{b9fc0ae0e8c3cebec25b843b697dfce4}
+      \strng{authorfullhash}{46a1e7c5b605c728b8f8bcff6134e8cb}
+      \strng{authorfullhashraw}{46a1e7c5b605c728b8f8bcff6134e8cb}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{We analyse growth vulnerabilities in the US using quantile partial correlation regression, a selection-based machine-learning method that achieves model selection consistency under time series. We find that downside risk is primarily driven by financial, labour-market, and housing variables, with their importance changing over time. Decomposing downside risk into its individual components, we construct sector-specific indices that predict it, while controlling for information from other sectors, thereby isolating the downside risks emanating from each sector.}
+      \field{month}{5}
+      \field{note}{arXiv:2506.00572 [econ]}
+      \field{title}{Machine-learning {Growth} at {Risk}}
+      \field{urlday}{24}
+      \field{urlmonth}{2}
+      \field{urlyear}{2026}
+      \field{year}{2025}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.48550/arXiv.2506.00572
+      \endverb
+      \verb{file}
+      \verb PDF:/home/rproner/Zotero/storage/R3JMR6ZQ/Adrian et al. - 2025 - Machine-learning Growth at Risk.pdf:application/pdf
+      \endverb
+      \verb{urlraw}
+      \verb http://arxiv.org/abs/2506.00572
+      \endverb
+      \verb{url}
+      \verb http://arxiv.org/abs/2506.00572
+      \endverb
+      \keyw{Economics - General Economics,read}
+    \endentry
+    \entry{caruanaMultitaskLearning1997}{article}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=599c5251d489b92dc7856277d56cb1a9}{%
+           family={Caruana},
+           familyi={C\bibinitperiod},
+           given={Rich},
+           giveni={R\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{language}{1}{%
+        {en}%
+      }
+      \strng{namehash}{599c5251d489b92dc7856277d56cb1a9}
+      \strng{fullhash}{599c5251d489b92dc7856277d56cb1a9}
+      \strng{fullhashraw}{599c5251d489b92dc7856277d56cb1a9}
+      \strng{bibnamehash}{599c5251d489b92dc7856277d56cb1a9}
+      \strng{authorbibnamehash}{599c5251d489b92dc7856277d56cb1a9}
+      \strng{authornamehash}{599c5251d489b92dc7856277d56cb1a9}
+      \strng{authorfullhash}{599c5251d489b92dc7856277d56cb1a9}
+      \strng{authorfullhashraw}{599c5251d489b92dc7856277d56cb1a9}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Multitask Learning is an approach to inductive transfer that improves generalization by using the domain information contained in the training signals of related tasks as an inductive bias. It does this by learning tasks in parallel while using a shared representation; what is learned for each task can help other tasks be learned better. This paper reviews prior work on MTL, presents new evidence that MTL in backprop nets discovers task relatedness without the need of supervisory signals, and presents new results for MTL with k-nearest neighbor and kernel regression. In this paper we demonstrate multitask learning in three domains. We explain how multitask learning works, and show that there are many opportunities for multitask learning in real domains. We present an algorithm and results for multitask learning with case-based methods like k-nearest neighbor and kernel regression, and sketch an algorithm for multitask learning in decision trees. Because multitask learning works, can be applied to many different kinds of domains, and can be used with different learning algorithms, we conjecture there will be many opportunities for its use on real-world problems.}
+      \field{issn}{1573-0565}
+      \field{journaltitle}{Machine Learning}
+      \field{month}{7}
+      \field{number}{1}
+      \field{title}{Multitask {Learning}}
+      \field{urlday}{10}
+      \field{urlmonth}{3}
+      \field{urlyear}{2026}
+      \field{volume}{28}
+      \field{year}{1997}
+      \field{urldateera}{ce}
+      \field{pages}{41\bibrangedash 75}
+      \range{pages}{35}
+      \verb{doi}
+      \verb 10.1023/A:1007379606734
+      \endverb
+      \verb{file}
+      \verb Full Text PDF:/home/rproner/Zotero/storage/3UGPAKNI/Caruana - 1997 - Multitask Learning.pdf:application/pdf
+      \endverb
+      \verb{urlraw}
+      \verb https://doi.org/10.1023/A:1007379606734
+      \endverb
+      \verb{url}
+      \verb https://doi.org/10.1023/A:1007379606734
+      \endverb
+      \keyw{backpropagation,generalization,inductive transfer,k-nearest neighbor,kernel regression,multitask learning,parallel transfer,supervised learning}
+    \endentry
+    \entry{chavleishviliForecastingStressTesting2024}{article}{}{}
+      \name{author}{2}{}{%
+        {{un=0,uniquepart=base,hash=a55bc03f38c16ab959b11e7567a544b2}{%
+           family={Chavleishvili},
+           familyi={C\bibinitperiod},
+           given={Sulkhan},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=bc717fc042b6e7ba3738dd13fbb4317d}{%
+           family={Manganelli},
+           familyi={M\bibinitperiod},
+           given={Simone},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{language}{1}{%
+        {en}%
+      }
+      \strng{namehash}{480a757af37938a7f0d0a6544f499924}
+      \strng{fullhash}{480a757af37938a7f0d0a6544f499924}
+      \strng{fullhashraw}{480a757af37938a7f0d0a6544f499924}
+      \strng{bibnamehash}{480a757af37938a7f0d0a6544f499924}
+      \strng{authorbibnamehash}{480a757af37938a7f0d0a6544f499924}
+      \strng{authornamehash}{480a757af37938a7f0d0a6544f499924}
+      \strng{authorfullhash}{480a757af37938a7f0d0a6544f499924}
+      \strng{authorfullhashraw}{480a757af37938a7f0d0a6544f499924}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{A quantile vector autoregressive (VAR) model, unlike standard VAR, traces the interaction among the endogenous random variables at any quantile. Quantile forecasts are obtained by factorizing the joint distribution in a recursive structure but cannot be obtained from reduced form estimation. Identification strategies and structural quantile impulse response functions are derived as generalization of the VAR model. The model is estimated using real and financial variables for the euro area. The dynamic properties of the system change across quantiles. This is relevant for stress testing exercises, whose goal is to forecast the tail behavior of the economy when hit by large financial and real shocks.}
+      \field{issn}{1099-1255}
+      \field{journaltitle}{Journal of Applied Econometrics}
+      \field{note}{\_eprint: https://onlinelibrary.wiley.com/doi/pdf/10.1002/jae.3009}
+      \field{number}{1}
+      \field{title}{Forecasting and stress testing with quantile vector autoregression}
+      \field{urlday}{10}
+      \field{urlmonth}{3}
+      \field{urlyear}{2026}
+      \field{volume}{39}
+      \field{year}{2024}
+      \field{urldateera}{ce}
+      \field{pages}{66\bibrangedash 85}
+      \range{pages}{20}
+      \verb{doi}
+      \verb 10.1002/jae.3009
+      \endverb
+      \verb{file}
+      \verb Full Text PDF:/home/rproner/Zotero/storage/CFRKP4KH/Chavleishvili and Manganelli - 2024 - Forecasting and stress testing with quantile vector autoregression.pdf:application/pdf;Snapshot:/home/rproner/Zotero/storage/WG797B5X/jae.html:text/html
+      \endverb
+      \verb{urlraw}
+      \verb https://onlinelibrary.wiley.com/doi/abs/10.1002/jae.3009
+      \endverb
+      \verb{url}
+      \verb https://onlinelibrary.wiley.com/doi/abs/10.1002/jae.3009
+      \endverb
+      \keyw{growth at risk,multivariate quantiles,regression quantiles,structural VAR}
+    \endentry
+    \entry{chiMacroeconomicForecastingMachine2025}{misc}{}{}
+      \name{author}{6}{}{%
+        {{un=0,uniquepart=base,hash=ee3eb4bacc0398606ba2437c5eed936a}{%
+           family={Chi},
+           familyi={C\bibinitperiod},
+           given={Ta-Chung},
+           giveni={T\bibinithyphendelim C\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=c054e65441c8637535e26f2cb787747b}{%
+           family={Fan},
+           familyi={F\bibinitperiod},
+           given={Ting-Han},
+           giveni={T\bibinithyphendelim H\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=1bd60e7f54386456fb8550d0570123ef}{%
+           family={Ghigliazza},
+           familyi={G\bibinitperiod},
+           given={Raffaele\bibnamedelima M.},
+           giveni={R\bibinitperiod\bibinitdelim M\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=5bd75a97c4a951e753c86c8edbc8a560}{%
+           family={Giannone},
+           familyi={G\bibinitperiod},
+           given={Domenico},
+           giveni={D\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=047c368269716031cceefa5c58594161}{%
+           family={Zixuan},
+           familyi={Z\bibinitperiod}}}%
+        {{un=0,uniquepart=base,hash=957b05eb2d9bfaf59947e44a46c3c7b3}{%
+           family={Wang},
+           familyi={W\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {arXiv}%
+      }
+      \strng{namehash}{319e39b543d902ac7258999b9fc74f6a}
+      \strng{fullhash}{a4d07128be1a0752620daf370191667e}
+      \strng{fullhashraw}{a4d07128be1a0752620daf370191667e}
+      \strng{bibnamehash}{319e39b543d902ac7258999b9fc74f6a}
+      \strng{authorbibnamehash}{319e39b543d902ac7258999b9fc74f6a}
+      \strng{authornamehash}{319e39b543d902ac7258999b9fc74f6a}
+      \strng{authorfullhash}{a4d07128be1a0752620daf370191667e}
+      \strng{authorfullhashraw}{a4d07128be1a0752620daf370191667e}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{We forecast the full conditional distribution of macroeconomic outcomes by systematically integrating three key principles: using high-dimensional data with appropriate regularization, adopting rigorous out-of-sample validation procedures, and incorporating nonlinearities. By exploiting the rich information embedded in a large set of macroeconomic and financial predictors, we produce accurate predictions of the entire profile of macroeconomic risk in real time. Our findings show that regularization via shrinkage is essential to control model complexity, while introducing nonlinearities yields limited improvements in predictive accuracy. Out-of-sample validation plays a critical role in selecting model architecture and preventing overfitting.}
+      \field{month}{10}
+      \field{note}{arXiv:2510.11008 [econ]}
+      \field{title}{Macroeconomic {Forecasting} and {Machine} {Learning}}
+      \field{urlday}{10}
+      \field{urlmonth}{3}
+      \field{urlyear}{2026}
+      \field{year}{2025}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.48550/arXiv.2510.11008
+      \endverb
+      \verb{file}
+      \verb Full Text PDF:/home/rproner/Zotero/storage/MUJKB6M2/Chi et al. - 2025 - Macroeconomic Forecasting and Machine Learning.pdf:application/pdf;Snapshot:/home/rproner/Zotero/storage/KL57AYG8/2510.html:text/html
+      \endverb
+      \verb{urlraw}
+      \verb http://arxiv.org/abs/2510.11008
+      \endverb
+      \verb{url}
+      \verb http://arxiv.org/abs/2510.11008
+      \endverb
+      \keyw{Economics - Econometrics,Statistics - Machine Learning}
+    \endentry
+    \entry{kileyUnemploymentRisk2022}{article}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=945fe3870bebb78a56b0e0f0ea185cec}{%
+           family={Kiley},
+           familyi={K\bibinitperiod},
+           given={Michael\bibnamedelima T.},
+           giveni={M\bibinitperiod\bibinitdelim T\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{language}{1}{%
+        {en}%
+      }
+      \strng{namehash}{945fe3870bebb78a56b0e0f0ea185cec}
+      \strng{fullhash}{945fe3870bebb78a56b0e0f0ea185cec}
+      \strng{fullhashraw}{945fe3870bebb78a56b0e0f0ea185cec}
+      \strng{bibnamehash}{945fe3870bebb78a56b0e0f0ea185cec}
+      \strng{authorbibnamehash}{945fe3870bebb78a56b0e0f0ea185cec}
+      \strng{authornamehash}{945fe3870bebb78a56b0e0f0ea185cec}
+      \strng{authorfullhash}{945fe3870bebb78a56b0e0f0ea185cec}
+      \strng{authorfullhashraw}{945fe3870bebb78a56b0e0f0ea185cec}
+      \field{sortinit}{K}
+      \field{sortinithash}{c02bf6bff1c488450c352b40f5d853ab}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Fluctuations in the risk of a large increase in unemployment are examined. The analysis compares medium-term risks—that is, risks at a 3-year horizon—to those over a 1-year horizon. The primary approach involves quantile regressions. Robustness exercises examine risks using a logistic regression to model the probability of a large increase in the unemployment rate. U.S. experience reveals an elevated risk of large increases in unemployment over the medium term when credit growth is high and when the unemployment rate is low. Near-term risks to unemployment are closely tied to changes in corporate bond spreads or the slope of the yield curve, consistent with research on recession prediction, but these factors do not play a sizable role in medium-term risks. These results highlight the value of considering different near- and medium-term risk factors.}
+      \field{issn}{1538-4616}
+      \field{journaltitle}{Journal of Money, Credit and Banking}
+      \field{note}{\_eprint: https://onlinelibrary.wiley.com/doi/pdf/10.1111/jmcb.12888}
+      \field{number}{5}
+      \field{title}{Unemployment {Risk}}
+      \field{urlday}{4}
+      \field{urlmonth}{3}
+      \field{urlyear}{2026}
+      \field{volume}{54}
+      \field{year}{2022}
+      \field{urldateera}{ce}
+      \field{pages}{1407\bibrangedash 1424}
+      \range{pages}{18}
+      \verb{doi}
+      \verb 10.1111/jmcb.12888
+      \endverb
+      \verb{file}
+      \verb Full Text PDF:/home/rproner/Zotero/storage/5FST37HR/Kiley - 2022 - Unemployment Risk.pdf:application/pdf;Snapshot:/home/rproner/Zotero/storage/69QTQ4BW/jmcb.html:text/html
+      \endverb
+      \verb{urlraw}
+      \verb https://onlinelibrary.wiley.com/doi/abs/10.1111/jmcb.12888
+      \endverb
+      \verb{url}
+      \verb https://onlinelibrary.wiley.com/doi/abs/10.1111/jmcb.12888
+      \endverb
+      \keyw{read,credit,GDP at Risk,risk management}
+    \endentry
+    \entry{liuStockDistributionRisk2023}{misc}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=f973610d59252075921cae16abfcc02e}{%
+           family={Liu},
+           familyi={L\bibinitperiod},
+           given={Fred},
+           giveni={F\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{language}{1}{%
+        {en}%
+      }
+      \list{location}{1}{%
+        {Rochester, NY}%
+      }
+      \list{publisher}{1}{%
+        {Social Science Research Network}%
+      }
+      \strng{namehash}{f973610d59252075921cae16abfcc02e}
+      \strng{fullhash}{f973610d59252075921cae16abfcc02e}
+      \strng{fullhashraw}{f973610d59252075921cae16abfcc02e}
+      \strng{bibnamehash}{f973610d59252075921cae16abfcc02e}
+      \strng{authorbibnamehash}{f973610d59252075921cae16abfcc02e}
+      \strng{authornamehash}{f973610d59252075921cae16abfcc02e}
+      \strng{authorfullhash}{f973610d59252075921cae16abfcc02e}
+      \strng{authorfullhashraw}{f973610d59252075921cae16abfcc02e}
+      \field{sortinit}{L}
+      \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{We study the predictability of future stock return distributions and risk premia using quantile machine learning models trained on firm characteristics and macroeconomic variables. We introduce a neural network architecture that jointly estimates multiple conditional quantiles while ensuring non-crossing by construction, along with a quantile-based risk premium measure that is robust to outliers and heteroskedasticity. Multi-quantile neural networks outperform linear, tree-based, and feed-forward neural network models, and the robust risk premium forecasts significantly outperform those from conventional machine learning approaches. Finally, we show that return distribution predictability is driven by investor inattention, information frictions, and underreaction to information shocks.}
+      \field{month}{6}
+      \field{title}{Stock {Distribution} and {Risk} {Premia} {Predictability} with {Quantile} {Machine} {Learning}}
+      \field{type}{{SSRN} {Scholarly} {Paper}}
+      \field{urlday}{26}
+      \field{urlmonth}{2}
+      \field{urlyear}{2026}
+      \field{year}{2023}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.2139/ssrn.4491887
+      \endverb
+      \verb{file}
+      \verb Full Text PDF:/home/rproner/Zotero/storage/2XTRT6EP/Liu - 2023 - Stock Distribution and Risk Premia Predictability with Quantile Machine Learning.pdf:application/pdf
+      \endverb
+      \verb{urlraw}
+      \verb https://papers.ssrn.com/abstract=4491887
+      \endverb
+      \verb{url}
+      \verb https://papers.ssrn.com/abstract=4491887
+      \endverb
+      \keyw{Machine Learning,Multi-quantile Neural Networks,Quantile Regression,Quantile Spacings,Robust Risk Premium,unread}
+    \endentry
+    \entry{lopez-salidoInflationRisk2024}{article}{}{}
+      \name{author}{2}{}{%
+        {{un=0,uniquepart=base,hash=4fe8a85e2b77cc83979af36d6b13456c}{%
+           family={López-Salido},
+           familyi={L\bibinithyphendelim S\bibinitperiod},
+           given={David},
+           giveni={D\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=f48b255e995273080a578f764c1c8944}{%
+           family={Loria},
+           familyi={L\bibinitperiod},
+           given={Francesca},
+           giveni={F\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{language}{1}{%
+        {en}%
+      }
+      \strng{namehash}{fdd199672a178b1df3ad4f7c5da8de39}
+      \strng{fullhash}{fdd199672a178b1df3ad4f7c5da8de39}
+      \strng{fullhashraw}{fdd199672a178b1df3ad4f7c5da8de39}
+      \strng{bibnamehash}{fdd199672a178b1df3ad4f7c5da8de39}
+      \strng{authorbibnamehash}{fdd199672a178b1df3ad4f7c5da8de39}
+      \strng{authornamehash}{fdd199672a178b1df3ad4f7c5da8de39}
+      \strng{authorfullhash}{fdd199672a178b1df3ad4f7c5da8de39}
+      \strng{authorfullhashraw}{fdd199672a178b1df3ad4f7c5da8de39}
+      \field{sortinit}{L}
+      \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Inflation at risk (IaR) refers to the tails of the distribution of inflation over a forecast horizon. We study IaR using quantile regressions in a panel of OECD countries for a sample that includes the Global Financial Crisis and the rise in inflation during the Covid-19 pandemic. First, we find that even though recently the conditional mean of inflation has been low and stable, there was ample variability in the tails. Second, financial conditions have a nonlinear effect on the predictive inflation distribution. Third, the role of economic drivers of IaR has changed over time. Our approach to measure tails complements others using financial market quotes and survey data.}
+      \field{issn}{03043932}
+      \field{journaltitle}{Journal of Monetary Economics}
+      \field{month}{7}
+      \field{title}{Inflation at risk}
+      \field{urlday}{24}
+      \field{urlmonth}{2}
+      \field{urlyear}{2026}
+      \field{volume}{145}
+      \field{year}{2024}
+      \field{urldateera}{ce}
+      \field{pages}{103570}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.1016/j.jmoneco.2024.103570
+      \endverb
+      \verb{file}
+      \verb PDF:/home/rproner/Zotero/storage/M7B4CSHC/López-Salido and Loria - 2024 - Inflation at risk.pdf:application/pdf
+      \endverb
+      \verb{urlraw}
+      \verb https://linkinghub.elsevier.com/retrieve/pii/S0304393224000230
+      \endverb
+      \verb{url}
+      \verb https://linkinghub.elsevier.com/retrieve/pii/S0304393224000230
+      \endverb
+      \keyw{read}
+    \endentry
+    \entry{schmidtQuantileSpacingsSimple2016}{article}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=f38678ace83f817d2c756a872ef0e825}{%
+           family={Schmidt},
+           familyi={S\bibinitperiod},
+           given={Lawrence\bibnamedelimb D\bibnamedelima W},
+           giveni={L\bibinitperiod\bibinitdelim D\bibinitperiod\bibinitdelim W\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{language}{1}{%
+        {en}%
+      }
+      \strng{namehash}{f38678ace83f817d2c756a872ef0e825}
+      \strng{fullhash}{f38678ace83f817d2c756a872ef0e825}
+      \strng{fullhashraw}{f38678ace83f817d2c756a872ef0e825}
+      \strng{bibnamehash}{f38678ace83f817d2c756a872ef0e825}
+      \strng{authorbibnamehash}{f38678ace83f817d2c756a872ef0e825}
+      \strng{authornamehash}{f38678ace83f817d2c756a872ef0e825}
+      \strng{authorfullhash}{f38678ace83f817d2c756a872ef0e825}
+      \strng{authorfullhashraw}{f38678ace83f817d2c756a872ef0e825}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{We propose a simple but ﬂexible parametric method for estimating multiple conditional quantiles. By construction, the estimated quantiles will satisfy the monotonicity requirement which must hold for any distribution, so, in contrast to many benchmark methods, they are not susceptible to the well-known quantile crossing problem. Rather than directly modeling the level of each individual quantile, we begin with a single quantile (usually the median), and then add or subtract sums of nonnegative functions (quantile spacings) to obtain the other quantiles. Our approach is thus a natural extension of the locationscale paradigm that also permits higher order moments (e.g., skewness and kurtosis) to vary. We propose two estimation methods and characterize the limiting behavior of each, establishing consistency, asymptotic normality, and the validity of bootstrap inference. The latter method, under an additional “linear index" assumption, respects monotonicity but preserves the computational tractability of standard linear quantile regression. We propose a simple interpolation method which generates a mapping from a ﬁnite number of quantiles to a probability density function. Simulation exercises demonstrate that the estimators perform well in ﬁnite samples. Finally, three applications demonstrate the utility of the method in time-series (forecasting), cross-sectional, and panel settings.}
+      \field{title}{Quantile {Spacings}: {A} {Simple} {Method} for the {Joint} {Estimation} of {Multiple} {Quantiles} {Without} {Crossing}}
+      \field{year}{2016}
+      \verb{file}
+      \verb PDF:/home/rproner/Zotero/storage/LETSFLQE/Schmidt - 2016 - Quantile Spacings A Simple Method for the Joint Estimation of Multiple Quantiles Without Crossing.pdf:application/pdf
+      \endverb
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

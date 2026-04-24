@@ -1,0 +1,52 @@
+This is BibTeX, Version 0.99e
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: paper.aux
+Reallocating 'name_of_file' (item size: 1) to 5 items.
+The style file: ecta.bst
+Reallocating 'name_of_file' (item size: 1) to 15 items.
+Database file #1: references.bib
+Warning--empty year in blanchardNBERWORKINGPAPER; set to ????
+Warning--empty journal in blanchardNBERWORKINGPAPER
+Warning--empty journal in schmidtQuantileSpacingsSimple2016
+You've used 19 entries,
+            2849 wiz_defined-function locations,
+            736 strings with 8622 characters,
+and the built_in function-call counts, 11005 in all, are:
+= -- 933
+> -- 470
+< -- 24
++ -- 150
+- -- 129
+* -- 961
+:= -- 1722
+add.period$ -- 38
+call.type$ -- 19
+change.case$ -- 119
+chr.to.int$ -- 19
+cite$ -- 22
+duplicate$ -- 788
+empty$ -- 794
+format.name$ -- 217
+if$ -- 2153
+int.to.chr$ -- 1
+int.to.str$ -- 1
+missing$ -- 142
+newline$ -- 62
+num.names$ -- 95
+pop$ -- 273
+preamble$ -- 1
+purify$ -- 119
+quote$ -- 0
+skip$ -- 284
+stack$ -- 0
+substring$ -- 554
+swap$ -- 381
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 228
+warning$ -- 3
+while$ -- 82
+width$ -- 0
+write$ -- 221
+(There were 3 warnings)

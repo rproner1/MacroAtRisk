@@ -1,0 +1,106 @@
+\begin{thebibliography}{19}
+\newcommand{\enquote}[1]{``#1''}
+\expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
+
+\bibitem[\protect\citeauthoryear{Adrian, Boyarchenko, and Giannone}{Adrian
+  et~al.}{2019}]{adrianVulnerableGrowth2019}
+\textsc{Adrian, T., N.~Boyarchenko, and D.~Giannone} (2019):
+  \enquote{Vulnerable {{Growth}},} \emph{American Economic Review}, 109,
+  1263--1289.
+
+\bibitem[\protect\citeauthoryear{Adrian, Chen, Dov{\`i}, and Lee}{Adrian
+  et~al.}{2025}]{adrianMachinelearningGrowthRisk2025}
+\textsc{Adrian, T., H.~Chen, M.-S. Dov{\`i}, and J.~H. Lee} (2025):
+  \enquote{Machine-Learning {{Growth}} at {{Risk}},} .
+
+\bibitem[\protect\citeauthoryear{Andrade, Ghysels, and Idier}{Andrade
+  et~al.}{2012}]{andradeTAILSINFLATIONFORECASTS2012}
+\textsc{Andrade, P., E.~Ghysels, and J.~Idier} (2012): \enquote{{{TAILS OF
+  INFLATION FORECASTS AND TALES OF MONETARY POLICY}},} \emph{MONETARY POLICY}.
+
+\bibitem[\protect\citeauthoryear{Blanchard, Cerutti, and Summers}{Blanchard
+  et~al.}{????}]{blanchardNBERWORKINGPAPER}
+\textsc{Blanchard, O., E.~Cerutti, and L.~Summers} (????): \enquote{{{NBER
+  WORKING PAPER SERIES}},} .
+
+\bibitem[\protect\citeauthoryear{Carriero, Clark, and Marcellino}{Carriero
+  et~al.}{2025}]{carrieroSpecificationChoicesQuantile2025}
+\textsc{Carriero, A., T.~E. Clark, and M.~Marcellino} (2025):
+  \enquote{Specification {{Choices}} in {{Quantile Regression}} for {{Empirical
+  Macroeconomics}},} \emph{Journal of Applied Econometrics}, 40, 57--73.
+
+\bibitem[\protect\citeauthoryear{Caruana}{Caruana}{1997}]{caruanaMultitaskLearning1997}
+\textsc{Caruana, R.} (1997): \enquote{Multitask {{Learning}},} \emph{Machine
+  Learning}, 28, 41--75.
+
+\bibitem[\protect\citeauthoryear{Clark}{Clark}{2011}]{clarkRealTimeDensityForecasts2011}
+\textsc{Clark, T.~E.} (2011): \enquote{Real-{{Time Density Forecasts From
+  Bayesian Vector Autoregressions With Stochastic Volatility}},} \emph{Journal
+  of Business \& Economic Statistics}, 29, 327--341.
+
+\bibitem[\protect\citeauthoryear{Diebold and Mariano}{Diebold and
+  Mariano}{2002}]{dieboldComparingPredictiveAccuracy2002}
+\textsc{Diebold, F.~X. and R.~S. Mariano} (2002): \enquote{Comparing Predictive
+  Accuracy,} \emph{Journal of Business \& Economic Statistics}, 20, 134--144.
+
+\bibitem[\protect\citeauthoryear{Erion, Janizek, Sturmfels, Lundberg, and
+  Lee}{Erion et~al.}{2021}]{erionImprovingPerformanceDeep2021}
+\textsc{Erion, G., J.~D. Janizek, P.~Sturmfels, S.~M. Lundberg, and S.-I. Lee}
+  (2021): \enquote{Improving Performance of Deep Learning Models with Axiomatic
+  Attribution Priors and Expected Gradients,} \emph{Nature Machine
+  Intelligence}, 3, 620--631.
+
+\bibitem[\protect\citeauthoryear{Goulet~Coulombe, Leroux, Stevanovic, and
+  Surprenant}{Goulet~Coulombe
+  et~al.}{2022}]{gouletcoulombeHowMachineLearning2022}
+\textsc{Goulet~Coulombe, P., M.~Leroux, D.~Stevanovic, and S.~Surprenant}
+  (2022): \enquote{How Is Machine Learning Useful for Macroeconomic
+  Forecasting?} \emph{Journal of Applied Econometrics}, 37, 920--964.
+
+\bibitem[\protect\citeauthoryear{Kiley}{Kiley}{2022}]{kileyUnemploymentRisk2022}
+\textsc{Kiley, M.~T.} (2022): \enquote{Unemployment {{Risk}},} \emph{Journal of
+  Money, Credit and Banking}, 54, 1407--1424.
+
+\bibitem[\protect\citeauthoryear{Koenker and Machado}{Koenker and
+  Machado}{1999}]{koenkerGoodnessFitRelated1999}
+\textsc{Koenker, R. and J.~A.~F. Machado} (1999): \enquote{Goodness of Fit and
+  Related Inference Processes for Quantile Regression,} \emph{Journal of the
+  American Statistical Association}, 94, 1296--1310.
+
+\bibitem[\protect\citeauthoryear{Liu}{Liu}{2023}]{liuStockDistributionRisk2023}
+\textsc{Liu, F.} (2023): \enquote{Stock {{Distribution}} and {{Risk Premia
+  Predictability}} with {{Quantile Machine Learning}},} .
+
+\bibitem[\protect\citeauthoryear{{L{\'o}pez-Salido} and
+  Loria}{{L{\'o}pez-Salido} and Loria}{2024}]{lopez-salidoInflationRisk2024}
+\textsc{{L{\'o}pez-Salido}, D. and F.~Loria} (2024): \enquote{Inflation at
+  Risk,} \emph{Journal of Monetary Economics}, 145, 103570.
+
+\bibitem[\protect\citeauthoryear{McCracken and Ng}{McCracken and
+  Ng}{2016}]{mccrackenFREDMDMonthlyDatabase2016}
+\textsc{McCracken, M.~W. and S.~Ng} (2016): \enquote{{{FRED-MD}}: {{A Monthly
+  Database}} for {{Macroeconomic Research}},} \emph{Journal of Business \&
+  Economic Statistics}, 34, 574--589.
+
+\bibitem[\protect\citeauthoryear{Newey and West}{Newey and
+  West}{1994}]{neweyAutomaticLagSelection1994}
+\textsc{Newey, W.~K. and K.~D. West} (1994): \enquote{Automatic {{Lag
+  Selection}} in {{Covariance Matrix Estimation}},} \emph{The Review of
+  Economic Studies}, 61, 631--653.
+
+\bibitem[\protect\citeauthoryear{Pr{\"u}ser and Huber}{Pr{\"u}ser and
+  Huber}{2024}]{pruserNonlinearitiesMacroeconomicTail2024}
+\textsc{Pr{\"u}ser, J. and F.~Huber} (2024): \enquote{Nonlinearities in
+  Macroeconomic Tail Risk through the Lens of Big Data Quantile Regressions,}
+  \emph{Journal of Applied Econometrics}, 39, 269--291.
+
+\bibitem[\protect\citeauthoryear{Ruder}{Ruder}{2017}]{ruderOverviewMultiTaskLearning2017}
+\textsc{Ruder, S.} (2017): \enquote{An {{Overview}} of {{Multi-Task Learning}}
+  in {{Deep Neural Networks}},} .
+
+\bibitem[\protect\citeauthoryear{Schmidt}{Schmidt}{2016}]{schmidtQuantileSpacingsSimple2016}
+\textsc{Schmidt, L. D.~W.} (2016): \enquote{Quantile {{Spacings}}: {{A Simple
+  Method}} for the {{Joint Estimation}} of {{Multiple Quantiles Without
+  Crossing}},} .
+
+\end{thebibliography}

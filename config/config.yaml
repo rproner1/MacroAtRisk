@@ -1,0 +1,263 @@
+logging_level: 20
+matplotlib:
+  font:
+    family: serif
+    sans_serif:
+      - Helvetica
+    serif:
+      - "Computer Modern Roman"
+
+
+# ========== Data Processing ==========
+oap_release: 202510
+construct_oap_signals: false
+skip_processed_data: false
+desired_start_date_of_samples: "1961-01-01"
+desired_end_date_of_samples: "2024-12-01"
+initial_training_last_date: "1997-12-01"
+last_date_of_sample: "2024-12-01"
+remove_cols_threshold: 0.3
+
+# OAP signal construction configurations
+oap_signals:
+  - signal: "avg"
+    output_name: "oap_avg"
+  - signal: "vw_avg"
+    output_name: "oap_vw"
+  - signal: "spread"
+    quantiles: 10
+    output_name: "oap_spread"
+
+# OAP data configurations
+oap_datasets:
+  - name: "oap_avg"
+    file: "oap_avg.csv"
+    first_difference: false
+    output_name: "oap_avg_x"
+  - name: "oap_avg_fd"
+    file: "oap_avg.csv"
+    first_difference: true
+    output_name: "oap_avg_fd_x"
+  # Add more OAP variants here as needed
+  - name: "oap_vw"
+    file: "oap_vw.csv"
+    first_difference: false
+    output_name: "oap_vw_x"
+  - name: "oap_vw_fd"
+    file: "oap_vw.csv"
+    first_difference: true
+    output_name: "oap_vw_fd_x"
+  - name: "oap_spread"
+    file: "oap_spread.csv"
+    first_difference: false
+    output_name: "oap_spread_x"
+  - name: "oap_spread_fd"
+    file: "oap_spread.csv"
+    first_difference: true
+    output_name: "oap_spread_fd_x"
+
+
+# ========== Model Training ==========
+fit_models: true
+input_files: [
+  "us_4q_fred_x.parquet"
+  # "us_4q_oap_vw_x.parquet"
+]
+target_file: 'us_4q_fred_y.parquet'
+
+trials: 100
+time_steps: 12
+quantiles: [0.05, 0.25, 0.50, 0.75, 0.95]
+n_estimators: 1
+k_folds: 10 # Number of folds for cross-validation
+val_size: 0.1 # Proportion of training data to use for validation in cross-validation
+val_years: 5  # Number of years for early stopping 
+loss_weights: [0.28, 0.17, 0.11, 0.17, 0.28]
+epochs: 500
+batch_size: 4
+
+tuning:
+  linear_grids:
+    QR:
+      lr:
+        type: 'float'
+        values: [0.0005, 0.002]
+        log_scale: true
+    # RID:
+    #   l2:
+    #     type: 'float'
+    #     values: [0.00001, 1.0]
+    #     log_scale: true
+    #   lr:
+    #     type: 'float'
+    #     values: [0.0005, 0.002]
+    #     log_scale: true
+    # LAS:
+    #   l1:
+    #     type: 'float'
+    #     values: [0.00001, 1.0]
+    #     log_scale: true
+    #   lr:
+    #     type: 'float'
+    #     values: [0.0005, 0.002]
+    #     log_scale: true
+    EN:
+      l1:
+        type: 'float'
+        values: [0.00001, 1.0]
+        log_scale: true
+      l2:
+        type: 'float'
+        values: [0.00001, 1.0]
+        log_scale: true
+      lr:
+        type: 'float'
+        values: [0.0005, 0.002]
+        log_scale: true
+
+  dmq_grid:
+    l2:
+      type: 'float'
+      values: [0.00001, 0.0001]
+      log_scale: true
+    lr:
+      type: 'float'
+      values: [0.0005, 0.002]
+      log_scale: true
+    n_recurrent_layers:
+      type: 'categorical'
+      values: [1, 2, 3]
+      log_scale: False
+    n_shared_layers:
+      type: 'categorical'
+      values: [1, 2, 3]
+      log_scale: False
+    n_qtask_layers:
+      type: 'categorical'
+      values: [1, 2, 3]
+      log_scale: False
+    n_recurrent_nodes:
+      type: 'categorical'
+      values: [16, 32, 64, 128]
+      log_scale: False
+    n_shared_nodes:
+      type: 'categorical'
+      values: [16, 32, 64, 128]
+      log_scale: False
+    n_task_nodes:
+      type: 'categorical'
+      values: [16, 32, 64, 128]
+      log_scale: False
+    
+
+  qrf_grid:
+    n_estimators: [100, 500, 1000]
+    max_depth: [1,2,3,4,5,6,7,8,9,10,11,12]
+
+  qgb_grid:
+    learning_rate: [0.1, 0.01, 0.001]
+    n_estimators: [50, 100, 200]
+    subsample: [0.25, 0.5, 1.0]
+    max_depth: [1,2,3,4,5,6]
+
+builder_params:
+  deep_models:
+    DMQv0:
+      n_recurrent_layers: 3
+      n_shared_layers: 2
+      n_qtask_layers: 2
+      n_recurrent_nodes: 64
+      n_shared_nodes: 32
+      n_task_nodes: 16
+      recurrent_layer_type: 'lstm'
+      norm_fn: 'layer'
+      recurrent_norm: true
+      shared_norm: true
+      task_norm: false
+    DMQv1:
+      n_recurrent_layers: 3
+      n_shared_layers: 2
+      n_qtask_layers: 2
+      n_recurrent_nodes: 64
+      n_shared_nodes: 32
+      n_task_nodes: 16
+      recurrent_layer_type: 'lstm'
+      norm_fn: 'layer'
+      recurrent_norm: true
+      shared_norm: true
+      task_norm: false
+
+    # DMQv0c:
+    #   n_recurrent_layers: 3
+    #   n_shared_layers: 2
+    #   n_qtask_layers: 2
+    #   n_recurrent_nodes: 32
+    #   n_shared_nodes: 32
+    #   n_task_nodes: 32
+    #   recurrent_layer_type: 'lstm'
+    #   norm_fn: 'layer'
+    # DMQv1:
+    #   n_recurrent_layers: 3
+    #   n_shared_layers: 2
+    #   n_qtask_layers: 2
+    #   n_recurrent_nodes: 64
+    #   n_shared_nodes: 32
+    #   n_task_nodes: 16
+    #   recurrent_layer_type: 'lstm'
+    #   norm_fn: 'layer'
+    # DMQv1c:
+    #   n_recurrent_layers: 3
+    #   n_shared_layers: 2
+    #   n_qtask_layers: 2
+    #   n_recurrent_nodes: 32
+    #   n_shared_nodes: 32
+    #   n_task_nodes: 32
+    #   recurrent_layer_type: 'lstm'
+    #   norm_fn: 'layer'
+    # DMQv2:
+    #   n_recurrent_layers: 3
+    #   n_shared_layers: 2
+    #   n_qtask_layers: 2
+    #   n_recurrent_nodes: 64
+    #   n_shared_nodes: 32
+    #   n_task_nodes: 16
+    #   recurrent_layer_type: 'lstm'
+    #   norm_fn: 'layer'
+    # DMQv2c:
+    #   n_recurrent_layers: 3
+    #   n_shared_layers: 2
+    #   n_qtask_layers: 2
+    #   n_recurrent_nodes: 32
+    #   n_shared_nodes: 32
+    #   n_task_nodes: 32
+    #   recurrent_layer_type: 'lstm'
+    #   norm_fn: 'layer'
+
+# ========== Shared Settings ==========
+year: 1997
+country: "us"
+horizon_in_quarters: 4
+
+
+# ========== Evaluation ==========
+make_results: true
+make_r1_tables: true
+base_models_subset: [
+  'LR',
+  'LAS',
+  'QRF',
+  'QGB',
+  'DMQv0c',
+  'DMQv1c',
+  'DMQv2c'
+]
+test_start: "1998-01-01"
+test_end: "2024-12-01"
+start_year: 1997
+end_year: 2023
+concatenate_predictions: true
+
+
+
+
+
