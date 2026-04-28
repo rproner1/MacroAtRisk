@@ -16,13 +16,11 @@ from tensorflow.keras.models import load_model
 
 from src.figures.feat_imp_plots import (
     make_event_force_plot,
-    make_feat_force_time_plot,
-    make_feat_force_time_smooth_plot,
-    make_feat_time_value_conditioned_plot,
     make_feat_x_time_importance_plot,
     make_overall_importance_plot_agg_time_lags,
-    make_top_feature_time_heatmap_agg_lags,
+    make_feature_x_attribution_by_regime_plot,
     make_top_feature_contrib_timeseries_plot,
+    make_pair_value_vs_attribution_cubic_spline_3d_plot,
 )
 from src.preprocessing.prepare_quantile_data import prepare_quantile_data
 from src.train.losses import make_tilted_loss, make_total_tilted_loss
@@ -57,6 +55,7 @@ parser.add_argument("--baseline-end-date", type=str, default='1997-12-01', help=
 parser.add_argument("--nsamples-shap", type=int, default=1000, help="Number of samples to use for SHAP value estimation (default 1000)")
 parser.add_argument("--start-year", type=int, default=None, help="First prediction year (default from config)")
 parser.add_argument("--end-year", type=int, default=None, help="Last prediction year (default from config)")
+parser.add_argument("--create-full-test-set", action="store_true", help="Force rebuild and save the full test set cache")
 parser.add_argument("--compute-shap", action="store_true", help="Compute and save yearly SHAP values")
 parser.add_argument("--feat-imp", action="store_true", help="Generate SHAP feature-importance plots")
 parser.add_argument("--concat-shap", action="store_true", help="Concatenate yearly SHAP arrays before plotting")
@@ -66,7 +65,15 @@ parser.add_argument("--event-name", type=str, default="Great Financial Crisis", 
 parser.add_argument('--smooth-window', type=int, default=12, help='Rolling window for SHAP contribution timeseries plots')
 parser.add_argument('--feature-value-color', action=argparse.BooleanOptionalAction, default=True, help='Color SHAP timeseries points by standardized feature value')
 parser.add_argument('--top-k', type=int, default=5, help='Number of top features to include in SHAP contribution timeseries')
+parser.add_argument("--global-imp-func", type=str, default="mean", choices=["mean", "median"], help="Function to aggregate SHAP values for global importance ranking")
 parser.add_argument("--check-additivity", action="store_true", help="Whether to check SHAP additivity on a sample of predictions")
+parser.add_argument("--spline-3d-interactions", action="store_true", help="Generate requested 3D cubic-spline interaction plots")
+parser.add_argument("--spline-grid-size", type=int, default=45, help="Grid size for 3D spline surface evaluation")
+parser.add_argument("--spline-point-alpha", type=float, default=0.28, help="Point alpha for overlayed 3D scatter")
+parser.add_argument("--spline-smoothing", type=float, default=None, help="Optional smoothing parameter for cubic spline (default auto)")
+parser.add_argument("--spline-outdir-name", type=str, default="interaction_3d_spline_requested_quantiles", help="Subdirectory under results_figures/DATE for spline outputs")
+parser.add_argument("--spline-interactive-html", action="store_true", help="Also save interactive HTML versions of spline plots")
+parser.add_argument("--spline-html-plotlyjs", type=str, default="cdn", choices=["cdn", "directory", "inline"], help="How Plotly JS is embedded in HTML output")
 parser.add_argument("--run-locally", action="store_true", help="Whether to run locally")
 args = parser.parse_args()
 
@@ -96,6 +103,19 @@ EVENT_NAME = args.event_name
 SMOOTH_WINDOW = args.smooth_window
 FEATURE_VALUE_COLOR = args.feature_value_color
 TOP_K = args.top_k
+
+REQUESTED_SPLINE_INTERACTIONS = {
+    "Infl_yoy": [
+        (0.05, "Starts:  MW", "Baa-FF spread"),
+        (0.95, "Starts:  MW", "Baa-FF spread"),
+    ],
+    "IP_yoy": [
+        (0.05, "10 yr-FF spread", "VIX"),
+    ],
+    "Unrate_yoy": [
+        (0.95, "10 yr-FF spread", "VIX"),
+    ],
+}
 
 path_quantiles = [int(q*100) for q in QUANTILES]
 
@@ -152,6 +172,57 @@ def check_additivity(model, X_eval, X_baseline, shap_values, tol=1e-2):
             logging.warning(f"Additivity check failed for quantile {QUANTILES[q]}: max deviation {np.max(np.abs(deviation))}")
         else:
             logging.info(f"Additivity check passed for quantile {QUANTILES[q]}")
+
+
+def load_or_build_full_test_set(fred_to_group: dict, fred_to_gsi: dict):
+    cache_path = SHAP_DIR / "full_test_set_cache.npz"
+
+    if cache_path.exists() and not args.create_full_test_set:
+        cache = np.load(cache_path, allow_pickle=True)
+        X_test_rnn = cache["X_test_rnn"]
+        model_features = cache["model_features"].tolist()
+        event_index = pd.DatetimeIndex(pd.to_datetime(cache["event_dates"]))
+        logging.info(f"Loaded shared cached full test set from {cache_path}")
+        return X_test_rnn, model_features, event_index
+
+    target_path = DATA_DIR / TARGET_FILE
+    input_paths = [DATA_DIR / file for file in INPUT_FILES]
+
+    X_test_rnn_all = []
+    event_dates = []
+    model_features = None
+
+    for year in range(START_YEAR, END_YEAR + 1):
+        non_rnn_data_year, rnn_data_year, _ = prepare_quantile_data(
+            target=TARGETS[0],
+            time_steps=TIME_STEPS,
+            targets_path=target_path,
+            input_paths=input_paths,
+            start_date='1961-01-01',
+            train_cutoff_year=year,
+            n_quantiles=len(QUANTILES),
+            val_years=VAL_YEARS,
+        )
+
+        if model_features is None:
+            model_features_raw = non_rnn_data_year['X_test'].columns.tolist()
+            model_features = [f' {fred_to_group.get(f, "Unknown")} | {fred_to_gsi.get(f, f)}' for f in model_features_raw]
+
+        X_test_rnn_all.append(np.asarray(rnn_data_year['X_test_rnn']))
+        event_dates.extend(list(non_rnn_data_year['X_test'].index))
+
+    X_test_rnn = np.concatenate(X_test_rnn_all, axis=0)
+    event_index = pd.DatetimeIndex(event_dates)
+
+    np.savez_compressed(
+        cache_path,
+        X_test_rnn=X_test_rnn,
+        model_features=np.asarray(model_features, dtype=object),
+        event_dates=np.asarray(event_index, dtype='datetime64[ns]'),
+    )
+    logging.info(f"Saved shared full test set cache to {cache_path}")
+
+    return X_test_rnn, model_features, event_index
 
 
 def compute_shap_values():
@@ -217,7 +288,6 @@ def compute_shap_values():
                 np.save(SHAP_DIR / f"{MODEL_TO_EXPLAIN}_{target_name_dict[target_idx]}_{year}.npy", sv)
             
 
-
 def plot_shap_feature_importance(target_idx: int):
     target_name = target_name_dict[target_idx]
 
@@ -231,9 +301,6 @@ def plot_shap_feature_importance(target_idx: int):
         sv = np.load(
             SHAP_CONCAT_DIR / f"{MODEL_TO_EXPLAIN}_concatenated_shap_values_{COUNTRY}_{HORIZON_IN_QUARTERS}q_{target_name}.npy"
         )
-
-    target_path = DATA_DIR / TARGET_FILE
-    input_paths = [DATA_DIR / file for file in INPUT_FILES]
 
     appendix_path = BASE_DIR / 'data' / 'FRED-MD_updated_appendix.csv'
     appendix_df = pd.read_csv(appendix_path, encoding='latin-1')
@@ -251,30 +318,10 @@ def plot_shap_feature_importance(target_idx: int):
     fred_to_group = pd.Series(appendix_df['group'].values, index=appendix_df['fred']).to_dict()
     fred_to_gsi = pd.Series(appendix_df['gsi:description'].values, index=appendix_df['fred']).to_dict()
 
-    X_test_rnn_all = []
-    event_dates = []
-    model_features = None
-    for year in range(START_YEAR, END_YEAR + 1):
-        non_rnn_data_year, rnn_data_year, _ = prepare_quantile_data(
-            target=target_idx,
-            time_steps=TIME_STEPS,
-            targets_path=target_path,
-            input_paths=input_paths,
-            start_date='1961-01-01',
-            train_cutoff_year=year,
-            n_quantiles=len(QUANTILES),
-            val_years=VAL_YEARS,
-        )
-
-        if model_features is None:
-            model_features_raw = non_rnn_data_year['X_test'].columns.tolist()
-            model_features = [f' {fred_to_group.get(f, "Unknown")} | {fred_to_gsi.get(f, f)}' for f in model_features_raw]
-
-        X_test_rnn_all.append(np.asarray(rnn_data_year['X_test_rnn']))
-        event_dates.extend(list(non_rnn_data_year['X_test'].index))
-
-    X_test_rnn = np.concatenate(X_test_rnn_all, axis=0)
-    event_index = pd.DatetimeIndex(event_dates)
+    X_test_rnn, model_features, event_index = load_or_build_full_test_set(
+        fred_to_group=fred_to_group,
+        fred_to_gsi=fred_to_gsi,
+    )
 
     if sv.shape[:3] != X_test_rnn.shape:
         raise ValueError(f"Concatenated SHAP and feature tensors are misaligned: sv {sv.shape[:3]} vs X {X_test_rnn.shape}.")
@@ -285,61 +332,35 @@ def plot_shap_feature_importance(target_idx: int):
         q_idx = QUANTILES.index(q)
         sv_q = sv[..., q_idx]
 
+        make_overall_importance_plot_agg_time_lags(
+            sv_q=sv_q,
+            model_features=model_features,
+            q=q,
+            target_name=target_name,
+            model_to_explain=MODEL_TO_EXPLAIN,
+            fig_dir=FIGURES_DIR,
+            top_n=25,
+            global_imp_func=args.global_imp_func,
+        )
+
         make_feat_x_time_importance_plot(
             sv_q=sv_q,
             model_features=model_features,
             q=q,
             target_name=target_name,
             fig_dir=FIGURES_DIR,
+            global_imp_func=args.global_imp_func,
         )
-
-        # make_feat_force_time_plot(
-        #     sv_q=sv_q,
-        #     model_features=model_features,
-        #     q=q,
-        #     target_name=target_name,
-        #     fig_dir=FIGURES_DIR,
-        #     top_n=10,
-        # )
-
-        # make_feat_force_time_smooth_plot(
-        #     sv_q=sv_q,
-        #     model_features=model_features,
-        #     q=q,
-        #     target_name=target_name,
-        #     fig_dir=FIGURES_DIR,
-        #     top_n=10,
-        # )
-
-        # make_feat_time_value_conditioned_plot(
+        
+        # make_feature_x_attribution_by_regime_plot(
         #     sv_q=sv_q,
         #     x_q=X_test_rnn,
         #     model_features=model_features,
         #     q=q,
         #     target_name=target_name,
+        #     model_to_explain=MODEL_TO_EXPLAIN,
         #     fig_dir=FIGURES_DIR,
-        #     top_n=10,
         # )
-
-        # make_top_feature_time_heatmap_agg_lags(
-        #     sv_q=sv_q,
-        #     model_features=model_features,
-        #     q=q,
-        #     target_name=target_name,
-        #     fig_dir=FIGURES_DIR,
-        #     time_index=event_index,
-        #     top_n=10,
-        # )
-
-        make_overall_importance_plot_agg_time_lags(
-            sv_q=sv_q,
-            model_features=model_features,
-            q=q,
-            target_name=target_name,
-            fig_dir=FIGURES_DIR,
-            top_n=25,
-        )
-
         make_top_feature_contrib_timeseries_plot(
             sv_q=sv_q,
             x_q=X_test_rnn,
@@ -350,6 +371,7 @@ def plot_shap_feature_importance(target_idx: int):
             fig_dir=FIGURES_DIR,
             time_index=event_index,
             top_k=TOP_K,
+            global_imp_func=args.global_imp_func,
             smooth_window=SMOOTH_WINDOW,
             feature_value_color=FEATURE_VALUE_COLOR,
         )
@@ -368,6 +390,75 @@ def plot_shap_feature_importance(target_idx: int):
                 fig_dir=FIGURES_DIR,
                 top_n=10,
             )
+
+    if args.spline_3d_interactions:
+        target_interactions = REQUESTED_SPLINE_INTERACTIONS.get(target_name, [])
+        if target_interactions:
+            spline_fig_dir = FIGURES_DIR / args.spline_outdir_name
+            summary_rows = []
+            q_arr = np.asarray(QUANTILES, dtype=float)
+
+            for q_req, feature_x, feature_y in target_interactions:
+                q_matches = np.where(np.isclose(q_arr, float(q_req), rtol=0, atol=1e-10))[0]
+                if len(q_matches) == 0:
+                    logging.warning(
+                        "Requested spline quantile %.4f is not in QUANTILES=%s for target %s; skipping.",
+                        float(q_req),
+                        QUANTILES,
+                        target_name,
+                    )
+                    continue
+
+                q_idx = int(q_matches[0])
+                sv_q = sv[..., q_idx]
+
+                try:
+                    meta = make_pair_value_vs_attribution_cubic_spline_3d_plot(
+                        sv_q=sv_q,
+                        x_q=X_test_rnn,
+                        model_features=model_features,
+                        q=float(q_req),
+                        target_name=target_name,
+                        model_to_explain=MODEL_TO_EXPLAIN,
+                        fig_dir=spline_fig_dir,
+                        feature_x=feature_x,
+                        feature_y=feature_y,
+                        value_agg="last",
+                        contrib_agg="sum",
+                        spline_s=args.spline_smoothing,
+                        grid_size=args.spline_grid_size,
+                        point_alpha=args.spline_point_alpha,
+                        time_index=event_index,
+                        make_interactive_html=args.spline_interactive_html,
+                        html_include_plotlyjs=(True if args.spline_html_plotlyjs == "inline" else args.spline_html_plotlyjs),
+                        highlight_n=20,
+                        plot_scatter=True,
+                    )
+                    summary_rows.append({
+                        "target": target_name,
+                        "quantile": float(q_req),
+                        "feature_x": meta["feature_x"],
+                        "feature_y": meta["feature_y"],
+                        "n_points": meta["n_points"],
+                        "n_event_points": meta.get("n_event_points", np.nan),
+                        "plot_file": Path(meta["out_path"]).name,
+                        "html_file": Path(meta["html_path"]).name if meta.get("html_path") else None,
+                    })
+                except Exception as exc:
+                    logging.exception(
+                        "Failed spline interaction plot for target=%s, q=%.4f, features=(%s, %s): %s",
+                        target_name,
+                        float(q_req),
+                        feature_x,
+                        feature_y,
+                        exc,
+                    )
+
+            if summary_rows:
+                summary_df = pd.DataFrame(summary_rows)
+                summary_path = spline_fig_dir / f"spline3d_summary_{MODEL_TO_EXPLAIN}_{target_name}.csv"
+                summary_df.to_csv(summary_path, index=False)
+                logging.info("Saved spline interaction summary to %s", summary_path)
 
 
 def main():

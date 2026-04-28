@@ -245,11 +245,12 @@ make_r1_tables: true
 base_models_subset: [
   'LR',
   'LAS',
+  # 'QPCR',
   'QRF',
   'QGB',
   'DMQv0c',
-  'DMQv1c',
-  'DMQv2c'
+  # 'DMQv1c',
+  # 'DMQv2c'
 ]
 test_start: "1998-01-01"
 test_end: "2024-12-01"

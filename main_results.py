@@ -41,6 +41,7 @@ parser.add_argument("--end-year", type=int, default=None,
                     help="Last prediction year (default: from config)")
 parser.add_argument("--plot-quantiles", action="store_true", help="Whether to generate quantile plots")
 parser.add_argument("--plot-means", action="store_true", help="Whether to generate mean plots")
+parser.add_argument("--dm-test", action="store_true", help="Whether to perform Diebold-Mariano tests for pairwise model comparisons")
 parser.add_argument("--run-locally", action="store_true", help="Whether to run locally (adjusts file paths accordingly)")
 args = parser.parse_args()
 
@@ -107,6 +108,7 @@ def main():
         pred_dir=PRED_DIR,
         results_dir=RESULTS_DIR,
         tables_dir=TABLES_DIR,
+        base_models_subset=config['base_models_subset'],
         country=COUNTRY,
         horizon_in_quarters=HORIZON,
         quantiles=QUANTILES,
@@ -121,6 +123,7 @@ def main():
         pred_dir=PRED_DIR,
         results_dir=RESULTS_DIR,
         tables_dir=TABLES_DIR,
+        base_models_subset=config['base_models_subset'],
         country=COUNTRY,
         horizon_in_quarters=HORIZON,
         quantiles=QUANTILES,
@@ -130,19 +133,21 @@ def main():
     )
 
     print("\nStep 4: Generating pairwise Diebold-Mariano tables...")
-    make_dm_tables(
-        targets_path=DATA_DIR / config['target_file'],
-        pred_dir=PRED_DIR,
-        results_dir=RESULTS_DIR,
-        tables_dir=TABLES_DIR,
-        country=COUNTRY,
-        horizon_in_quarters=HORIZON,
-        quantiles=QUANTILES,
-        test_start=TEST_START,
-        test_end=TEST_END,
-        alpha=0.05,
-        date_str=DATE,
-    )
+    if args.dm_test:
+        make_dm_tables(
+            targets_path=DATA_DIR / config['target_file'],
+            pred_dir=PRED_DIR,
+            results_dir=RESULTS_DIR,
+            tables_dir=TABLES_DIR,
+            base_models_subset=config['base_models_subset'],
+            country=COUNTRY,
+            horizon_in_quarters=HORIZON,
+            quantiles=QUANTILES,
+            test_start=TEST_START,
+            test_end=TEST_END,
+            alpha=0.05,
+            date_str=DATE,
+        )
     
     if PLOT_QUANTILES:
         print("\nStep 5: Generating quantile plots...")
