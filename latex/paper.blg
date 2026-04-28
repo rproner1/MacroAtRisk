@@ -5,48 +5,46 @@ Reallocating 'name_of_file' (item size: 1) to 5 items.
 The style file: ecta.bst
 Reallocating 'name_of_file' (item size: 1) to 15 items.
 Database file #1: references.bib
-Warning--empty year in blanchardNBERWORKINGPAPER; set to ????
 Warning--empty journal in blanchardNBERWORKINGPAPER
-Warning--empty journal in schmidtQuantileSpacingsSimple2016
-You've used 19 entries,
+You've used 14 entries,
             2849 wiz_defined-function locations,
-            736 strings with 8622 characters,
-and the built_in function-call counts, 11005 in all, are:
-= -- 933
-> -- 470
-< -- 24
-+ -- 150
-- -- 129
-* -- 961
-:= -- 1722
-add.period$ -- 38
-call.type$ -- 19
-change.case$ -- 119
-chr.to.int$ -- 19
-cite$ -- 22
-duplicate$ -- 788
-empty$ -- 794
-format.name$ -- 217
-if$ -- 2153
+            711 strings with 7622 characters,
+and the built_in function-call counts, 8242 in all, are:
+= -- 709
+> -- 332
+< -- 20
++ -- 108
+- -- 90
+* -- 722
+:= -- 1274
+add.period$ -- 28
+call.type$ -- 14
+change.case$ -- 86
+chr.to.int$ -- 14
+cite$ -- 15
+duplicate$ -- 586
+empty$ -- 604
+format.name$ -- 162
+if$ -- 1619
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 142
-newline$ -- 62
-num.names$ -- 95
-pop$ -- 273
+missing$ -- 106
+newline$ -- 47
+num.names$ -- 70
+pop$ -- 190
 preamble$ -- 1
-purify$ -- 119
+purify$ -- 86
 quote$ -- 0
-skip$ -- 284
+skip$ -- 215
 stack$ -- 0
-substring$ -- 554
-swap$ -- 381
+substring$ -- 452
+swap$ -- 292
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 228
-warning$ -- 3
-while$ -- 82
+type$ -- 168
+warning$ -- 1
+while$ -- 63
 width$ -- 0
-write$ -- 221
-(There were 3 warnings)
+write$ -- 166
+(There was 1 warning)

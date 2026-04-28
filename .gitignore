@@ -13,4 +13,3 @@ build/
 .cache/
 renv*
 .Rprofile
-data/

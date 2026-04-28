@@ -2,96 +2,90 @@
 \providecommand\hyper@newdestlabel[2]{}
 \providecommand\HyField@AuxAddToFields[1]{}
 \providecommand\HyField@AuxAddToCoFields[2]{}
-\citation{andradeTAILSINFLATIONFORECASTS2012}
 \@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
-\citation{adrianVulnerableGrowth2019,lopez-salidoInflationRisk2024,kileyUnemploymentRisk2022,clarkRealTimeDensityForecasts2011,pruserNonlinearitiesMacroeconomicTail2024,andradeTAILSINFLATIONFORECASTS2012}
-\citation{adrianVulnerableGrowth2019,lopez-salidoInflationRisk2024,pruserNonlinearitiesMacroeconomicTail2024,gouletcoulombeHowMachineLearning2022}
-\citation{pruserNonlinearitiesMacroeconomicTail2024,carrieroSpecificationChoicesQuantile2025,adrianMachinelearningGrowthRisk2025}
-\citation{schmidtQuantileSpacingsSimple2016}
+\citation{adrianVulnerableGrowth2019}
+\citation{caldaraMonetaryPolicyReal2019}
+\citation{adrianVulnerableGrowth2019}
+\citation{lopez-salidoInflationRisk2024}
+\citation{gertlerMacroeconomicModelFinancial2020}
+\citation{kileyUnemploymentRisk2022}
 \citation{mccrackenFREDMDMonthlyDatabase2016}
-\@writefile{toc}{\contentsline {section}{\numberline {2}Related literature}{2}{section.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {3}Data}{2}{section.3}\protected@file@percent }
 \citation{mccrackenFREDMDMonthlyDatabase2016}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Data}{3}{section.2}\protected@file@percent }
 \newlabel{eq: forecast targets}{{1}{3}{Data}{equation.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Methodology}{4}{section.3}\protected@file@percent }
+\newlabel{sec: methodology}{{3}{4}{Methodology}{section.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Estimation}{4}{subsection.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.1}Quantile loss}{4}{subsubsection.3.1.1}\protected@file@percent }
 \citation{adrianVulnerableGrowth2019,kileyUnemploymentRisk2022,lopez-salidoInflationRisk2024}
-\@writefile{toc}{\contentsline {section}{\numberline {4}Methodology}{4}{section.4}\protected@file@percent }
-\newlabel{sec: methodology}{{4}{4}{Methodology}{section.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Estimation}{4}{subsection.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.1}Quantile loss}{4}{subsubsection.4.1.1}\protected@file@percent }
-\newlabel{eq: quantile loss}{{6}{4}{Quantile loss}{equation.6}{}}
 \citation{blanchardNBERWORKINGPAPER}
 \citation{lopez-salidoInflationRisk2024}
 \citation{adrianVulnerableGrowth2019}
 \citation{kileyUnemploymentRisk2022}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.2}Benchmark models}{5}{subsubsection.4.1.2}\protected@file@percent }
-\newlabel{sec: benchmark models}{{4.1.2}{5}{Benchmark models}{subsubsection.4.1.2}{}}
+\newlabel{eq: quantile loss}{{6}{5}{Quantile loss}{equation.6}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.2}Benchmark models}{5}{subsubsection.3.1.2}\protected@file@percent }
+\newlabel{sec: benchmark models}{{3.1.2}{5}{Benchmark models}{subsubsection.3.1.2}{}}
 \newlabel{eq: IAR}{{7}{5}{Benchmark models}{equation.7}{}}
 \newlabel{eq: VG}{{8}{5}{Benchmark models}{equation.8}{}}
-\newlabel{eq: UAR}{{9}{5}{Benchmark models}{equation.9}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.3}Off-the-shelf models}{5}{subsubsection.4.1.3}\protected@file@percent }
 \citation{caruanaMultitaskLearning1997}
 \citation{ruderOverviewMultiTaskLearning2017}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.4}Multi-quantile neural networks}{6}{subsubsection.4.1.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.5}Estimation procedure}{6}{subsubsection.4.1.5}\protected@file@percent }
-\citation{koenkerGoodnessFitRelated1999}
+\newlabel{eq: UAR}{{9}{6}{Benchmark models}{equation.9}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.3}Off-the-shelf models}{6}{subsubsection.3.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.4}Multi-quantile neural networks}{6}{subsubsection.3.1.4}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces This figure illustrates the dynamic multi-quantile neural network. The recurrent layers reduce the dimensionality of the feature space into a set of latent business cycle features. Business cycle features are then interacted before non-linear exposures to this common set of latent factors are estimated for each quantile and aggregated into a prediction for each quantile.}}{7}{figure.caption.1}\protected@file@percent }
 \providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
 \newlabel{fig: DMQ}{{1}{7}{This figure illustrates the dynamic multi-quantile neural network. The recurrent layers reduce the dimensionality of the feature space into a set of latent business cycle features. Business cycle features are then interacted before non-linear exposures to this common set of latent factors are estimated for each quantile and aggregated into a prediction for each quantile}{figure.caption.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.5}Estimation procedure}{7}{subsubsection.3.1.5}\protected@file@percent }
+\citation{koenkerGoodnessFitRelated1999}
 \citation{liuStockDistributionRisk2023}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Evaluation}{8}{subsection.3.2}\protected@file@percent }
+\newlabel{sec:evaluation}{{3.2}{8}{Evaluation}{subsection.3.2}{}}
 \citation{dieboldComparingPredictiveAccuracy2002}
 \citation{neweyAutomaticLagSelection1994}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Evaluation}{8}{subsection.4.2}\protected@file@percent }
-\newlabel{sec:evaluation}{{4.2}{8}{Evaluation}{subsection.4.2}{}}
-\newlabel{eq: pooled DM statistic}{{13}{8}{Evaluation}{equation.13}{}}
 \citation{lopez-salidoInflationRisk2024}
-\@writefile{toc}{\contentsline {section}{\numberline {5}Baseline results}{9}{section.5}\protected@file@percent }
-\newlabel{sec: baseline results}{{5}{9}{Baseline results}{section.5}{}}
-\citation{adrianVulnerableGrowth2019}
+\newlabel{eq: pooled DM statistic}{{13}{9}{Evaluation}{equation.13}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Results}{9}{section.4}\protected@file@percent }
+\newlabel{sec: baseline results}{{4}{9}{Results}{section.4}{}}
 \@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces $R^1$ table for annual inflation, annual IP growth, and annual percent change in the unemployment rate for the period January 1998 to December 2024}}{10}{table.caption.2}\protected@file@percent }
 \newlabel{tab: baseline r1 table}{{1}{10}{$R^1$ table for annual inflation, annual IP growth, and annual percent change in the unemployment rate for the period January 1998 to December 2024}{table.caption.2}{}}
 \@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Pairwise DM $t$-statistics pooled across quantiles (upper triangular). Significant values at 5\% are in bold.}}{11}{table.caption.3}\protected@file@percent }
 \newlabel{tab: dm_qpooled}{{2}{11}{Pairwise DM $t$-statistics pooled across quantiles (upper triangular). Significant values at 5\% are in bold}{table.caption.3}{}}
+\citation{adrianVulnerableGrowth2019}
 \@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces $R^2$ table}}{12}{table.caption.4}\protected@file@percent }
 \newlabel{tab: baseline r2 table}{{3}{12}{$R^2$ table}{table.caption.4}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Inflation forecast comparison across benchmark, QRF, and DMQv0c.}}{12}{figure.caption.5}\protected@file@percent }
-\newlabel{fig:infl_model_comparison}{{2}{12}{Inflation forecast comparison across benchmark, QRF, and DMQv0c}{figure.caption.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Inflation forecast comparison across benchmark, QRF, and DMQv0c.}}{13}{figure.caption.5}\protected@file@percent }
+\newlabel{fig:infl_model_comparison}{{2}{13}{Inflation forecast comparison across benchmark, QRF, and DMQv0c}{figure.caption.5}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Industrial production forecast comparison across benchmark, QRF, and DMQv0c.}}{13}{figure.caption.6}\protected@file@percent }
 \newlabel{fig:ip_model_comparison}{{3}{13}{Industrial production forecast comparison across benchmark, QRF, and DMQv0c}{figure.caption.6}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {6}Results during the GFC and COVID}{13}{section.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {7}Drivers of tail risk}{13}{section.7}\protected@file@percent }
-\citation{erionImprovingPerformanceDeep2021}
 \@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Unemployment forecast comparison across benchmark, QRF, and DMQv0c.}}{14}{figure.caption.7}\protected@file@percent }
 \newlabel{fig:unrate_model_comparison}{{4}{14}{Unemployment forecast comparison across benchmark, QRF, and DMQv0c}{figure.caption.7}{}}
-\newlabel{eq: additivity}{{14}{14}{Drivers of tail risk}{equation.14}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Overall feature importance according to the mean absolute SHAP value across time}}{16}{figure.caption.8}\protected@file@percent }
-\newlabel{fig: dmq overall importance main quantile-targets}{{5}{16}{Overall feature importance according to the mean absolute SHAP value across time}{figure.caption.8}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {8}Conclusion}{17}{section.8}\protected@file@percent }
-\newlabel{section:conclusion}{{8}{17}{Conclusion}{section.8}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Drivers of tail risk}{14}{section.5}\protected@file@percent }
+\citation{erionImprovingPerformanceDeep2021}
+\newlabel{eq: additivity}{{14}{15}{Drivers of tail risk}{equation.14}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Overall feature importance according to the mean absolute SHAP value across time}}{17}{figure.caption.8}\protected@file@percent }
+\newlabel{fig: dmq overall importance main quantile-targets}{{5}{17}{Overall feature importance according to the mean absolute SHAP value across time}{figure.caption.8}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Feature ranking according to mean absolute SHAP value by lag}}{18}{figure.caption.9}\protected@file@percent }
+\newlabel{fig: dmq top 5 contribution over time}{{6}{18}{Feature ranking according to mean absolute SHAP value by lag}{figure.caption.9}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Interactions}}{19}{figure.caption.10}\protected@file@percent }
+\newlabel{fig: dmq interactions}{{7}{19}{Interactions}{figure.caption.10}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Conclusion}{19}{section.6}\protected@file@percent }
+\newlabel{section:conclusion}{{6}{19}{Conclusion}{section.6}{}}
 \bibstyle{ecta}
 \bibdata{references.bib}
 \bibcite{adrianVulnerableGrowth2019}{{1}{2019}{{Adrian et~al.}}{{Adrian, Boyarchenko, and Giannone}}}
-\bibcite{adrianMachinelearningGrowthRisk2025}{{2}{2025}{{Adrian et~al.}}{{Adrian, Chen, Dov{\`i}, and Lee}}}
-\bibcite{andradeTAILSINFLATIONFORECASTS2012}{{3}{2012}{{Andrade et~al.}}{{Andrade, Ghysels, and Idier}}}
-\bibcite{blanchardNBERWORKINGPAPER}{{4}{????}{{Blanchard et~al.}}{{Blanchard, Cerutti, and Summers}}}
-\bibcite{carrieroSpecificationChoicesQuantile2025}{{5}{2025}{{Carriero et~al.}}{{Carriero, Clark, and Marcellino}}}
-\bibcite{caruanaMultitaskLearning1997}{{6}{1997}{{Caruana}}{{Caruana}}}
-\bibcite{clarkRealTimeDensityForecasts2011}{{7}{2011}{{Clark}}{{Clark}}}
-\bibcite{dieboldComparingPredictiveAccuracy2002}{{8}{2002}{{Diebold and Mariano}}{{Diebold and Mariano}}}
-\bibcite{erionImprovingPerformanceDeep2021}{{9}{2021}{{Erion et~al.}}{{Erion, Janizek, Sturmfels, Lundberg, and Lee}}}
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Feature ranking according to mean absolute SHAP value by lag}}{18}{figure.caption.9}\protected@file@percent }
-\newlabel{fig: dmq top 5 contribution over time}{{6}{18}{Feature ranking according to mean absolute SHAP value by lag}{figure.caption.9}{}}
-\bibcite{gouletcoulombeHowMachineLearning2022}{{10}{2022}{{Goulet~Coulombe et~al.}}{{Goulet~Coulombe, Leroux, Stevanovic, and Surprenant}}}
-\bibcite{kileyUnemploymentRisk2022}{{11}{2022}{{Kiley}}{{Kiley}}}
-\bibcite{koenkerGoodnessFitRelated1999}{{12}{1999}{{Koenker and Machado}}{{Koenker and Machado}}}
-\bibcite{liuStockDistributionRisk2023}{{13}{2023}{{Liu}}{{Liu}}}
-\bibcite{lopez-salidoInflationRisk2024}{{14}{2024}{{{L{\'o}pez-Salido} and Loria}}{{{L{\'o}pez-Salido} and Loria}}}
-\bibcite{mccrackenFREDMDMonthlyDatabase2016}{{15}{2016}{{McCracken and Ng}}{{McCracken and Ng}}}
-\bibcite{neweyAutomaticLagSelection1994}{{16}{1994}{{Newey and West}}{{Newey and West}}}
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Feature ranking according to mean absolute SHAP value by lag}}{19}{figure.caption.10}\protected@file@percent }
-\newlabel{fig: dmq ranked importance by lag main quantile-targets}{{7}{19}{Feature ranking according to mean absolute SHAP value by lag}{figure.caption.10}{}}
-\bibcite{pruserNonlinearitiesMacroeconomicTail2024}{{17}{2024}{{Pr{\"u}ser and Huber}}{{Pr{\"u}ser and Huber}}}
-\bibcite{ruderOverviewMultiTaskLearning2017}{{18}{2017}{{Ruder}}{{Ruder}}}
-\bibcite{schmidtQuantileSpacingsSimple2016}{{19}{2016}{{Schmidt}}{{Schmidt}}}
+\bibcite{blanchardNBERWORKINGPAPER}{{2}{2015}{{Blanchard et~al.}}{{Blanchard, Cerutti, and Summers}}}
+\bibcite{caldaraMonetaryPolicyReal2019}{{3}{2019}{{Caldara and Herbst}}{{Caldara and Herbst}}}
+\bibcite{caruanaMultitaskLearning1997}{{4}{1997}{{Caruana}}{{Caruana}}}
+\bibcite{dieboldComparingPredictiveAccuracy2002}{{5}{2002}{{Diebold and Mariano}}{{Diebold and Mariano}}}
+\bibcite{erionImprovingPerformanceDeep2021}{{6}{2021}{{Erion et~al.}}{{Erion, Janizek, Sturmfels, Lundberg, and Lee}}}
+\bibcite{gertlerMacroeconomicModelFinancial2020}{{7}{2020}{{Gertler et~al.}}{{Gertler, Kiyotaki, and Prestipino}}}
+\bibcite{kileyUnemploymentRisk2022}{{8}{2022}{{Kiley}}{{Kiley}}}
+\bibcite{koenkerGoodnessFitRelated1999}{{9}{1999}{{Koenker and Machado}}{{Koenker and Machado}}}
+\bibcite{liuStockDistributionRisk2023}{{10}{2023}{{Liu}}{{Liu}}}
+\bibcite{lopez-salidoInflationRisk2024}{{11}{2024}{{{L{\'o}pez-Salido} and Loria}}{{{L{\'o}pez-Salido} and Loria}}}
+\bibcite{mccrackenFREDMDMonthlyDatabase2016}{{12}{2016}{{McCracken and Ng}}{{McCracken and Ng}}}
+\bibcite{neweyAutomaticLagSelection1994}{{13}{1994}{{Newey and West}}{{Newey and West}}}
+\bibcite{ruderOverviewMultiTaskLearning2017}{{14}{2017}{{Ruder}}{{Ruder}}}
 \@writefile{toc}{\contentsline {section}{\numberline {A}Appendix}{21}{appendix.A}\protected@file@percent }
 \@writefile{lot}{\contentsline {table}{\numberline {A.1}{\ignorespaces INFL: Pairwise DM $t$-statistics by quantile (upper triangular). Significant values at 5\% are in bold.}}{21}{table.caption.12}\protected@file@percent }
 \newlabel{tab: dm_quantile_infl}{{A.1}{21}{INFL: Pairwise DM $t$-statistics by quantile (upper triangular). Significant values at 5\% are in bold}{table.caption.12}{}}
