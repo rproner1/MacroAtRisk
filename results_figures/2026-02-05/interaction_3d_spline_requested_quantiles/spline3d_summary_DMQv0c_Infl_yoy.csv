@@ -1,3 +1,3 @@
 target,quantile,feature_x,feature_y,n_points,n_event_points,plot_file,html_file
-Infl_yoy,0.05,Housing | Starts:  MW,Rates | Baa-FF spread,324,13,spline3d_dmqv0c_infl_yoy_q5_housing_starts_mw_vs_rates_baa_ff_spread.png,spline3d_dmqv0c_infl_yoy_q5_housing_starts_mw_vs_rates_baa_ff_spread.html
-Infl_yoy,0.95,Housing | Starts:  MW,Rates | Baa-FF spread,324,13,spline3d_dmqv0c_infl_yoy_q95_housing_starts_mw_vs_rates_baa_ff_spread.png,spline3d_dmqv0c_infl_yoy_q95_housing_starts_mw_vs_rates_baa_ff_spread.html
+Infl_yoy,0.05,Consumption | M&T invent,Rates | Baa-FF spread,324,13,spline3d_dmqv0c_infl_yoy_q5_consumption_m_t_invent_vs_rates_baa_ff_spread.png,spline3d_dmqv0c_infl_yoy_q5_consumption_m_t_invent_vs_rates_baa_ff_spread.html
+Infl_yoy,0.95,Consumption | M&T invent,Rates | Baa-FF spread,324,13,spline3d_dmqv0c_infl_yoy_q95_consumption_m_t_invent_vs_rates_baa_ff_spread.png,spline3d_dmqv0c_infl_yoy_q95_consumption_m_t_invent_vs_rates_baa_ff_spread.html

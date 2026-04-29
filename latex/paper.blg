@@ -6,45 +6,45 @@ The style file: ecta.bst
 Reallocating 'name_of_file' (item size: 1) to 15 items.
 Database file #1: references.bib
 Warning--empty journal in blanchardNBERWORKINGPAPER
-You've used 14 entries,
+You've used 22 entries,
             2849 wiz_defined-function locations,
-            711 strings with 7622 characters,
-and the built_in function-call counts, 8242 in all, are:
-= -- 709
-> -- 332
-< -- 20
-+ -- 108
-- -- 90
-* -- 722
-:= -- 1274
-add.period$ -- 28
-call.type$ -- 14
-change.case$ -- 86
-chr.to.int$ -- 14
-cite$ -- 15
-duplicate$ -- 586
-empty$ -- 604
-format.name$ -- 162
-if$ -- 1619
+            759 strings with 9340 characters,
+and the built_in function-call counts, 13155 in all, are:
+= -- 1123
+> -- 570
+< -- 28
++ -- 184
+- -- 156
+* -- 1172
+:= -- 2030
+add.period$ -- 44
+call.type$ -- 22
+change.case$ -- 140
+chr.to.int$ -- 22
+cite$ -- 23
+duplicate$ -- 937
+empty$ -- 940
+format.name$ -- 276
+if$ -- 2579
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 106
-newline$ -- 47
-num.names$ -- 70
-pop$ -- 190
+missing$ -- 170
+newline$ -- 71
+num.names$ -- 110
+pop$ -- 315
 preamble$ -- 1
-purify$ -- 86
+purify$ -- 140
 quote$ -- 0
-skip$ -- 215
+skip$ -- 334
 stack$ -- 0
-substring$ -- 452
-swap$ -- 292
+substring$ -- 675
+swap$ -- 470
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 168
+type$ -- 264
 warning$ -- 1
-while$ -- 63
+while$ -- 97
 width$ -- 0
-write$ -- 166
+write$ -- 259
 (There was 1 warning)

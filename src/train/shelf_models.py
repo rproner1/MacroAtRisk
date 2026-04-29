@@ -136,7 +136,7 @@ def fit_linear_models(
                     builder_func=build_qlr,
                     fit_params=fit_params,
                     early_stopping_args=early_stopping_args,
-                    n_jobs=os.cpu_count(),
+                    n_jobs=1,
                     grid=grid,
                     **builder_params
                 )

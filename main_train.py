@@ -290,11 +290,11 @@ def train_deep_models():
     trials = 1 if RUN_LOCALLY else config['trials']
     max_total_trials = 1 if RUN_LOCALLY else 100
     n_estimators = 1 if RUN_LOCALLY else config['n_estimators']
-    cpu_count = os.cpu_count() or 1
+    cpu_count = os.cpu_count()
 
     # Avoid nested full-CPU parallelism (Optuna + CV + TensorFlow), which can hang on Windows.
-    deep_cv_jobs = 1 if RUN_LOCALLY else min(4, cpu_count)
-    deep_optuna_jobs = 1
+    deep_cv_jobs = 1 
+    deep_optuna_jobs = cpu_count
     
     target_path = DATA_DIR / TARGET_FILE
     input_paths = [DATA_DIR / file for file in INPUT_FILES]

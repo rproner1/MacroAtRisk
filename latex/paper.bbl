@@ -1,4 +1,4 @@
-\begin{thebibliography}{14}
+\begin{thebibliography}{22}
 \newcommand{\enquote}[1]{``#1''}
 \expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
 
@@ -7,6 +7,16 @@
 \textsc{Adrian, T., N.~Boyarchenko, and D.~Giannone} (2019):
   \enquote{Vulnerable {{Growth}},} \emph{American Economic Review}, 109,
   1263--1289.
+
+\bibitem[\protect\citeauthoryear{Adrian, Chen, Dov{\`i}, and Lee}{Adrian
+  et~al.}{2025}]{adrianMachinelearningGrowthRisk2025}
+\textsc{Adrian, T., H.~Chen, M.-S. Dov{\`i}, and J.~H. Lee} (2025):
+  \enquote{Machine-Learning {{Growth}} at {{Risk}},} .
+
+\bibitem[\protect\citeauthoryear{Andrade, Ghysels, and Idier}{Andrade
+  et~al.}{2012}]{andradeTAILSINFLATIONFORECASTS2012}
+\textsc{Andrade, P., E.~Ghysels, and J.~Idier} (2012): \enquote{{{TAILS OF
+  INFLATION FORECASTS AND TALES OF MONETARY POLICY}},} \emph{MONETARY POLICY}.
 
 \bibitem[\protect\citeauthoryear{Blanchard, Cerutti, and Summers}{Blanchard
   et~al.}{2015}]{blanchardNBERWORKINGPAPER}
@@ -23,6 +33,12 @@
 \textsc{Caruana, R.} (1997): \enquote{Multitask {{Learning}},} \emph{Machine
   Learning}, 28, 41--75.
 
+\bibitem[\protect\citeauthoryear{Chavleishvili and Manganelli}{Chavleishvili
+  and Manganelli}{2024}]{chavleishviliForecastingStressTesting2024}
+\textsc{Chavleishvili, S. and S.~Manganelli} (2024): \enquote{Forecasting and
+  Stress Testing with Quantile Vector Autoregression,} \emph{Journal of Applied
+  Econometrics}, 39, 66--85.
+
 \bibitem[\protect\citeauthoryear{Diebold and Mariano}{Diebold and
   Mariano}{2002}]{dieboldComparingPredictiveAccuracy2002}
 \textsc{Diebold, F.~X. and R.~S. Mariano} (2002): \enquote{Comparing Predictive
@@ -35,11 +51,30 @@
   Attribution Priors and Expected Gradients,} \emph{Nature Machine
   Intelligence}, 3, 620--631.
 
+\bibitem[\protect\citeauthoryear{Famiglietti, Garriga, and Hedlund}{Famiglietti
+  et~al.}{2020}]{famigliettiGeographyHousingMarket2020}
+\textsc{Famiglietti, M., C.~Garriga, and A.~Hedlund} (2020): \enquote{The
+  {{Geography}} of {{Housing Market Liquidity During}} the {{Great
+  Recession}},} \emph{Review}, 102.
+
 \bibitem[\protect\citeauthoryear{Gertler, Kiyotaki, and Prestipino}{Gertler
   et~al.}{2020}]{gertlerMacroeconomicModelFinancial2020}
 \textsc{Gertler, M., N.~Kiyotaki, and A.~Prestipino} (2020): \enquote{A
   {{Macroeconomic Model}} with {{Financial Panics}},} \emph{The Review of
   Economic Studies}, 87, 240--288.
+
+\bibitem[\protect\citeauthoryear{Gilchrist and Zakraj{\v s}ek}{Gilchrist and
+  Zakraj{\v s}ek}{2012}]{gilchristCreditSpreadsBusiness2012}
+\textsc{Gilchrist, S. and E.~Zakraj{\v s}ek} (2012): \enquote{Credit
+  {{Spreads}} and {{Business Cycle Fluctuations}},} \emph{The American Economic
+  Review}, 102, 1692--1720.
+
+\bibitem[\protect\citeauthoryear{Goulet~Coulombe, Leroux, Stevanovic, and
+  Surprenant}{Goulet~Coulombe
+  et~al.}{2022}]{gouletcoulombeHowMachineLearning2022}
+\textsc{Goulet~Coulombe, P., M.~Leroux, D.~Stevanovic, and S.~Surprenant}
+  (2022): \enquote{How Is Machine Learning Useful for Macroeconomic
+  Forecasting?} \emph{Journal of Applied Econometrics}, 37, 920--964.
 
 \bibitem[\protect\citeauthoryear{Kiley}{Kiley}{2022}]{kileyUnemploymentRisk2022}
 \textsc{Kiley, M.~T.} (2022): \enquote{Unemployment {{Risk}},} \emph{Journal of
@@ -72,8 +107,20 @@
   Selection}} in {{Covariance Matrix Estimation}},} \emph{The Review of
   Economic Studies}, 61, 631--653.
 
+\bibitem[\protect\citeauthoryear{Pr{\"u}ser and Huber}{Pr{\"u}ser and
+  Huber}{2024}]{pruserNonlinearitiesMacroeconomicTail2024}
+\textsc{Pr{\"u}ser, J. and F.~Huber} (2024): \enquote{Nonlinearities in
+  Macroeconomic Tail Risk through the Lens of Big Data Quantile Regressions,}
+  \emph{Journal of Applied Econometrics}, 39, 269--291.
+
 \bibitem[\protect\citeauthoryear{Ruder}{Ruder}{2017}]{ruderOverviewMultiTaskLearning2017}
 \textsc{Ruder, S.} (2017): \enquote{An {{Overview}} of {{Multi-Task Learning}}
   in {{Deep Neural Networks}},} .
+
+\bibitem[\protect\citeauthoryear{Stock and Watson}{Stock and
+  Watson}{2002}]{stockMacroeconomicForecastingUsing2002}
+\textsc{Stock, J.~H. and M.~W. Watson} (2002): \enquote{Macroeconomic
+  {{Forecasting Using Diffusion Indexes}},} \emph{Journal of Business \&
+  Economic Statistics}, 20, 147--162.
 
 \end{thebibliography}

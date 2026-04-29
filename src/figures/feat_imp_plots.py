@@ -86,8 +86,8 @@ def make_overall_importance_plot_agg_time_lags(
     target_name,
     model_to_explain,
     fig_dir,
-    top_n: int = 20,
-    global_imp_func: str="mean",
+    top_n: int = 25,
+    global_imp_func: str="median",
 ):
     """
     Plot overall feature importance using mean absolute SHAP over samples and lags.
@@ -120,7 +120,7 @@ def make_overall_importance_plot_agg_time_lags(
     plt.barh(imp_top.index, imp_top.values, color="#4f6d7a")
     q_label = int(round(float(q) * 100))
     # plt.title(f"Overall SHAP Importance")
-    plt.xlabel(f"{global_imp_func.capitalize()} |SHAP| value")
+    plt.xlabel(f"{global_imp_func.capitalize()} |EG| value")
     plt.ylabel("Feature")
     plt.tight_layout()
 
@@ -129,6 +129,7 @@ def make_overall_importance_plot_agg_time_lags(
     out_path = fig_dir / f"overall_importance_{model_to_explain}_{target_name}_q{q_label}.png"
     plt.savefig(out_path, dpi=220, bbox_inches="tight")
     plt.close()
+
 
 def make_feature_x_attribution_by_regime_plot(
     sv_q,
@@ -212,8 +213,8 @@ def make_top_feature_contrib_timeseries_plot(
     feature_value_color: bool = True,
     contrib_agg: str = "sum",
     value_agg: str = "last",
-    rank_agg: str = "abs_mean",
-    global_imp_func: str = "mean",
+    rank_agg: str = "sum_abs",
+    global_imp_func: str = "median",
     z_clip: float = 2.5,
     values_already_standardized: bool = True,
     low_value_marker: str = "v",
@@ -255,16 +256,14 @@ def make_top_feature_contrib_timeseries_plot(
 
     # Rank top features without signed-cancellation artifacts.
     rank_agg = str(rank_agg).lower().strip()
-    if rank_agg == "abs_mean":
-        global_imp = func(np.abs(sv_q), axis=(0, 1))
-    elif rank_agg == "abs_sum":
-        global_imp = np.sum(np.abs(sv_q), axis=(0, 1))
-    elif rank_agg == "last_abs_mean":
+    if rank_agg == "sum_abs":
+        global_imp = func(np.abs(np.sum(sv_q, axis=1)), axis=0)
+    elif rank_agg == "last_abs":
         global_imp = func(np.abs(sv_q[:, -1, :]), axis=0)
     else:
         raise ValueError(
             f"Unknown rank_agg '{rank_agg}'. "
-            "Use one of: abs_mean, abs_sum, last_abs_mean."
+            "Use one of: sum_abs, last_abs."
         )
 
     top_k = min(top_k, sv_collapsed.shape[1])
@@ -337,10 +336,10 @@ def make_top_feature_contrib_timeseries_plot(
     _add_macro_recession_shading(ax, idx)
     plt.axhline(y=0.0, color='black', linestyle='--', linewidth=0.8)
     plt.xlabel('Date')
-    plt.ylabel('SHAP contribution')
+    plt.ylabel('EG attribution')
 
     q_label = int(round(float(q) * 100))
-    plt.title(f"Top {top_k} Feature Contributions Over Time - {model_to_explain} {target_name} Q{q_label} (MA{smooth_window})")
+    plt.title(f"Top {top_k} Feature Attributions Over Time - {model_to_explain} {target_name} Q{q_label}")
     if feature_value_color:
         legend_handles.extend([
             Line2D(
@@ -383,6 +382,7 @@ def make_top_feature_contrib_timeseries_plot(
     out_path = fig_dir / f"contrib_timeseries_{model_to_explain}_{target_name}_top{top_k}_q{q_label}_ma{smooth_window}{style_suffix}.png"
     plt.savefig(out_path, bbox_inches='tight', dpi=220)
     plt.close()
+
 
 def make_feat_x_time_importance_plot(
     sv_q,
@@ -542,8 +542,6 @@ def make_top_feature_time_heatmap_agg_lags(
     plt.close()
 
 
-
-
 def make_event_force_plot(
     sv_event,
     model_features,
@@ -610,7 +608,7 @@ def make_event_force_plot(
         f"Event date: {pd.Timestamp(event_date).date()}"
     )
     plt.xlabel("Lag")
-    plt.ylabel("SHAP contribution")
+    plt.ylabel("EG attribution")
     plt.xticks(lags)
     plt.legend(bbox_to_anchor=(1.02, 1.0), loc="upper left", frameon=False, fontsize='small')
     plt.tight_layout(rect=[0, 0, 0.85, 1])
@@ -726,6 +724,10 @@ def make_pair_value_vs_attribution_cubic_spline_3d_plot(
     gy = np.linspace(y_lo, y_hi, int(max(15, grid_size)))
     xx, yy = np.meshgrid(gx, gy)
     zz = spline.ev(xx.ravel(), yy.ravel()).reshape(xx.shape)
+
+    z_max = np.max(z_vals)
+    z_min = np.min(z_vals)
+    zz = np.clip(zz, z_min - 0.1 * abs(z_min), z_max + 0.1 * abs(z_max))
 
     z_all = np.concatenate([z_vals.ravel(), zz.ravel()])
     z_abs_max = float(np.nanmax(np.abs(z_all))) if z_all.size else 0.0

@@ -74,6 +74,7 @@ parser.add_argument("--spline-smoothing", type=float, default=None, help="Option
 parser.add_argument("--spline-outdir-name", type=str, default="interaction_3d_spline_requested_quantiles", help="Subdirectory under results_figures/DATE for spline outputs")
 parser.add_argument("--spline-interactive-html", action="store_true", help="Also save interactive HTML versions of spline plots")
 parser.add_argument("--spline-html-plotlyjs", type=str, default="cdn", choices=["cdn", "directory", "inline"], help="How Plotly JS is embedded in HTML output")
+parser.add_argument("--highlight-n", type=int, default=0, help="Number of points to highlight in spline interaction plots based on highest absolute SHAP value")
 parser.add_argument("--run-locally", action="store_true", help="Whether to run locally")
 args = parser.parse_args()
 
@@ -431,8 +432,8 @@ def plot_shap_feature_importance(target_idx: int):
                         time_index=event_index,
                         make_interactive_html=args.spline_interactive_html,
                         html_include_plotlyjs=(True if args.spline_html_plotlyjs == "inline" else args.spline_html_plotlyjs),
-                        highlight_n=20,
-                        plot_scatter=True,
+                        highlight_n=args.highlight_n,
+                        plot_scatter=False,
                     )
                     summary_rows.append({
                         "target": target_name,

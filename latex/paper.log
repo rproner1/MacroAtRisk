@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.3.29)  27 APR 2026 14:17
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.3.29)  29 APR 2026 14:24
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -952,159 +952,162 @@ LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 10
 File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
 ) [1
 
-{C:/Users/Robpr/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{C:/Users/Robpr/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/base/8r.enc}] [2]
-Underfull \hbox (badness 10000) in paragraph at lines 150--150
+{C:/Users/Robpr/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{C:/Users/Robpr/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/base/8r.enc}] [2] [3] [4]
+Underfull \hbox (badness 10000) in paragraph at lines 163--163
 [][]\OT1/ptm/m/n/10 https://www.federalreserve.gov/econres/notes/feds-notes/updating-the-recession-risk-and-the-excess-
  []
 
-[3] [4] [5] [6]
-<figures/DMQv0.png, id=162, 963.6pt x 722.7pt>
+[5] [6] [7]
+<figures/DMQv0.png, id=199, 963.6pt x 722.7pt>
 File: figures/DMQv0.png Graphic file (type png)
 <use figures/DMQv0.png>
-Package pdftex.def Info: figures/DMQv0.png  used on input line 217.
+Package pdftex.def Info: figures/DMQv0.png  used on input line 230.
 (pdftex.def)             Requested size: 440.84746pt x 330.6265pt.
- [7 <./figures/DMQv0.png (PNG copy)>] [8] [9] (../results_tables/2026-02-05/r1_combined_body_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-02-05/dm_qpooled_upper_Infl_yoy_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-02-05/dm_qpooled_upper_IP_yoy_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-02-05/dm_qpooled_upper_Unrate_yoy_us_4q_1998-01-01-2024-12-01.tex) [10] [11] (../results_tables/2026-02-05/r2_combined_us_4q_1998-01-01-2024-12-01.tex)
-<../results_figures/2026-02-05/IAR_quantile_plot_us_4q_Infl_yoy.png, id=229, 860.013pt x 425.4294pt>
+ [8] [9 <./figures/DMQv0.png (PNG copy)>] [10] (../results_tables/2026-02-05/r1_combined_body_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-02-05/dm_qpooled_upper_Infl_yoy_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-02-05/dm_qpooled_upper_IP_yoy_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-02-05/dm_qpooled_upper_Unrate_yoy_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-02-05/r2_combined_us_4q_1998-01-01-2024-12-01.tex) [11] [12] [13]
+<../results_figures/2026-02-05/IAR_quantile_plot_us_4q_Infl_yoy.png, id=273, 860.013pt x 425.4294pt>
 File: ../results_figures/2026-02-05/IAR_quantile_plot_us_4q_Infl_yoy.png Graphic file (type png)
 <use ../results_figures/2026-02-05/IAR_quantile_plot_us_4q_Infl_yoy.png>
-Package pdftex.def Info: ../results_figures/2026-02-05/IAR_quantile_plot_us_4q_Infl_yoy.png  used on input line 326.
+Package pdftex.def Info: ../results_figures/2026-02-05/IAR_quantile_plot_us_4q_Infl_yoy.png  used on input line 339.
 (pdftex.def)             Requested size: 216.01767pt x 106.85692pt.
-<../results_figures/2026-02-05/QRF_quantile_plot_us_4q_Infl_yoy.png, id=231, 860.013pt x 425.4294pt>
+<../results_figures/2026-02-05/QRF_quantile_plot_us_4q_Infl_yoy.png, id=275, 860.013pt x 425.4294pt>
 File: ../results_figures/2026-02-05/QRF_quantile_plot_us_4q_Infl_yoy.png Graphic file (type png)
 <use ../results_figures/2026-02-05/QRF_quantile_plot_us_4q_Infl_yoy.png>
-Package pdftex.def Info: ../results_figures/2026-02-05/QRF_quantile_plot_us_4q_Infl_yoy.png  used on input line 332.
+Package pdftex.def Info: ../results_figures/2026-02-05/QRF_quantile_plot_us_4q_Infl_yoy.png  used on input line 345.
 (pdftex.def)             Requested size: 216.01767pt x 106.85692pt.
-<../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Infl_yoy.png, id=232, 860.013pt x 425.4294pt>
+<../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Infl_yoy.png, id=276, 860.013pt x 425.4294pt>
 File: ../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Infl_yoy.png Graphic file (type png)
 <use ../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Infl_yoy.png>
-Package pdftex.def Info: ../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Infl_yoy.png  used on input line 340.
+Package pdftex.def Info: ../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Infl_yoy.png  used on input line 353.
 (pdftex.def)             Requested size: 216.01767pt x 106.85692pt.
-<../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_Infl_yoy.png, id=233, 867.24pt x 433.62pt>
+<../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_Infl_yoy.png, id=277, 867.24pt x 433.62pt>
 File: ../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_Infl_yoy.png Graphic file (type png)
 <use ../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_Infl_yoy.png>
-Package pdftex.def Info: ../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_Infl_yoy.png  used on input line 346.
+Package pdftex.def Info: ../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_Infl_yoy.png  used on input line 359.
 (pdftex.def)             Requested size: 216.01767pt x 108.00774pt.
-<../results_figures/2026-02-05/VG_quantile_plot_us_4q_IP_yoy.png, id=234, 860.013pt x 425.4294pt>
+<../results_figures/2026-02-05/VG_quantile_plot_us_4q_IP_yoy.png, id=278, 860.013pt x 425.4294pt>
 File: ../results_figures/2026-02-05/VG_quantile_plot_us_4q_IP_yoy.png Graphic file (type png)
 <use ../results_figures/2026-02-05/VG_quantile_plot_us_4q_IP_yoy.png>
-Package pdftex.def Info: ../results_figures/2026-02-05/VG_quantile_plot_us_4q_IP_yoy.png  used on input line 357.
+Package pdftex.def Info: ../results_figures/2026-02-05/VG_quantile_plot_us_4q_IP_yoy.png  used on input line 370.
 (pdftex.def)             Requested size: 216.01767pt x 106.85692pt.
-<../results_figures/2026-02-05/QRF_quantile_plot_us_4q_IP_yoy.png, id=235, 860.013pt x 425.4294pt>
+<../results_figures/2026-02-05/QRF_quantile_plot_us_4q_IP_yoy.png, id=279, 860.013pt x 425.4294pt>
 File: ../results_figures/2026-02-05/QRF_quantile_plot_us_4q_IP_yoy.png Graphic file (type png)
 <use ../results_figures/2026-02-05/QRF_quantile_plot_us_4q_IP_yoy.png>
-Package pdftex.def Info: ../results_figures/2026-02-05/QRF_quantile_plot_us_4q_IP_yoy.png  used on input line 363.
+Package pdftex.def Info: ../results_figures/2026-02-05/QRF_quantile_plot_us_4q_IP_yoy.png  used on input line 376.
 (pdftex.def)             Requested size: 216.01767pt x 106.85692pt.
-<../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_IP_yoy.png, id=236, 860.013pt x 425.4294pt>
+<../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_IP_yoy.png, id=280, 860.013pt x 425.4294pt>
 File: ../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_IP_yoy.png Graphic file (type png)
 <use ../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_IP_yoy.png>
-Package pdftex.def Info: ../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_IP_yoy.png  used on input line 371.
+Package pdftex.def Info: ../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_IP_yoy.png  used on input line 384.
 (pdftex.def)             Requested size: 216.01767pt x 106.85692pt.
-<../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_IP_yoy.png, id=237, 867.24pt x 433.62pt>
+<../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_IP_yoy.png, id=281, 867.24pt x 433.62pt>
 File: ../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_IP_yoy.png Graphic file (type png)
 <use ../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_IP_yoy.png>
-Package pdftex.def Info: ../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_IP_yoy.png  used on input line 377.
+Package pdftex.def Info: ../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_IP_yoy.png  used on input line 390.
 (pdftex.def)             Requested size: 216.01767pt x 108.00774pt.
-<../results_figures/2026-02-05/UAR_quantile_plot_us_4q_Unrate_yoy.png, id=238, 860.013pt x 425.4294pt>
+<../results_figures/2026-02-05/UAR_quantile_plot_us_4q_Unrate_yoy.png, id=282, 860.013pt x 425.4294pt>
 File: ../results_figures/2026-02-05/UAR_quantile_plot_us_4q_Unrate_yoy.png Graphic file (type png)
 <use ../results_figures/2026-02-05/UAR_quantile_plot_us_4q_Unrate_yoy.png>
-Package pdftex.def Info: ../results_figures/2026-02-05/UAR_quantile_plot_us_4q_Unrate_yoy.png  used on input line 388.
+Package pdftex.def Info: ../results_figures/2026-02-05/UAR_quantile_plot_us_4q_Unrate_yoy.png  used on input line 401.
 (pdftex.def)             Requested size: 216.01767pt x 106.85692pt.
-<../results_figures/2026-02-05/QRF_quantile_plot_us_4q_Unrate_yoy.png, id=239, 860.013pt x 425.4294pt>
+<../results_figures/2026-02-05/QRF_quantile_plot_us_4q_Unrate_yoy.png, id=283, 860.013pt x 425.4294pt>
 File: ../results_figures/2026-02-05/QRF_quantile_plot_us_4q_Unrate_yoy.png Graphic file (type png)
 <use ../results_figures/2026-02-05/QRF_quantile_plot_us_4q_Unrate_yoy.png>
-Package pdftex.def Info: ../results_figures/2026-02-05/QRF_quantile_plot_us_4q_Unrate_yoy.png  used on input line 394.
+Package pdftex.def Info: ../results_figures/2026-02-05/QRF_quantile_plot_us_4q_Unrate_yoy.png  used on input line 407.
 (pdftex.def)             Requested size: 216.01767pt x 106.85692pt.
-<../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png, id=240, 860.013pt x 425.4294pt>
+<../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png, id=284, 860.013pt x 425.4294pt>
 File: ../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png Graphic file (type png)
 <use ../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png>
-Package pdftex.def Info: ../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png  used on input line 402.
+Package pdftex.def Info: ../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png  used on input line 415.
 (pdftex.def)             Requested size: 216.01767pt x 106.85692pt.
-<../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_Unrate_yoy.png, id=241, 867.24pt x 433.62pt>
+<../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_Unrate_yoy.png, id=285, 867.24pt x 433.62pt>
 File: ../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_Unrate_yoy.png Graphic file (type png)
 <use ../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_Unrate_yoy.png>
-Package pdftex.def Info: ../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_Unrate_yoy.png  used on input line 408.
+Package pdftex.def Info: ../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_Unrate_yoy.png  used on input line 421.
 (pdftex.def)             Requested size: 216.01767pt x 108.00774pt.
- [12] [13 <../results_figures/2026-02-05/IAR_quantile_plot_us_4q_Infl_yoy.png> <../results_figures/2026-02-05/QRF_quantile_plot_us_4q_Infl_yoy.png> <../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Infl_yoy.png> <../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_Infl_yoy.png> <../results_figures/2026-02-05/VG_quantile_plot_us_4q_IP_yoy.png> <../results_figures/2026-02-05/QRF_quantile_plot_us_4q_IP_yoy.png> <../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_IP_yoy.png> <../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_IP_yoy.png>] [14 <../results_figures/2026-02-05/UAR_quantile_plot_us_4q_Unrate_yoy.png> <../results_figures/2026-02-05/QRF_quantile_plot_us_4q_Unrate_yoy.png> <../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png> <../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_Unrate_yoy.png>] [15]
-<../results_figures/2026-02-05/overall_importance_agg_time_lags_Infl_yoy_q5.png, id=284, 750.951pt x 532.827pt>
-File: ../results_figures/2026-02-05/overall_importance_agg_time_lags_Infl_yoy_q5.png Graphic file (type png)
-<use ../results_figures/2026-02-05/overall_importance_agg_time_lags_Infl_yoy_q5.png>
-Package pdftex.def Info: ../results_figures/2026-02-05/overall_importance_agg_time_lags_Infl_yoy_q5.png  used on input line 465.
-(pdftex.def)             Requested size: 216.01767pt x 153.27194pt.
-<../results_figures/2026-02-05/overall_importance_agg_time_lags_Infl_yoy_q95.png, id=285, 750.951pt x 532.827pt>
-File: ../results_figures/2026-02-05/overall_importance_agg_time_lags_Infl_yoy_q95.png Graphic file (type png)
-<use ../results_figures/2026-02-05/overall_importance_agg_time_lags_Infl_yoy_q95.png>
-Package pdftex.def Info: ../results_figures/2026-02-05/overall_importance_agg_time_lags_Infl_yoy_q95.png  used on input line 471.
-(pdftex.def)             Requested size: 216.01767pt x 153.27194pt.
-<../results_figures/2026-02-05/overall_importance_agg_time_lags_IP_yoy_q5.png, id=286, 751.9365pt x 532.827pt>
-File: ../results_figures/2026-02-05/overall_importance_agg_time_lags_IP_yoy_q5.png Graphic file (type png)
-<use ../results_figures/2026-02-05/overall_importance_agg_time_lags_IP_yoy_q5.png>
-Package pdftex.def Info: ../results_figures/2026-02-05/overall_importance_agg_time_lags_IP_yoy_q5.png  used on input line 479.
-(pdftex.def)             Requested size: 216.01767pt x 153.06868pt.
-<../results_figures/2026-02-05/overall_importance_agg_time_lags_Unrate_yoy_q95.png, id=287, 750.951pt x 532.827pt>
-File: ../results_figures/2026-02-05/overall_importance_agg_time_lags_Unrate_yoy_q95.png Graphic file (type png)
-<use ../results_figures/2026-02-05/overall_importance_agg_time_lags_Unrate_yoy_q95.png>
-Package pdftex.def Info: ../results_figures/2026-02-05/overall_importance_agg_time_lags_Unrate_yoy_q95.png  used on input line 485.
-(pdftex.def)             Requested size: 216.01767pt x 153.27194pt.
- [16] [17 <../results_figures/2026-02-05/overall_importance_agg_time_lags_Infl_yoy_q5.png> <../results_figures/2026-02-05/overall_importance_agg_time_lags_Infl_yoy_q95.png> <../results_figures/2026-02-05/overall_importance_agg_time_lags_IP_yoy_q5.png> <../results_figures/2026-02-05/overall_importance_agg_time_lags_Unrate_yoy_q95.png>]
-<../results_figures/2026-02-05/DMQv0c_Infl_yoy_top5_contrib_timeseries_q5_ma12_valuecolor.png, id=306, 857.385pt x 424.422pt>
-File: ../results_figures/2026-02-05/DMQv0c_Infl_yoy_top5_contrib_timeseries_q5_ma12_valuecolor.png Graphic file (type png)
-<use ../results_figures/2026-02-05/DMQv0c_Infl_yoy_top5_contrib_timeseries_q5_ma12_valuecolor.png>
-Package pdftex.def Info: ../results_figures/2026-02-05/DMQv0c_Infl_yoy_top5_contrib_timeseries_q5_ma12_valuecolor.png  used on input line 507.
+ [14 <../results_figures/2026-02-05/IAR_quantile_plot_us_4q_Infl_yoy.png> <../results_figures/2026-02-05/QRF_quantile_plot_us_4q_Infl_yoy.png> <../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Infl_yoy.png> <../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_Infl_yoy.png>] [15 <../results_figures/2026-02-05/VG_quantile_plot_us_4q_IP_yoy.png> <../results_figures/2026-02-05/QRF_quantile_plot_us_4q_IP_yoy.png> <../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_IP_yoy.png> <../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_IP_yoy.png> <../results_figures/2026-02-05/UAR_quantile_plot_us_4q_Unrate_yoy.png> <../results_figures/2026-02-05/QRF_quantile_plot_us_4q_Unrate_yoy.png> <../results_figures/2026-02-05/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png> <../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_Unrate_yoy.png>] [16]
+<../results_figures/2026-02-05/overall_importance_DMQv0c_Infl_yoy_q5.png, id=328, 750.951pt x 533.484pt>
+File: ../results_figures/2026-02-05/overall_importance_DMQv0c_Infl_yoy_q5.png Graphic file (type png)
+<use ../results_figures/2026-02-05/overall_importance_DMQv0c_Infl_yoy_q5.png>
+Package pdftex.def Info: ../results_figures/2026-02-05/overall_importance_DMQv0c_Infl_yoy_q5.png  used on input line 457.
+(pdftex.def)             Requested size: 216.01767pt x 153.46092pt.
+<../results_figures/2026-02-05/overall_importance_DMQv0c_Infl_yoy_q95.png, id=329, 750.951pt x 533.484pt>
+File: ../results_figures/2026-02-05/overall_importance_DMQv0c_Infl_yoy_q95.png Graphic file (type png)
+<use ../results_figures/2026-02-05/overall_importance_DMQv0c_Infl_yoy_q95.png>
+Package pdftex.def Info: ../results_figures/2026-02-05/overall_importance_DMQv0c_Infl_yoy_q95.png  used on input line 463.
+(pdftex.def)             Requested size: 216.01767pt x 153.46092pt.
+<../results_figures/2026-02-05/overall_importance_DMQv0c_IP_yoy_q5.png, id=330, 751.9365pt x 533.484pt>
+File: ../results_figures/2026-02-05/overall_importance_DMQv0c_IP_yoy_q5.png Graphic file (type png)
+<use ../results_figures/2026-02-05/overall_importance_DMQv0c_IP_yoy_q5.png>
+Package pdftex.def Info: ../results_figures/2026-02-05/overall_importance_DMQv0c_IP_yoy_q5.png  used on input line 471.
+(pdftex.def)             Requested size: 216.01767pt x 153.25742pt.
+<../results_figures/2026-02-05/overall_importance_DMQv0c_Unrate_yoy_q95.png, id=331, 750.951pt x 533.484pt>
+File: ../results_figures/2026-02-05/overall_importance_DMQv0c_Unrate_yoy_q95.png Graphic file (type png)
+<use ../results_figures/2026-02-05/overall_importance_DMQv0c_Unrate_yoy_q95.png>
+Package pdftex.def Info: ../results_figures/2026-02-05/overall_importance_DMQv0c_Unrate_yoy_q95.png  used on input line 477.
+(pdftex.def)             Requested size: 216.01767pt x 153.46092pt.
+ [17] [18 <../results_figures/2026-02-05/overall_importance_DMQv0c_Infl_yoy_q5.png> <../results_figures/2026-02-05/overall_importance_DMQv0c_Infl_yoy_q95.png> <../results_figures/2026-02-05/overall_importance_DMQv0c_IP_yoy_q5.png> <../results_figures/2026-02-05/overall_importance_DMQv0c_Unrate_yoy_q95.png>]
+<../results_figures/2026-02-05/contrib_timeseries_DMQv0c_Infl_yoy_top5_q5_ma12_valuecolor.png, id=358, 857.385pt x 424.422pt>
+File: ../results_figures/2026-02-05/contrib_timeseries_DMQv0c_Infl_yoy_top5_q5_ma12_valuecolor.png Graphic file (type png)
+<use ../results_figures/2026-02-05/contrib_timeseries_DMQv0c_Infl_yoy_top5_q5_ma12_valuecolor.png>
+Package pdftex.def Info: ../results_figures/2026-02-05/contrib_timeseries_DMQv0c_Infl_yoy_top5_q5_ma12_valuecolor.png  used on input line 503.
 (pdftex.def)             Requested size: 216.01767pt x 106.9277pt.
-<../results_figures/2026-02-05/DMQv0c_Infl_yoy_top5_contrib_timeseries_q95_ma12_valuecolor.png, id=307, 857.385pt x 424.422pt>
-File: ../results_figures/2026-02-05/DMQv0c_Infl_yoy_top5_contrib_timeseries_q95_ma12_valuecolor.png Graphic file (type png)
-<use ../results_figures/2026-02-05/DMQv0c_Infl_yoy_top5_contrib_timeseries_q95_ma12_valuecolor.png>
-Package pdftex.def Info: ../results_figures/2026-02-05/DMQv0c_Infl_yoy_top5_contrib_timeseries_q95_ma12_valuecolor.png  used on input line 513.
+<../results_figures/2026-02-05/contrib_timeseries_DMQv0c_Infl_yoy_top5_q95_ma12_valuecolor.png, id=359, 857.385pt x 424.422pt>
+File: ../results_figures/2026-02-05/contrib_timeseries_DMQv0c_Infl_yoy_top5_q95_ma12_valuecolor.png Graphic file (type png)
+<use ../results_figures/2026-02-05/contrib_timeseries_DMQv0c_Infl_yoy_top5_q95_ma12_valuecolor.png>
+Package pdftex.def Info: ../results_figures/2026-02-05/contrib_timeseries_DMQv0c_Infl_yoy_top5_q95_ma12_valuecolor.png  used on input line 509.
 (pdftex.def)             Requested size: 216.01767pt x 106.9277pt.
-<../results_figures/2026-02-05/DMQv0c_IP_yoy_top5_contrib_timeseries_q5_ma12_valuecolor.png, id=308, 858.042pt x 424.422pt>
-File: ../results_figures/2026-02-05/DMQv0c_IP_yoy_top5_contrib_timeseries_q5_ma12_valuecolor.png Graphic file (type png)
-<use ../results_figures/2026-02-05/DMQv0c_IP_yoy_top5_contrib_timeseries_q5_ma12_valuecolor.png>
-Package pdftex.def Info: ../results_figures/2026-02-05/DMQv0c_IP_yoy_top5_contrib_timeseries_q5_ma12_valuecolor.png  used on input line 521.
+<../results_figures/2026-02-05/contrib_timeseries_DMQv0c_IP_yoy_top5_q5_ma12_valuecolor.png, id=360, 858.042pt x 424.422pt>
+File: ../results_figures/2026-02-05/contrib_timeseries_DMQv0c_IP_yoy_top5_q5_ma12_valuecolor.png Graphic file (type png)
+<use ../results_figures/2026-02-05/contrib_timeseries_DMQv0c_IP_yoy_top5_q5_ma12_valuecolor.png>
+Package pdftex.def Info: ../results_figures/2026-02-05/contrib_timeseries_DMQv0c_IP_yoy_top5_q5_ma12_valuecolor.png  used on input line 517.
 (pdftex.def)             Requested size: 216.01767pt x 106.84999pt.
-<../results_figures/2026-02-05/DMQv0c_Unrate_yoy_top5_contrib_timeseries_q95_ma12_valuecolor.png, id=309, 858.042pt x 424.422pt>
-File: ../results_figures/2026-02-05/DMQv0c_Unrate_yoy_top5_contrib_timeseries_q95_ma12_valuecolor.png Graphic file (type png)
-<use ../results_figures/2026-02-05/DMQv0c_Unrate_yoy_top5_contrib_timeseries_q95_ma12_valuecolor.png>
-Package pdftex.def Info: ../results_figures/2026-02-05/DMQv0c_Unrate_yoy_top5_contrib_timeseries_q95_ma12_valuecolor.png  used on input line 527.
-(pdftex.def)             Requested size: 216.01767pt x 106.84999pt.
- [18 <../results_figures/2026-02-05/DMQv0c_Infl_yoy_top5_contrib_timeseries_q5_ma12_valuecolor.png> <../results_figures/2026-02-05/DMQv0c_Infl_yoy_top5_contrib_timeseries_q95_ma12_valuecolor.png> <../results_figures/2026-02-05/DMQv0c_IP_yoy_top5_contrib_timeseries_q5_ma12_valuecolor.png> <../results_figures/2026-02-05/DMQv0c_Unrate_yoy_top5_contrib_timeseries_q95_ma12_valuecolor.png>]
-<../results_figures/2026-02-05/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_infl_yoy_q5_housing_starts_mw_vs_rates_baa_ff_spread.png, id=323, 607.068pt x 497.75963pt>
+<../results_figures/2026-02-05/contrib_timeseries_DMQv0c_Unrate_yoy_top5_q95_ma12_valuecolor.png, id=361, 857.7135pt x 424.422pt>
+File: ../results_figures/2026-02-05/contrib_timeseries_DMQv0c_Unrate_yoy_top5_q95_ma12_valuecolor.png Graphic file (type png)
+<use ../results_figures/2026-02-05/contrib_timeseries_DMQv0c_Unrate_yoy_top5_q95_ma12_valuecolor.png>
+Package pdftex.def Info: ../results_figures/2026-02-05/contrib_timeseries_DMQv0c_Unrate_yoy_top5_q95_ma12_valuecolor.png  used on input line 523.
+(pdftex.def)             Requested size: 216.01767pt x 106.88884pt.
+ [19] [20 <../results_figures/2026-02-05/contrib_timeseries_DMQv0c_Infl_yoy_top5_q5_ma12_valuecolor.png> <../results_figures/2026-02-05/contrib_timeseries_DMQv0c_Infl_yoy_top5_q95_ma12_valuecolor.png> <../results_figures/2026-02-05/contrib_timeseries_DMQv0c_IP_yoy_top5_q5_ma12_valuecolor.png> <../results_figures/2026-02-05/contrib_timeseries_DMQv0c_Unrate_yoy_top5_q95_ma12_valuecolor.png>]
+<../results_figures/2026-02-05/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_infl_yoy_q5_housing_starts_mw_vs_rates_baa_ff_spread.png, id=387, 613.69275pt x 497.75963pt>
 File: ../results_figures/2026-02-05/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_infl_yoy_q5_housing_starts_mw_vs_rates_baa_ff_spread.png Graphic file (type png)
 <use ../results_figures/2026-02-05/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_infl_yoy_q5_housing_starts_mw_vs_rates_baa_ff_spread.png>
-Package pdftex.def Info: ../results_figures/2026-02-05/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_infl_yoy_q5_housing_starts_mw_vs_rates_baa_ff_spread.png  used on input line 587.
-(pdftex.def)             Requested size: 216.01767pt x 177.11984pt.
-<../results_figures/2026-02-05/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_infl_yoy_q95_housing_starts_mw_vs_rates_baa_ff_spread.png, id=324, 607.068pt x 497.75963pt>
+Package pdftex.def Info: ../results_figures/2026-02-05/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_infl_yoy_q5_housing_starts_mw_vs_rates_baa_ff_spread.png  used on input line 570.
+(pdftex.def)             Requested size: 216.01767pt x 175.20584pt.
+<../results_figures/2026-02-05/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_infl_yoy_q95_housing_starts_mw_vs_rates_baa_ff_spread.png, id=388, 620.01637pt x 497.75963pt>
 File: ../results_figures/2026-02-05/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_infl_yoy_q95_housing_starts_mw_vs_rates_baa_ff_spread.png Graphic file (type png)
 <use ../results_figures/2026-02-05/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_infl_yoy_q95_housing_starts_mw_vs_rates_baa_ff_spread.png>
-Package pdftex.def Info: ../results_figures/2026-02-05/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_infl_yoy_q95_housing_starts_mw_vs_rates_baa_ff_spread.png  used on input line 593.
-(pdftex.def)             Requested size: 216.01767pt x 177.11984pt.
-<../results_figures/2026-02-05/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_ip_yoy_q5_rates_10_yr_ff_spread_vs_stocks_vix.png, id=325, 613.69275pt x 497.75963pt>
+Package pdftex.def Info: ../results_figures/2026-02-05/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_infl_yoy_q95_housing_starts_mw_vs_rates_baa_ff_spread.png  used on input line 576.
+(pdftex.def)             Requested size: 216.01767pt x 173.42097pt.
+<../results_figures/2026-02-05/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_ip_yoy_q5_rates_10_yr_ff_spread_vs_stocks_vix.png, id=389, 607.068pt x 497.75963pt>
 File: ../results_figures/2026-02-05/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_ip_yoy_q5_rates_10_yr_ff_spread_vs_stocks_vix.png Graphic file (type png)
 <use ../results_figures/2026-02-05/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_ip_yoy_q5_rates_10_yr_ff_spread_vs_stocks_vix.png>
-Package pdftex.def Info: ../results_figures/2026-02-05/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_ip_yoy_q5_rates_10_yr_ff_spread_vs_stocks_vix.png  used on input line 601.
-(pdftex.def)             Requested size: 216.01767pt x 175.20584pt.
-<../results_figures/2026-02-05/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_unrate_yoy_q95_rates_10_yr_ff_spread_vs_stocks_vix.png, id=326, 600.74437pt x 497.75963pt>
+Package pdftex.def Info: ../results_figures/2026-02-05/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_ip_yoy_q5_rates_10_yr_ff_spread_vs_stocks_vix.png  used on input line 584.
+(pdftex.def)             Requested size: 216.01767pt x 177.11984pt.
+<../results_figures/2026-02-05/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_unrate_yoy_q95_rates_10_yr_ff_spread_vs_stocks_vix.png, id=390, 607.068pt x 497.75963pt>
 File: ../results_figures/2026-02-05/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_unrate_yoy_q95_rates_10_yr_ff_spread_vs_stocks_vix.png Graphic file (type png)
 <use ../results_figures/2026-02-05/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_unrate_yoy_q95_rates_10_yr_ff_spread_vs_stocks_vix.png>
-Package pdftex.def Info: ../results_figures/2026-02-05/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_unrate_yoy_q95_rates_10_yr_ff_spread_vs_stocks_vix.png  used on input line 607.
-(pdftex.def)             Requested size: 216.01767pt x 178.98825pt.
- [19 <../results_figures/2026-02-05/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_infl_yoy_q5_housing_starts_mw_vs_rates_baa_ff_spread.png> <../results_figures/2026-02-05/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_infl_yoy_q95_housing_starts_mw_vs_rates_baa_ff_spread.png> <../results_figures/2026-02-05/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_ip_yoy_q5_rates_10_yr_ff_spread_vs_stocks_vix.png> <../results_figures/2026-02-05/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_unrate_yoy_q95_rates_10_yr_ff_spread_vs_stocks_vix.png>] (paper.bbl) [20] (../results_tables/2026-02-05/dm_quantile_upper_Infl_yoy_Q5_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-02-05/dm_quantile_upper_Infl_yoy_Q25_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-02-05/dm_quantile_upper_Infl_yoy_Q50_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-02-05/dm_quantile_upper_Infl_yoy_Q75_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-02-05/dm_quantile_upper_Infl_yoy_Q95_us_4q_1998-01-01-2024-12-01.tex) [21
+Package pdftex.def Info: ../results_figures/2026-02-05/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_unrate_yoy_q95_rates_10_yr_ff_spread_vs_stocks_vix.png  used on input line 590.
+(pdftex.def)             Requested size: 216.01767pt x 177.11984pt.
+ [21] [22 <../results_figures/2026-02-05/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_infl_yoy_q5_housing_starts_mw_vs_rates_baa_ff_spread.png> <../results_figures/2026-02-05/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_infl_yoy_q95_housing_starts_mw_vs_rates_baa_ff_spread.png> <../results_figures/2026-02-05/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_ip_yoy_q5_rates_10_yr_ff_spread_vs_stocks_vix.png> <../results_figures/2026-02-05/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_unrate_yoy_q95_rates_10_yr_ff_spread_vs_stocks_vix.png>] (paper.bbl [23]) [24] (../results_tables/2026-02-05/dm_quantile_upper_Infl_yoy_Q5_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-02-05/dm_quantile_upper_Infl_yoy_Q25_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-02-05/dm_quantile_upper_Infl_yoy_Q50_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-02-05/dm_quantile_upper_Infl_yoy_Q75_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-02-05/dm_quantile_upper_Infl_yoy_Q95_us_4q_1998-01-01-2024-12-01.tex) [25
 
-] (../results_tables/2026-02-05/dm_quantile_upper_IP_yoy_Q5_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-02-05/dm_quantile_upper_IP_yoy_Q25_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-02-05/dm_quantile_upper_IP_yoy_Q50_us_4q_1998-01-01-2024-12-01.tex) [22] (../results_tables/2026-02-05/dm_quantile_upper_IP_yoy_Q75_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-02-05/dm_quantile_upper_IP_yoy_Q95_us_4q_1998-01-01-2024-12-01.tex) [23] (../results_tables/2026-02-05/dm_quantile_upper_Unrate_yoy_Q5_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-02-05/dm_quantile_upper_Unrate_yoy_Q25_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-02-05/dm_quantile_upper_Unrate_yoy_Q50_us_4q_1998-01-01-2024-12-01.tex) [24] (../results_tables/2026-02-05/dm_quantile_upper_Unrate_yoy_Q75_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-02-05/dm_quantile_upper_Unrate_yoy_Q95_us_4q_1998-01-01-2024-12-01.tex) [25] (../results_tables/2026-02-05/dm_upper_Infl_yoy_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-02-05/dm_upper_IP_yoy_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-02-05/dm_upper_Unrate_yoy_us_4q_1998-01-01-2024-12-01.tex) [26] [27] (paper.aux)
+] (../results_tables/2026-02-05/dm_quantile_upper_IP_yoy_Q5_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-02-05/dm_quantile_upper_IP_yoy_Q25_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-02-05/dm_quantile_upper_IP_yoy_Q50_us_4q_1998-01-01-2024-12-01.tex) [26] (../results_tables/2026-02-05/dm_quantile_upper_IP_yoy_Q75_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-02-05/dm_quantile_upper_IP_yoy_Q95_us_4q_1998-01-01-2024-12-01.tex) [27] (../results_tables/2026-02-05/dm_quantile_upper_Unrate_yoy_Q5_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-02-05/dm_quantile_upper_Unrate_yoy_Q25_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-02-05/dm_quantile_upper_Unrate_yoy_Q50_us_4q_1998-01-01-2024-12-01.tex) [28] (../results_tables/2026-02-05/dm_quantile_upper_Unrate_yoy_Q75_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-02-05/dm_quantile_upper_Unrate_yoy_Q95_us_4q_1998-01-01-2024-12-01.tex) [29] (../results_tables/2026-02-05/dm_upper_Infl_yoy_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-02-05/dm_upper_IP_yoy_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-02-05/dm_upper_Unrate_yoy_us_4q_1998-01-01-2024-12-01.tex) [30] [31] (paper.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
  ***********
 Package rerunfilecheck Info: File `paper.out' has not changed.
-(rerunfilecheck)             Checksum: 7FD8B0880441096588929BDCABDC7C05;1738.
+(rerunfilecheck)             Checksum: 884B37460D85B323ED420CC8E9AE52A8;1875.
  ) 
 Here is how much of TeX's memory you used:
- 24613 strings out of 467871
- 473990 string characters out of 5418376
- 851007 words of memory out of 5000000
- 52881 multiletter control sequences out of 15000+600000
+ 24654 strings out of 467871
+ 475286 string characters out of 5418376
+ 852113 words of memory out of 5000000
+ 52908 multiletter control sequences out of 15000+600000
  669004 words of font info for 134 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 84i,12n,104p,2164b,597s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 84i,12n,104p,2149b,597s stack positions out of 10000i,1000n,20000p,200000b,200000s
+
+pdfTeX warning (dest): name{Hfootnote.6} has been referenced but does not exist, replaced by a fixed one
+
 
 pdfTeX warning (dest): name{Hfootnote.5} has been referenced but does not exist, replaced by a fixed one
 
@@ -1121,9 +1124,9 @@ pdfTeX warning (dest): name{Hfootnote.2} has been referenced but does not exist,
 pdfTeX warning (dest): name{Hfootnote.1} has been referenced but does not exist, replaced by a fixed one
 
  <C:\Users\Robpr\AppData\Local\MiKTeX\fonts/pk/ljfour/public/mathabx/dpi657\matha10.pk> <C:\Users\Robpr\AppData\Local\MiKTeX\fonts/pk/ljfour/public/mathabx/dpi600\matha6.pk> <C:\Users\Robpr\AppData\Local\MiKTeX\fonts/pk/ljfour/public/mathabx/dpi720\mathx10.pk> <C:\Users\Robpr\AppData\Local\MiKTeX\fonts/pk/ljfour/public/mathabx/dpi600\matha12.pk> <C:\Users\Robpr\AppData\Local\MiKTeX\fonts/pk/ljfour/public/mathabx/dpi600\matha8.pk><C:/Users/Robpr/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/Robpr/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/Robpr/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/Robpr/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/Robpr/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/Robpr/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/Robpr/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/Robpr/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/Robpr/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb><C:/Users/Robpr/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/Users/Robpr/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb><C:/Users/Robpr/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmri8a.pfb>
-Output written on paper.pdf (27 pages, 10824157 bytes).
+Output written on paper.pdf (31 pages, 10948656 bytes).
 PDF statistics:
- 494 PDF objects out of 1000 (max. 8388607)
- 94 named destinations out of 1000 (max. 500000)
- 250 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 568 PDF objects out of 1000 (max. 8388607)
+ 108 named destinations out of 1000 (max. 500000)
+ 258 words of extra memory for PDF output out of 10000 (max. 10000000)
 
