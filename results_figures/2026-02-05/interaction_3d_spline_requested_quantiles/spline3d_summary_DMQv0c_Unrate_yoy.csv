@@ -1,2 +1,2 @@
 target,quantile,feature_x,feature_y,n_points,n_event_points,plot_file,html_file
-Unrate_yoy,0.95,Rates | 10 yr-FF spread,Stocks | VIX,324,13,spline3d_dmqv0c_unrate_yoy_q95_rates_10_yr_ff_spread_vs_stocks_vix.png,spline3d_dmqv0c_unrate_yoy_q95_rates_10_yr_ff_spread_vs_stocks_vix.html
+Unrate_yoy,0.95,Rates | Baa-FF spread,Rates | Fed Funds,324,13,spline3d_dmqv0c_unrate_yoy_q95_rates_baa_ff_spread_vs_rates_fed_funds.png,spline3d_dmqv0c_unrate_yoy_q95_rates_baa_ff_spread_vs_rates_fed_funds.html
