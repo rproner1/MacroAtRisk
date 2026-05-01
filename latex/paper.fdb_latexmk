@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex paper"] 1777487080.38579 "paper.aux" "paper.bbl" "paper" 1777487095.25185 0
+["bibtex paper"] 1777556061.29899 "paper.aux" "paper.bbl" "paper" 1777556408.63649 0
   "./references.bib" 1777476476 57944 2ffc64f4783152f46c33e9e369aeaccd ""
   "C:/Users/Robpr/AppData/Local/Programs/MiKTeX/bibtex/bst/economic/ecta.bst" 1222085570 29983 0ef0a2bd678e76d0ae833edd63f5ad06 ""
-  "paper.aux" 1777487094 13389 2a920d967763ed3afac0808618e4db08 "pdflatex"
+  "paper.aux" 1777556407 13391 39e39ebd8599190fb7542c2ca265e771 "pdflatex"
   (generated)
   "paper.bbl"
   "paper.blg"
   (rewritten before read)
-["pdflatex"] 1777487080.70368 "c:/Users/Robpr/Documents/projects/macroatrisk/latex/paper.tex" "paper.pdf" "paper" 1777487095.2527 0
+["pdflatex"] 1777556387.20705 "c:/Users/Robpr/Documents/projects/macroatrisk/latex/paper.tex" "paper.pdf" "paper" 1777556408.63763 0
   "../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_IP_yoy.png" 1774301708 300429 75817c90e5266ba185ca30548dc84109 ""
   "../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_Infl_yoy.png" 1775234669 263236 3c91ca12a9c7e88e3c7d0cd0e679dd1b ""
   "../results_figures/2026-02-05/DMQv0c_mean_plot_us_4q_Unrate_yoy.png" 1774301708 266919 5fe916ca409302df11dc188e9160b66e ""
@@ -260,12 +260,12 @@
   "C:/Users/Robpr/AppData/Local/Programs/MiKTeX/tex/latex/tools/dcolumn.sty" 1761901070 2758 45e23cbfca71d005129508736d6a89ec ""
   "C:/Users/Robpr/AppData/Local/Programs/MiKTeX/tex/latex/url/url.sty" 1388490452 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "C:/Users/Robpr/AppData/Local/Programs/MiKTeX/tex/latex/xcolor/xcolor.sty" 1729265222 55384 b454dec21c2d9f45ec0b793f0995b992 ""
-  "c:/Users/Robpr/Documents/projects/macroatrisk/latex/paper.tex" 1777487065 62450 89f5e12cc3f4894852d887dc789eae27 ""
+  "c:/Users/Robpr/Documents/projects/macroatrisk/latex/paper.tex" 1777556386 63559 83f1ae469fbb45f4a3bf12b5867eb370 ""
   "figures/DMQv0.png" 1774301700 51835 cfea27a9b85762ef79a9bcb69aca3e11 ""
-  "paper.aux" 1777487094 13389 2a920d967763ed3afac0808618e4db08 "pdflatex"
-  "paper.bbl" 1777487080 6611 55799aa5f63a6580e33d32f90a3cb0b0 "bibtex paper"
-  "paper.out" 1777487094 1875 884b37460d85b323ed420cc8e9ae52a8 "pdflatex"
-  "paper.tex" 1777487065 62450 89f5e12cc3f4894852d887dc789eae27 ""
+  "paper.aux" 1777556407 13391 39e39ebd8599190fb7542c2ca265e771 "pdflatex"
+  "paper.bbl" 1777556061 6611 55799aa5f63a6580e33d32f90a3cb0b0 "bibtex paper"
+  "paper.out" 1777556407 1875 884b37460d85b323ed420cc8e9ae52a8 "pdflatex"
+  "paper.tex" 1777556386 63559 83f1ae469fbb45f4a3bf12b5867eb370 ""
   (generated)
   "paper.aux"
   "paper.log"
