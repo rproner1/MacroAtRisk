@@ -13,6 +13,7 @@ from keras.layers import (
     Concatenate, 
     LSTM, 
     GRU, 
+    RNN,
     Conv1D,
     BatchNormalization, 
     LayerNormalization, 
@@ -26,6 +27,8 @@ from keras.regularizers import L1L2
 from keras.optimizers import Adam
 from keras.initializers import GlorotUniform
 from typing import Union, List
+
+from src.train.slstm import sLSTM, sLSTMCell
 
 def get_confounding_set(X: np.ndarray, m: int, j: int) -> list:
 
@@ -404,7 +407,6 @@ def build_mq(input_shapes: Union[tuple, list[tuple]], n_input_processing_layers:
 
     return model
 
-
 def build_dmq_v1(
         input_shape: tuple, 
         n_recurrent_layers: int=2, 
@@ -627,6 +629,8 @@ def build_dmq_v0(
         recurrent_layer_type = LSTM
     elif recurrent_layer_type == 'gru':   
         recurrent_layer_type = GRU
+    elif recurrent_layer_type == 'xlstm':
+        recurrent_layer_type = sLSTM 
     else:
         raise ValueError("recurrent_layer_type must be 'lstm' or 'gru'")
 
@@ -640,7 +644,7 @@ def build_dmq_v0(
                 n_recurrent_nodes, 
                 return_sequences=(i < n_recurrent_layers), 
                 kernel_regularizer=L1L2(l1,l2), 
-                recurrent_dropout=rec_drop,
+                # recurrent_dropout=rec_drop,
                 kernel_initializer=initializer
             )
         )
