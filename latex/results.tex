@@ -12,6 +12,7 @@
 \usepackage{setspace}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{multirow}
 
 \geometry{margin=1in}
 \onehalfspacing
@@ -20,7 +21,7 @@
 \date{\today}
 \author{Robert Proner}
 % Date variable for results paths
-\newcommand{\resultdate}{2026-02-09_avg_fd}
+\newcommand{\resultsdate}{2026-04-28_macroonly}
 
 % Toggle to show/hide figures. Default shows figures.
 % To override from the command line, pass e.g.:
@@ -37,105 +38,253 @@
 
 \maketitle
 
+\section{Main tables}
+
+\begin{table}[htbp]
+  \centering
+  \resizebox{\textwidth}{!}{
+  \input{../results_tables/\resultsdate/r1_combined_body_us_4q_1998-01-01-2024-12-01.tex}
+  }
+  \caption{$R^1$ table for annual inflation, annual IP growth, and annual percent change in the unemployment rate for the period January 1998 to December 2024}
+  \label{tab: baseline r1 table}
+\end{table}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Pairwise DM $t$-statistics pooled across quantiles (upper triangular). Significant values at 5\% are in bold.}
+  \label{tab: dm_qpooled}
+
+  \begin{subtable}{\textwidth}
+    \centering
+    \caption*{Panel A: INFL}
+    \resizebox{\textwidth}{!}{
+    \input{../results_tables/\resultsdate/dm_qpooled_upper_Infl_yoy_us_4q_1998-01-01-2024-12-01.tex}
+    }
+  \end{subtable}
+
+  \vspace{0.75em}
+  \begin{subtable}{\textwidth}
+    \centering
+    \caption*{Panel B: IP}
+    \resizebox{\textwidth}{!}{
+    \input{../results_tables/\resultsdate/dm_qpooled_upper_IP_yoy_us_4q_1998-01-01-2024-12-01.tex}
+    }
+  \end{subtable}
+
+  \vspace{0.75em}
+  \begin{subtable}{\textwidth}
+    \centering
+    \caption*{Panel C: UNRATE}
+    \resizebox{\textwidth}{!}{
+    \input{../results_tables/\resultsdate/dm_qpooled_upper_Unrate_yoy_us_4q_1998-01-01-2024-12-01.tex}
+    }
+  \end{subtable}
+\end{table}
+
+\begin{table}[htbp]
+  \centering
+  \resizebox{\textwidth}{!}{
+  \input{../results_tables/\resultsdate/r2_combined_us_4q_1998-01-01-2024-12-01.tex}
+  }
+  \caption{$R^2$ table}
+  \label{tab: baseline r2 table}
+\end{table}
+
+
+
 \section{Figures}
 % Figures can be toggled with the `\ifshowfigures` conditional
 \ifshowfigures
-\begin{figure}[H]
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.49\textwidth}
     \centering
-    \includegraphics[width=0.8\textwidth]{../results_figures/\resultdate/DMQv0c_quantile_plot_us_4q_Infl_yoy.png}
-    \caption{Forecasts for Infl\_yoy using DMQv0c}
-    \label{fig:infl_yoy_dmqv0c}
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/IAR_quantile_plot_us_4q_Infl_yoy.png}
+    \caption*{Top left: Benchmark quantile forecasts (IAR)}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/QRF_quantile_plot_us_4q_Infl_yoy.png}
+    \caption*{Top right: QRF quantile forecasts}
+  \end{subfigure}
+
+  \vspace{0.5em}
+
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/DMQv0_quantile_plot_us_4q_Infl_yoy.png}
+    \caption*{Bottom left: DMQv0 quantile forecasts}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/DMQv0_mean_plot_us_4q_Infl_yoy.png}
+    \caption*{Bottom right: DMQv0 mean forecasts}
+  \end{subfigure}
+  \caption{Inflation forecast comparison across benchmark, QRF, and DMQv0.}
+  \label{fig:infl_model_comparison}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.49\textwidth}
     \centering
-    \includegraphics[width=0.8\textwidth]{../results_figures/\resultdate/DMQv0c_quantile_plot_us_4q_IP_yoy.png}
-    \caption{Forecasts for IP\_yoy using DMQv0c}
-    \label{fig:ip_yoy_dmqv0c}
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/VG_quantile_plot_us_4q_IP_yoy.png}
+    \caption*{Top left: Benchmark quantile forecasts (VG)}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/QRF_quantile_plot_us_4q_IP_yoy.png}
+    \caption*{Top right: QRF quantile forecasts}
+  \end{subfigure}
+
+  \vspace{0.5em}
+
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/DMQv0_quantile_plot_us_4q_IP_yoy.png}
+    \caption*{Bottom left: DMQv0 quantile forecasts}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/DMQv0_mean_plot_us_4q_IP_yoy.png}
+    \caption*{Bottom right: DMQv0 mean forecasts}
+  \end{subfigure}
+  \caption{Industrial production forecast comparison across benchmark, QRF, and DMQv0.}
+  \label{fig:ip_model_comparison}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.49\textwidth}
     \centering
-    \includegraphics[width=0.8\textwidth]{../results_figures/\resultdate/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png}
-    \caption{Forecasts for Unrate\_yoy using DMQv0c}
-    \label{fig:unrate_yoy_dmqv0c}
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/UAR_quantile_plot_us_4q_Unrate_yoy.png}
+    \caption*{Top left: Benchmark quantile forecasts (UAR)}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/QRF_quantile_plot_us_4q_Unrate_yoy.png}
+    \caption*{Top right: QRF quantile forecasts}
+  \end{subfigure}
+
+  \vspace{0.5em}
+
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/DMQv0_quantile_plot_us_4q_Unrate_yoy.png}
+    \caption*{Bottom left: DMQv0 quantile forecasts}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/DMQv0_mean_plot_us_4q_Unrate_yoy.png}
+    \caption*{Bottom right: DMQv0 mean forecasts}
+  \end{subfigure}
+  \caption{Unemployment forecast comparison across benchmark, QRF, and DMQv0.}
+  \label{fig:unrate_model_comparison}
 \end{figure}
+
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.8\textwidth]{../results_figures/\resultdate/DMQv0_quantile_plot_us_4q_Infl_yoy_1998-01-01-2024-12-01.png}
+%     \caption{Forecasts for Infl\_yoy using DMQv0}
+%     \label{fig:infl_yoy_DMQv0}
+% \end{figure}
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.8\textwidth]{../results_figures/\resultdate/DMQv0_quantile_plot_us_4q_IP_yoy_1998-01-01-2024-12-01.png}
+%     \caption{Forecasts for IP\_yoy using DMQv0}
+%     \label{fig:ip_yoy_DMQv0}
+% \end{figure}
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.8\textwidth]{../results_figures/\resultdate/DMQv0_quantile_plot_us_4q_Unrate_yoy_1998-01-01-2024-12-01.png}
+%     \caption{Forecasts for Unrate\_yoy using DMQv0}
+%     \label{fig:unrate_yoy_DMQv0}
+% \end{figure}
 \fi
 
 
 \newpage
 
-\section{Tables}
-% Inflation yoy
-\begin{table}[H]
-\centering
-\caption{Infl\_yoy}
-\label{tab:infl_yoy}
-\begin{subtable}{\textwidth}
-\centering
-\caption*{Panel A: R1 --- Infl\_yoy}
-\resizebox{\textwidth}{!}{%
-\input{../results_tables/\resultdate/r1_Infl_yoy.tex}
-}
-\end{subtable}
+% \section{Tables}
+% % Inflation yoy
+% \begin{table}[H]
+% \centering
+% \caption{Infl\_yoy}
+% \label{tab:infl_yoy}
+% \begin{subtable}{\textwidth}
+% \centering
+% \caption*{Panel A: R1 --- Infl\_yoy}
+% \resizebox{\textwidth}{!}{%
+% \input{../results_tables/\resultdate/r1_Infl_yoy.tex}
+% }
+% \end{subtable}
 
-\vspace{1em}
+% \vspace{1em}
 
-\begin{subtable}{\textwidth}
-\centering
-\caption*{Panel B: R2 --- Infl\_yoy}
-\resizebox{\textwidth}{!}{%
-\input{../results_tables/\resultdate/r2_Infl_yoy.tex}
-}
-\end{subtable}
-\end{table}
+% \begin{subtable}{\textwidth}
+% \centering
+% \caption*{Panel B: R2 --- Infl\_yoy}
+% \resizebox{\textwidth}{!}{%
+% \input{../results_tables/\resultdate/r2_Infl_yoy.tex}
+% }
+% \end{subtable}
+% \end{table}
 
-% IP yoy
-\begin{table}[H]
-\centering
-\caption{IP\_yoy}
-\label{tab:ip_yoy}
-\begin{subtable}{\textwidth}
-\centering
-\caption*{Panel A: R1 --- IP\_yoy}
-\resizebox{\textwidth}{!}{%
-\input{../results_tables/\resultdate/r1_IP_yoy.tex}
-}
-\end{subtable}
+% % IP yoy
+% \begin{table}[H]
+% \centering
+% \caption{IP\_yoy}
+% \label{tab:ip_yoy}
+% \begin{subtable}{\textwidth}
+% \centering
+% \caption*{Panel A: R1 --- IP\_yoy}
+% \resizebox{\textwidth}{!}{%
+% \input{../results_tables/\resultdate/r1_IP_yoy.tex}
+% }
+% \end{subtable}
 
-\vspace{1em}
+% \vspace{1em}
 
-\begin{subtable}{\textwidth}
-\centering
-\caption*{Panel B: R2 --- IP\_yoy}
-\resizebox{\textwidth}{!}{%
-\input{../results_tables/\resultdate/r2_IP_yoy.tex}
-}
-\end{subtable}
-\end{table}
+% \begin{subtable}{\textwidth}
+% \centering
+% \caption*{Panel B: R2 --- IP\_yoy}
+% \resizebox{\textwidth}{!}{%
+% \input{../results_tables/\resultdate/r2_IP_yoy.tex}
+% }
+% \end{subtable}
+% \end{table}
 
-% Unrate yoy
-\begin{table}[H]
-\centering
-\caption{Unrate\_yoy}
-\label{tab:unrate_yoy}
-\begin{subtable}{\textwidth}
-\centering
-\caption*{Panel A: R1 --- Unrate\_yoy}
-\resizebox{\textwidth}{!}{%
-\input{../results_tables/\resultdate/r1_Unrate_yoy.tex}
-}
-\end{subtable}
+% % Unrate yoy
+% \begin{table}[H]
+% \centering
+% \caption{Unrate\_yoy}
+% \label{tab:unrate_yoy}
+% \begin{subtable}{\textwidth}
+% \centering
+% \caption*{Panel A: R1 --- Unrate\_yoy}
+% \resizebox{\textwidth}{!}{%
+% \input{../results_tables/\resultdate/r1_Unrate_yoy.tex}
+% }
+% \end{subtable}
 
-\vspace{1em}
+% \vspace{1em}
 
-\begin{subtable}{\textwidth}
-\centering
-\caption*{Panel B: R2 --- Unrate\_yoy}
-\resizebox{\textwidth}{!}{%
-\input{../results_tables/\resultdate/r2_Unrate_yoy.tex}
-}
-\end{subtable}
-\end{table}
+% \begin{subtable}{\textwidth}
+% \centering
+% \caption*{Panel B: R2 --- Unrate\_yoy}
+% \resizebox{\textwidth}{!}{%
+% \input{../results_tables/\resultdate/r2_Unrate_yoy.tex}
+% }
+% \end{subtable}
+% \end{table}
 
 \end{document}

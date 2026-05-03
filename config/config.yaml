@@ -243,13 +243,14 @@ horizon_in_quarters: 4
 make_results: true
 make_r1_tables: true
 base_models_subset: [
-  'LR',
-  'LAS',
+  'Naive',
+  'QR',
+  'EN',
   # 'QPCR',
   'QRF',
   'QGB',
-  'DMQv0c',
-  # 'DMQv1c',
+  'DMQv0',
+  'DMQv1',
   # 'DMQv2c'
 ]
 test_start: "1998-01-01"
