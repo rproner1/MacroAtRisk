@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1777806340.50078 "c:/Users/Robpr/Documents/projects/macroatrisk/latex/results.tex" "results.pdf" "results" 1777806341.21552 0
+["pdflatex"] 1777806879.90112 "c:/Users/Robpr/Documents/projects/macroatrisk/latex/results.tex" "results.pdf" "results" 1777806880.58538 0
   "../results_tables/2026-04-28_macroonly/dm_qpooled_upper_IP_yoy_us_4q_1998-01-01-2024-12-01.tex" 1777806032 547 911215ff6426246f134db12744fb6adf ""
   "../results_tables/2026-04-28_macroonly/dm_qpooled_upper_Infl_yoy_us_4q_1998-01-01-2024-12-01.tex" 1777806031 549 9b0840e6f2fffaad89b1b38f57a959e3 ""
   "../results_tables/2026-04-28_macroonly/dm_qpooled_upper_Unrate_yoy_us_4q_1998-01-01-2024-12-01.tex" 1777806033 549 fcb5b2fed2a8db590883c5546e7620da ""
@@ -73,9 +73,9 @@
   "C:/Users/Robpr/AppData/Local/Programs/MiKTeX/tex/latex/multirow/multirow.sty" 1731767677 6696 886c9f3087d0b973ed2c19aa79cb3023 ""
   "C:/Users/Robpr/AppData/Local/Programs/MiKTeX/tex/latex/setspace/setspace.sty" 1670403145 22490 8cac309b79a4c53a4ffce4b1b07aead0 ""
   "C:/Users/Robpr/AppData/Local/Programs/MiKTeX/tex/latex/tools/array.sty" 1761901070 15651 9d7c62df82cb29a555c00550babfe364 ""
-  "c:/Users/Robpr/Documents/projects/macroatrisk/latex/results.tex" 1777806339 8544 45b34a5ed103fd2e97c12a08800944b0 ""
-  "results.aux" 1777806341 1021 739cce3672b0ebcedd38046071289afc "pdflatex"
-  "results.tex" 1777806339 8544 45b34a5ed103fd2e97c12a08800944b0 ""
+  "c:/Users/Robpr/Documents/projects/macroatrisk/latex/results.tex" 1777806879 6097 91c97082ee281b5e2b32603534f4abfb ""
+  "results.aux" 1777806880 1021 739cce3672b0ebcedd38046071289afc "pdflatex"
+  "results.tex" 1777806879 6097 91c97082ee281b5e2b32603534f4abfb ""
   (generated)
   "results.aux"
   "results.log"

@@ -342,14 +342,6 @@ def make_dm_tables(
         t_stats.to_csv(results_dir / f"dm_tstats_{country}_{horizon_in_quarters}q_{target_name}_{test_start}-{test_end}.csv")
         p_vals.to_csv(results_dir / f"dm_pvals_{country}_{horizon_in_quarters}q_{target_name}_{test_start}-{test_end}.csv")
 
-        out_tex = tables_dir / f"dm_upper_{target_name}_{country}_{horizon_in_quarters}q_{test_start}-{test_end}.tex"
-        write_upper_triangular_dm_table(
-            t_stats=t_stats,
-            p_vals=p_vals,
-            out_path=out_tex,
-            alpha=alpha,
-        )
-
         out_tex_mean = tables_dir / f"dm_mean_upper_{target_name}_{country}_{horizon_in_quarters}q_{test_start}-{test_end}.tex"
         write_upper_triangular_dm_table(
             t_stats=t_stats,
@@ -395,4 +387,4 @@ def make_dm_tables(
             alpha=alpha,
         )
 
-        print(f"DM table written to {out_tex}")
+        print(f"DM table written to {out_pool}")
