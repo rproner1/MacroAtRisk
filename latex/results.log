@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.3.29)  3 MAY 2026 07:14
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.3.29)  3 MAY 2026 07:34
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -287,26 +287,87 @@ File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 LaTeX Font Info:    Trying to load font information for U+msb on input line 39.
  (C:\Users\Robpr\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-) (../results_tables/2026-04-28_macroonly/r1_combined_body_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-04-28_macroonly/dm_qpooled_upper_Infl_yoy_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-04-28_macroonly/dm_qpooled_upper_IP_yoy_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-04-28_macroonly/dm_qpooled_upper_Unrate_yoy_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-04-28_macroonly/r2_combined_us_4q_1998-01-01-2024-12-01.tex) [1
+) (../results_tables/2026-04-28_macroonly/r1_combined_body_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-04-28_macroonly/dm_qpooled_upper_Infl_yoy_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-04-28_macroonly/dm_qpooled_upper_IP_yoy_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-04-28_macroonly/dm_qpooled_upper_Unrate_yoy_us_4q_1998-01-01-2024-12-01.tex) (../results_tables/2026-04-28_macroonly/r2_combined_us_4q_1998-01-01-2024-12-01.tex)
+<../results_figures/2026-04-28_macroonly/IAR_quantile_plot_us_4q_Infl_yoy_1998-01-01-2024-12-01.png, id=1, 860.013pt x 425.4294pt>
+File: ../results_figures/2026-04-28_macroonly/IAR_quantile_plot_us_4q_Infl_yoy_1998-01-01-2024-12-01.png Graphic file (type png)
+<use ../results_figures/2026-04-28_macroonly/IAR_quantile_plot_us_4q_Infl_yoy_1998-01-01-2024-12-01.png>
+Package pdftex.def Info: ../results_figures/2026-04-28_macroonly/IAR_quantile_plot_us_4q_Infl_yoy_1998-01-01-2024-12-01.png  used on input line 102.
+(pdftex.def)             Requested size: 221.95676pt x 109.79759pt.
+<../results_figures/2026-04-28_macroonly/QRF_quantile_plot_us_4q_Infl_yoy_1998-01-01-2024-12-01.png, id=3, 860.013pt x 425.4294pt>
+File: ../results_figures/2026-04-28_macroonly/QRF_quantile_plot_us_4q_Infl_yoy_1998-01-01-2024-12-01.png Graphic file (type png)
+<use ../results_figures/2026-04-28_macroonly/QRF_quantile_plot_us_4q_Infl_yoy_1998-01-01-2024-12-01.png>
+Package pdftex.def Info: ../results_figures/2026-04-28_macroonly/QRF_quantile_plot_us_4q_Infl_yoy_1998-01-01-2024-12-01.png  used on input line 108.
+(pdftex.def)             Requested size: 221.95676pt x 109.79759pt.
+<../results_figures/2026-04-28_macroonly/DMQv0_quantile_plot_us_4q_Infl_yoy_1998-01-01-2024-12-01.png, id=4, 860.013pt x 425.4294pt>
+File: ../results_figures/2026-04-28_macroonly/DMQv0_quantile_plot_us_4q_Infl_yoy_1998-01-01-2024-12-01.png Graphic file (type png)
+<use ../results_figures/2026-04-28_macroonly/DMQv0_quantile_plot_us_4q_Infl_yoy_1998-01-01-2024-12-01.png>
+Package pdftex.def Info: ../results_figures/2026-04-28_macroonly/DMQv0_quantile_plot_us_4q_Infl_yoy_1998-01-01-2024-12-01.png  used on input line 116.
+(pdftex.def)             Requested size: 221.95676pt x 109.79759pt.
+<../results_figures/2026-04-28_macroonly/DMQv0_mean_plot_us_4q_Infl_yoy_1998-01-01-2024-12-01.png, id=5, 867.24pt x 433.62pt>
+File: ../results_figures/2026-04-28_macroonly/DMQv0_mean_plot_us_4q_Infl_yoy_1998-01-01-2024-12-01.png Graphic file (type png)
+<use ../results_figures/2026-04-28_macroonly/DMQv0_mean_plot_us_4q_Infl_yoy_1998-01-01-2024-12-01.png>
+Package pdftex.def Info: ../results_figures/2026-04-28_macroonly/DMQv0_mean_plot_us_4q_Infl_yoy_1998-01-01-2024-12-01.png  used on input line 122.
+(pdftex.def)             Requested size: 221.95676pt x 110.97855pt.
+<../results_figures/2026-04-28_macroonly/VG_quantile_plot_us_4q_IP_yoy_1998-01-01-2024-12-01.png, id=6, 860.013pt x 425.4294pt>
+File: ../results_figures/2026-04-28_macroonly/VG_quantile_plot_us_4q_IP_yoy_1998-01-01-2024-12-01.png Graphic file (type png)
+<use ../results_figures/2026-04-28_macroonly/VG_quantile_plot_us_4q_IP_yoy_1998-01-01-2024-12-01.png>
+Package pdftex.def Info: ../results_figures/2026-04-28_macroonly/VG_quantile_plot_us_4q_IP_yoy_1998-01-01-2024-12-01.png  used on input line 133.
+(pdftex.def)             Requested size: 221.95676pt x 109.79759pt.
+<../results_figures/2026-04-28_macroonly/QRF_quantile_plot_us_4q_IP_yoy_1998-01-01-2024-12-01.png, id=7, 860.013pt x 425.4294pt>
+File: ../results_figures/2026-04-28_macroonly/QRF_quantile_plot_us_4q_IP_yoy_1998-01-01-2024-12-01.png Graphic file (type png)
+<use ../results_figures/2026-04-28_macroonly/QRF_quantile_plot_us_4q_IP_yoy_1998-01-01-2024-12-01.png>
+Package pdftex.def Info: ../results_figures/2026-04-28_macroonly/QRF_quantile_plot_us_4q_IP_yoy_1998-01-01-2024-12-01.png  used on input line 139.
+(pdftex.def)             Requested size: 221.95676pt x 109.79759pt.
+<../results_figures/2026-04-28_macroonly/DMQv0_quantile_plot_us_4q_IP_yoy_1998-01-01-2024-12-01.png, id=8, 860.013pt x 425.4294pt>
+File: ../results_figures/2026-04-28_macroonly/DMQv0_quantile_plot_us_4q_IP_yoy_1998-01-01-2024-12-01.png Graphic file (type png)
+<use ../results_figures/2026-04-28_macroonly/DMQv0_quantile_plot_us_4q_IP_yoy_1998-01-01-2024-12-01.png>
+Package pdftex.def Info: ../results_figures/2026-04-28_macroonly/DMQv0_quantile_plot_us_4q_IP_yoy_1998-01-01-2024-12-01.png  used on input line 147.
+(pdftex.def)             Requested size: 221.95676pt x 109.79759pt.
+<../results_figures/2026-04-28_macroonly/DMQv0_mean_plot_us_4q_IP_yoy_1998-01-01-2024-12-01.png, id=9, 867.24pt x 433.62pt>
+File: ../results_figures/2026-04-28_macroonly/DMQv0_mean_plot_us_4q_IP_yoy_1998-01-01-2024-12-01.png Graphic file (type png)
+<use ../results_figures/2026-04-28_macroonly/DMQv0_mean_plot_us_4q_IP_yoy_1998-01-01-2024-12-01.png>
+Package pdftex.def Info: ../results_figures/2026-04-28_macroonly/DMQv0_mean_plot_us_4q_IP_yoy_1998-01-01-2024-12-01.png  used on input line 153.
+(pdftex.def)             Requested size: 221.95676pt x 110.97855pt.
+<../results_figures/2026-04-28_macroonly/UAR_quantile_plot_us_4q_Unrate_yoy_1998-01-01-2024-12-01.png, id=10, 860.013pt x 425.4294pt>
+File: ../results_figures/2026-04-28_macroonly/UAR_quantile_plot_us_4q_Unrate_yoy_1998-01-01-2024-12-01.png Graphic file (type png)
+<use ../results_figures/2026-04-28_macroonly/UAR_quantile_plot_us_4q_Unrate_yoy_1998-01-01-2024-12-01.png>
+Package pdftex.def Info: ../results_figures/2026-04-28_macroonly/UAR_quantile_plot_us_4q_Unrate_yoy_1998-01-01-2024-12-01.png  used on input line 164.
+(pdftex.def)             Requested size: 221.95676pt x 109.79759pt.
+<../results_figures/2026-04-28_macroonly/QRF_quantile_plot_us_4q_Unrate_yoy_1998-01-01-2024-12-01.png, id=11, 860.013pt x 425.4294pt>
+File: ../results_figures/2026-04-28_macroonly/QRF_quantile_plot_us_4q_Unrate_yoy_1998-01-01-2024-12-01.png Graphic file (type png)
+<use ../results_figures/2026-04-28_macroonly/QRF_quantile_plot_us_4q_Unrate_yoy_1998-01-01-2024-12-01.png>
+Package pdftex.def Info: ../results_figures/2026-04-28_macroonly/QRF_quantile_plot_us_4q_Unrate_yoy_1998-01-01-2024-12-01.png  used on input line 170.
+(pdftex.def)             Requested size: 221.95676pt x 109.79759pt.
+<../results_figures/2026-04-28_macroonly/DMQv0_quantile_plot_us_4q_Unrate_yoy_1998-01-01-2024-12-01.png, id=12, 860.013pt x 425.4294pt>
+File: ../results_figures/2026-04-28_macroonly/DMQv0_quantile_plot_us_4q_Unrate_yoy_1998-01-01-2024-12-01.png Graphic file (type png)
+<use ../results_figures/2026-04-28_macroonly/DMQv0_quantile_plot_us_4q_Unrate_yoy_1998-01-01-2024-12-01.png>
+Package pdftex.def Info: ../results_figures/2026-04-28_macroonly/DMQv0_quantile_plot_us_4q_Unrate_yoy_1998-01-01-2024-12-01.png  used on input line 178.
+(pdftex.def)             Requested size: 221.95676pt x 109.79759pt.
+<../results_figures/2026-04-28_macroonly/DMQv0_mean_plot_us_4q_Unrate_yoy_1998-01-01-2024-12-01.png, id=13, 867.24pt x 433.62pt>
+File: ../results_figures/2026-04-28_macroonly/DMQv0_mean_plot_us_4q_Unrate_yoy_1998-01-01-2024-12-01.png Graphic file (type png)
+<use ../results_figures/2026-04-28_macroonly/DMQv0_mean_plot_us_4q_Unrate_yoy_1998-01-01-2024-12-01.png>
+Package pdftex.def Info: ../results_figures/2026-04-28_macroonly/DMQv0_mean_plot_us_4q_Unrate_yoy_1998-01-01-2024-12-01.png  used on input line 184.
+(pdftex.def)             Requested size: 221.95676pt x 110.97855pt.
+ [1
 
-{C:/Users/Robpr/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] [2] [3] (results.aux)
+{C:/Users/Robpr/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] [2] [3 <../results_figures/2026-04-28_macroonly/IAR_quantile_plot_us_4q_Infl_yoy_1998-01-01-2024-12-01.png> <../results_figures/2026-04-28_macroonly/QRF_quantile_plot_us_4q_Infl_yoy_1998-01-01-2024-12-01.png> <../results_figures/2026-04-28_macroonly/DMQv0_quantile_plot_us_4q_Infl_yoy_1998-01-01-2024-12-01.png> <../results_figures/2026-04-28_macroonly/DMQv0_mean_plot_us_4q_Infl_yoy_1998-01-01-2024-12-01.png> <../results_figures/2026-04-28_macroonly/VG_quantile_plot_us_4q_IP_yoy_1998-01-01-2024-12-01.png> <../results_figures/2026-04-28_macroonly/QRF_quantile_plot_us_4q_IP_yoy_1998-01-01-2024-12-01.png> <../results_figures/2026-04-28_macroonly/DMQv0_quantile_plot_us_4q_IP_yoy_1998-01-01-2024-12-01.png> <../results_figures/2026-04-28_macroonly/DMQv0_mean_plot_us_4q_IP_yoy_1998-01-01-2024-12-01.png>] [4 <../results_figures/2026-04-28_macroonly/UAR_quantile_plot_us_4q_Unrate_yoy_1998-01-01-2024-12-01.png> <../results_figures/2026-04-28_macroonly/QRF_quantile_plot_us_4q_Unrate_yoy_1998-01-01-2024-12-01.png> <../results_figures/2026-04-28_macroonly/DMQv0_quantile_plot_us_4q_Unrate_yoy_1998-01-01-2024-12-01.png> <../results_figures/2026-04-28_macroonly/DMQv0_mean_plot_us_4q_Unrate_yoy_1998-01-01-2024-12-01.png>] (results.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 5183 strings out of 467871
- 85422 string characters out of 5418376
- 517609 words of memory out of 5000000
- 33996 multiletter control sequences out of 15000+600000
+ 5279 strings out of 467871
+ 94516 string characters out of 5418376
+ 519675 words of memory out of 5000000
+ 34092 multiletter control sequences out of 15000+600000
  638521 words of font info for 70 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  57i,11n,65p,336b,518s stack positions out of 10000i,1000n,20000p,200000b,200000s
  <C:\Users\Robpr\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1000.pk> <C:\Users\Robpr\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1095.pk> <C:\Users\Robpr\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1440.pk> <C:\Users\Robpr\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1200.pk> <C:\Users\Robpr\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1728.pk><C:/Users/Robpr/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/Robpr/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb>
-Output written on results.pdf (3 pages, 62730 bytes).
+Output written on results.pdf (4 pages, 5982182 bytes).
 PDF statistics:
- 157 PDF objects out of 1000 (max. 8388607)
+ 208 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 61 words of extra memory for PDF output out of 10000 (max. 10000000)
 
