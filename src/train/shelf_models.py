@@ -149,20 +149,27 @@ def fit_linear_models(
                     sampler=optuna.samplers.RandomSampler(seed),
                     pruner=None
                 )
-                
-                study.optimize(
-                    objective,
-                    n_trials=trials,
-                    n_jobs=os.cpu_count(),
-                    callbacks=[
-                        optuna.study.MaxTrialsCallback(
-                            max_total_trials,
-                            states=(TrialState.COMPLETE, TrialState.PRUNED)
-                        )
-                    ],
-                    gc_after_trial=True,
-                    show_progress_bar=True
+
+                n_completed_trials = len(
+                    study.get_trials(deepcopy=False, states=[TrialState.COMPLETE])
                 )
+                remaining_trials = max(0, max_total_trials - n_completed_trials)
+
+                if remaining_trials == 0:
+                    logging.info(
+                        f"Study {study_name} already has {n_completed_trials} completed trials. Skipping..."
+                    )
+                else:
+                    logging.info(
+                        f"Study {study_name} has {n_completed_trials} completed trials. Running {remaining_trials} more..."
+                    )
+                    study.optimize(
+                        objective,
+                        n_trials=remaining_trials,
+                        n_jobs=os.cpu_count(),
+                        gc_after_trial=True,
+                        show_progress_bar=True
+                    )
                 
                 best_params = study.best_params
                 best_params.update(builder_params)
