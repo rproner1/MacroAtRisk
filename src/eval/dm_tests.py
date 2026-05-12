@@ -19,6 +19,10 @@ BENCHMARK_MODEL_BY_TARGET = {
     2: "UAR",
 }
 
+def _tilted_loss(y_true: np.ndarray, y_pred: np.ndarray, q: float) -> np.ndarray:
+    """Compute tilted loss for quantile q."""
+    e = y_true - y_pred
+    return np.where(e >= 0, q * e, (q - 1) * e)
 
 def get_quantile_weights(quantiles: list[float]) -> np.ndarray:
     """Compute quadrature-style weights from ordered quantile levels."""
@@ -205,6 +209,8 @@ def compute_pairwise_dm_matrices_quantile_pooled(
     models = list(model_quantile_forecasts.keys())
     y = np.asarray(y_true, dtype=float).reshape(-1)
 
+    print("Model quantile forecasts:", model_quantile_forecasts)
+
     t_stats = pd.DataFrame(np.nan, index=models, columns=models, dtype=float)
     p_vals = pd.DataFrame(np.nan, index=models, columns=models, dtype=float)
 
@@ -219,9 +225,10 @@ def compute_pairwise_dm_matrices_quantile_pooled(
             for q_idx, q in enumerate(quantiles):
                 f_i = np.asarray(model_quantile_forecasts[model_i][:, q_idx], dtype=float)
                 f_j = np.asarray(model_quantile_forecasts[model_j][:, q_idx], dtype=float)
-                q_diffs.append(tilted_loss(y, f_i, q=q) - tilted_loss(y, f_j, q=q))
+                q_diffs.append(_tilted_loss(y, f_i, q=q) - _tilted_loss(y, f_j, q=q))
 
             d_pooled = np.mean(np.column_stack(q_diffs), axis=1)
+            # print(f"Quantile-pooled DM differential for {model_i} vs {model_j}:", d_pooled) # One element vector resulting in nans
             t_stat, p_val = _dm_from_differential(d_pooled)
             t_stats.loc[model_i, model_j] = t_stat
             p_vals.loc[model_i, model_j] = p_val
@@ -331,6 +338,7 @@ def make_dm_tables(
         ordered_q_forecasts = {k: model_q_forecasts[k] for k in ordered_keys}
 
         # 1) Mean DM
+        # print(actuals, ordered_forecasts)
         t_stats, p_vals = compute_pairwise_dm_matrices(
             y_true=actuals,
             model_forecasts=ordered_forecasts,
