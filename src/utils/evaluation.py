@@ -4,13 +4,22 @@ import numpy as np
 from scipy.stats import t
 import matplotlib.pyplot as plt
 import scipy.integrate as integrate
-
+import warnings
 
 def compute_oos_r1_score(benchmark_pred, y_true, y_pred, q):
     
     """
     Computes the R1 score of a set of quantile forecasts and a set of returns.
     """
+
+    if np.isnan(benchmark_pred).any() or np.isnan(y_true).any() or np.isnan(y_pred).any():
+        warnings.warn("Input arrays contain NaN values. Please handle missing data before computing R1 score.")
+
+        # Drop nas
+    mask = ~np.isnan(benchmark_pred) & ~np.isnan(y_true) & ~np.isnan(y_pred)
+    benchmark_pred = benchmark_pred[mask]
+    y_true = y_true[mask]   
+    y_pred = y_pred[mask]
 
     return (1 - mean_pinball_loss(y_true, y_pred, alpha=q)/mean_pinball_loss(y_true, benchmark_pred, alpha=q))*100
 
@@ -19,6 +28,15 @@ def compute_oos_r2_score(y_true, y_pred, benchmark):
     """
     Computes out-of-sample (OOS) R2.
     """
+
+    if np.isnan(benchmark).any() or np.isnan(y_true).any() or np.isnan(y_pred).any():
+        warnings.warn("Input arrays contain NaN values. Please handle missing data before computing R2 score.")
+
+    # Drop nas
+    mask = ~np.isnan(benchmark) & ~np.isnan(y_true) & ~np.isnan(y_pred)
+    benchmark = benchmark[mask]
+    y_true = y_true[mask]   
+    y_pred = y_pred[mask]
     
     return (1 - mean_squared_error(y_true, y_pred) / mean_squared_error(y_true, benchmark))*100
 

@@ -43,6 +43,7 @@ parser.add_argument("--plot-quantiles", action="store_true", help="Whether to ge
 parser.add_argument("--plot-means", action="store_true", help="Whether to generate mean plots")
 parser.add_argument("--dm-test", action="store_true", help="Whether to perform Diebold-Mariano tests for pairwise model comparisons")
 parser.add_argument("--run-locally", action="store_true", help="Whether to run locally (adjusts file paths accordingly)")
+parser.add_argument("--ensemble-models", type=str, nargs="*", default=None, help="List of models to include in the ensemble")
 args = parser.parse_args()
 
 # Use config values as defaults, allow CLI overrides
@@ -99,7 +100,8 @@ def main():
         shelf_pred_dir=SHELF_PRED_DIR,
         pred_dir=PRED_DIR,
         start_year=START_YEAR,
-        end_year=END_YEAR
+        end_year=END_YEAR,
+        ensemble_models=args.ensemble_models
     )
     
     print("\nStep 2: Generating combined R1 table body across INFL/IP/UNRATE...")

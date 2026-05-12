@@ -15,7 +15,8 @@ def concat_predictions(
     horizon_in_quarters: int = 4,
     date: str = date.today(),
     start_year: int = 1997,
-    end_year: int = 2023
+    end_year: int = 2023,
+    ensemble_models: list = None
 ):
     """
     Concatenate predictions from different model types.
@@ -67,6 +68,20 @@ def concat_predictions(
 
         preds = pd.concat(preds)
 
+        # Ense
+        
+        if ensemble_models is not None:
+            ensemble_preds = []
+            for model in ensemble_models:
+                model_cols = [col for col in preds.columns if col.startswith(model)]
+                model_preds = preds[model_cols] # E.g., DMQs_Q5, ..., DMQs_Q95
+                ensemble_preds.append(model_preds.values[:,:,np.newaxis])
+            
+            ensemble_preds = np.mean(np.concatenate(ensemble_preds, axis=2), axis=2) # Shape: (num_samples, num_quantiles)
+
+            ensemble_preds_df = pd.DataFrame(ensemble_preds, index=preds.index, columns=[f"DMQe_Q{q}" for q in [5, 25, 50, 75, 95]])    
+            preds = pd.concat([preds, ensemble_preds_df], axis=1)
+        
         preds.to_csv(pred_dir / f"all_models_predictions_{country}_{horizon_in_quarters}q_{target_name_dict[TARGET_IDX]}.csv")
     
     print(f"Concatenated predictions saved to {pred_dir}")

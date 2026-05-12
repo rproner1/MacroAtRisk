@@ -250,7 +250,11 @@ base_models_subset: [
   'QRF',
   'QGB',
   'DMQv0',
-  # 'DMQv1',
+  'DMQv1',
+  # 'DMQs',
+  # 'DMQm',
+  # 'DMQl',
+  # 'DMQe'
   # 'DMQv2c'
 ]
 test_start: "1998-01-01"
