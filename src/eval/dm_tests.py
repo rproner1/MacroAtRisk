@@ -190,7 +190,7 @@ def compute_pairwise_dm_matrices_per_quantile(
 
                 f_i = np.asarray(model_quantile_forecasts[model_i][:, q_idx], dtype=float)
                 f_j = np.asarray(model_quantile_forecasts[model_j][:, q_idx], dtype=float)
-                d = tilted_loss(y, f_i, q=q) - tilted_loss(y, f_j, q=q)
+                d = _tilted_loss(y, f_i, q=q) - _tilted_loss(y, f_j, q=q)
                 t_stat, p_val = _dm_from_differential(d)
                 t_stats.loc[model_i, model_j] = t_stat
                 p_vals.loc[model_i, model_j] = p_val
@@ -208,8 +208,6 @@ def compute_pairwise_dm_matrices_quantile_pooled(
     """Return pairwise DM matrices pooled across quantiles (per target)."""
     models = list(model_quantile_forecasts.keys())
     y = np.asarray(y_true, dtype=float).reshape(-1)
-
-    print("Model quantile forecasts:", model_quantile_forecasts)
 
     t_stats = pd.DataFrame(np.nan, index=models, columns=models, dtype=float)
     p_vals = pd.DataFrame(np.nan, index=models, columns=models, dtype=float)
