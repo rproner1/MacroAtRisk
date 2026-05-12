@@ -97,9 +97,6 @@ def fit_linear_models(
 
     models = [m for m in ['QR', 'RID', 'LAS', 'EN'] if m in linear_grids]
 
-    # Cap total Optuna trials across resumed runs
-    max_total_trials = min(trials, 100)
-    
     # Optuna storage
     if optuna_storage == "inmemory":
         storage = optuna.storages.InMemoryStorage()
@@ -153,7 +150,7 @@ def fit_linear_models(
                 n_completed_trials = len(
                     study.get_trials(deepcopy=False, states=[TrialState.COMPLETE])
                 )
-                remaining_trials = max(0, max_total_trials - n_completed_trials)
+                remaining_trials = max(0, trials - n_completed_trials)
 
                 if remaining_trials == 0:
                     logging.info(

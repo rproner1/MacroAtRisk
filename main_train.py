@@ -288,7 +288,6 @@ def train_deep_models():
     
     # Adjust parameters for local runs
     trials = 1 if RUN_LOCALLY else config['trials']
-    max_total_trials = 1 if RUN_LOCALLY else 100
     n_estimators = 1 if RUN_LOCALLY else config['n_estimators']
     cpu_count = os.cpu_count()
 
@@ -425,7 +424,7 @@ def train_deep_models():
             n_completed_trials = len(
                 study.get_trials(deepcopy=False, states=[TrialState.COMPLETE])
             )
-            remaining_trials = max(0, max_total_trials - n_completed_trials)
+            remaining_trials = max(0, trials - n_completed_trials)
 
             if remaining_trials == 0:
                 logging.info(
