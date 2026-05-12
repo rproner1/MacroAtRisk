@@ -13,3 +13,6 @@ build/
 .cache/
 renv*
 .Rprofile
+models/
+predictions/ 
+tuning_logs/
