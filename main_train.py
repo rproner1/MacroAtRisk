@@ -412,7 +412,7 @@ def train_deep_models():
                 **builder_params
             )
 
-            optuna.logging.set_verbosity(optuna.logging.WARNING)
+            optuna.logging.set_verbosity(optuna.logging.INFO)
             study = optuna.create_study(
                 direction="minimize",
                 study_name=study_name,
