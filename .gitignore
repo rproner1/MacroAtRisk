@@ -16,3 +16,5 @@ renv*
 models/
 predictions/ 
 tuning_logs/
+results_figures/
+results_tables/

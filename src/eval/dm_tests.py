@@ -336,12 +336,6 @@ def make_dm_tables(
             model_forecasts=ordered_forecasts,
         )
 
-        t_stats.to_csv(results_dir / f"dm_mean_tstats_{country}_{horizon_in_quarters}q_{target_name}_{test_start}-{test_end}.csv")
-        p_vals.to_csv(results_dir / f"dm_mean_pvals_{country}_{horizon_in_quarters}q_{target_name}_{test_start}-{test_end}.csv")
-        # Backward-compatible filenames used in existing paper input.
-        t_stats.to_csv(results_dir / f"dm_tstats_{country}_{horizon_in_quarters}q_{target_name}_{test_start}-{test_end}.csv")
-        p_vals.to_csv(results_dir / f"dm_pvals_{country}_{horizon_in_quarters}q_{target_name}_{test_start}-{test_end}.csv")
-
         out_tex_mean = tables_dir / f"dm_mean_upper_{target_name}_{country}_{horizon_in_quarters}q_{test_start}-{test_end}.tex"
         write_upper_triangular_dm_table(
             t_stats=t_stats,
@@ -359,8 +353,6 @@ def make_dm_tables(
         for q in quantiles:
             q_int = int(round(q * 100))
             qt, qp = q_mats[q]
-            qt.to_csv(results_dir / f"dm_quantile_tstats_{country}_{horizon_in_quarters}q_{target_name}_Q{q_int}_{test_start}-{test_end}.csv")
-            qp.to_csv(results_dir / f"dm_quantile_pvals_{country}_{horizon_in_quarters}q_{target_name}_Q{q_int}_{test_start}-{test_end}.csv")
 
             out_q = tables_dir / f"dm_quantile_upper_{target_name}_Q{q_int}_{country}_{horizon_in_quarters}q_{test_start}-{test_end}.tex"
             write_upper_triangular_dm_table(
@@ -376,8 +368,6 @@ def make_dm_tables(
             model_quantile_forecasts=ordered_q_forecasts,
             quantiles=quantiles,
         )
-        t_pool.to_csv(results_dir / f"dm_qpooled_tstats_{country}_{horizon_in_quarters}q_{target_name}_{test_start}-{test_end}.csv")
-        p_pool.to_csv(results_dir / f"dm_qpooled_pvals_{country}_{horizon_in_quarters}q_{target_name}_{test_start}-{test_end}.csv")
 
         out_pool = tables_dir / f"dm_qpooled_upper_{target_name}_{country}_{horizon_in_quarters}q_{test_start}-{test_end}.tex"
         write_upper_triangular_dm_table(
