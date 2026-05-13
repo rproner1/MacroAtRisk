@@ -25,6 +25,10 @@ parser = argparse.ArgumentParser(description="Generate results and tables")
 parser.add_argument('--target', type=int, default=0, help="Target variable index (0: Infl_yoy, 1: IP_yoy, 2: Unrate_yoy)")
 parser.add_argument("--date", type=str, default=None, 
                     help="Date identifier for results (default: from config)")
+parser.add_argument("--shelf-date", type=str, default=None,
+                    help="Date identifier for shelf model predictions")
+parser.add_argument("--st-date", type=str, default=None,
+                    help="Date identifier for state-of-the-art model predictions")
 parser.add_argument("--country", type=str, default=None, 
                     help="Country code (default: from config)")
 parser.add_argument("--horizon", type=int, default=None, 
@@ -49,6 +53,8 @@ args = parser.parse_args()
 # Use config values as defaults, allow CLI overrides
 TARGET_IDX = args.target
 DATE = args.date if args.date is not None else config.get('date', str(date.today()))
+SHELF_DATE = args.shelf_date if args.shelf_date is not None else args.date
+ST_DATE = args.st_date if args.st_date is not None else args.date
 COUNTRY = args.country if args.country is not None else config['country']
 HORIZON = args.horizon if args.horizon is not None else config['horizon_in_quarters']
 QUANTILES = args.quantiles if args.quantiles is not None else config['quantiles']
@@ -63,12 +69,9 @@ RUN_LOCALLY = args.run_locally
 BASE_DIR = Path(os.getenv('REMOTE_BASE_DIR')) if not RUN_LOCALLY else Path(os.getenv('LOCAL_BASE_DIR'))
 
 DATA_DIR = BASE_DIR / 'data' / 'processed'
-SHELF_MODEL_DIR = BASE_DIR / 'models' / 'shelf_models' / DATE
-SHELF_PRED_DIR = BASE_DIR / 'predictions' / 'shelf_preds' / DATE
-SHELF_TUNING_LOG_PATH = BASE_DIR / 'tuning_logs' / f"shelf_tuning_log_{DATE}.json"
+SHELF_PRED_DIR = BASE_DIR / 'predictions' / 'shelf_preds' / SHELF_DATE
 LIT_BENCH_PRED_DIR = BASE_DIR  / 'lit_benchmark_predictions' 
-ST_MODEL_DIR = BASE_DIR / 'models' / 'st_models' / DATE 
-ST_PRED_DIR = BASE_DIR / 'predictions' / 'st_preds' / DATE
+ST_PRED_DIR = BASE_DIR / 'predictions' / 'st_preds' / ST_DATE
 
 PRED_DIR = BASE_DIR / 'predictions' / 'concatenated' / DATE
 
