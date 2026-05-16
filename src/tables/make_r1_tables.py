@@ -70,7 +70,7 @@ def make_r1_tables(
     model_subset = ['AR1', benchmark_model] + base_models_subset
 
     # Naive rolling mean and quantile predictions for computing out-of-sample R1 and R2
-    y_full = pd.read_parquet(targets_path).loc['1961-01-01':'2024-12-01', :]
+    y_full = pd.read_csv(targets_path, index_col=0, parse_dates=True).loc['1961-01-01':'2024-12-01', :]
     naive_preds = expanding_stats(
         y_full,
         col=target_dict[target_idx],

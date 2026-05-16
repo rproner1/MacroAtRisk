@@ -102,9 +102,9 @@ for path in [SHELF_MODEL_DIR, SHELF_PRED_DIR, SHELF_TUNING_LOG_PATH.parent, LIT_
 
 target_name_dict = {0: 'Infl_yoy', 1: 'IP_yoy', 2: 'Unrate_yoy'}
 model_file_dict = {
-    0: f"{COUNTRY}_{HORIZON_IN_QUARTERS}q_iar_x.parquet",
-    1: f"{COUNTRY}_{HORIZON_IN_QUARTERS}q_vg_x.parquet",
-    2: f"{COUNTRY}_{HORIZON_IN_QUARTERS}q_uar_x.parquet"
+    0: f"{COUNTRY}_{HORIZON_IN_QUARTERS}q_iar_x.csv",
+    1: f"{COUNTRY}_{HORIZON_IN_QUARTERS}q_vg_x.csv",
+    2: f"{COUNTRY}_{HORIZON_IN_QUARTERS}q_uar_x.csv"
 }
 model_name_dict = {0: 'IAR', 1: 'VG', 2: 'UAR'}
 
@@ -160,8 +160,8 @@ def train_shelf_models():
     all_preds.update(naive_preds)
     
     # AR(1) models
-    ar1_x_path = DATA_DIR / f"{COUNTRY}_{HORIZON_IN_QUARTERS}q_ar1_x.parquet"
-    X_ar1 = pd.read_parquet(ar1_x_path)
+    ar1_x_path = DATA_DIR / f"{COUNTRY}_{HORIZON_IN_QUARTERS}q_ar1_x.csv"
+    X_ar1 = pd.read_csv(ar1_x_path, index_col=0, parse_dates=True)
     X_train_ar1 = X_ar1.loc['1961-02-01':f'{YEAR}-12-01', f"{target_name}_t-1"]
     X_test_ar1 = X_ar1.loc[f'{YEAR+1}-01-01': f'{YEAR+1}-12-01', f"{target_name}_t-1"]
     y_train_ar1 = y_train_full.loc['1961-02-01':f'{YEAR}-12-01'] # Get rid of first date because NaN from lag

@@ -41,7 +41,7 @@ def _compute_r1_results_df(
 
     target_name = TARGET_DICT[target_idx]
 
-    y_full = pd.read_parquet(targets_path).loc['1961-01-01':'2024-12-01', :]
+    y_full = pd.read_csv(targets_path, index_col=0, parse_dates=True).loc['1961-01-01':'2024-12-01', :]
     naive_preds = expanding_stats(
         y_full,
         col=target_name,
@@ -102,7 +102,7 @@ def _compute_r2_results_df(
 
     target_name = TARGET_DICT[target_idx]
 
-    y_full = pd.read_parquet(targets_path).loc['1961-01-01':'2024-12-01', :]
+    y_full = pd.read_csv(targets_path, index_col=0, parse_dates=True).loc['1961-01-01':'2024-12-01', :]
     naive_preds = expanding_stats(
         y_full,
         col=target_name,

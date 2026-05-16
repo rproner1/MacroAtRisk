@@ -10,7 +10,7 @@ import numpy as np
 def get_latest_file(
     file: Path | None = None,
     prefix: str | None = None,
-    extension: str = ".parquet",
+    extension: str = ".csv",
     directory: Path = Path("."),
 ) -> Path | None:
     """
@@ -19,7 +19,7 @@ def get_latest_file(
     Args:
         file (Path, optional): The file path without the timestamp. Defaults to None.
         prefix (str): The prefix of the file name. Defaults to None.
-        extension (str, optional): The extension of the file. Defaults to ".parquet".
+        extension (str, optional): The extension of the file. Defaults to ".csv".
         directory (Path, optional): The directory to search in. Defaults to Path(".")
 
     Returns:

@@ -139,9 +139,9 @@ for path in [SHELF_MODEL_DIR, SHELF_PRED_DIR, SHELF_TUNING_LOG_PATH.parent, LIT_
 
 target_name_dict = {0: 'Infl_yoy', 1: 'IP_yoy', 2: 'Unrate_yoy'}
 model_file_dict = {
-    0: f"{COUNTRY}_{HORIZON_IN_QUARTERS}q_iar_x.parquet",
-    1: f"{COUNTRY}_{HORIZON_IN_QUARTERS}q_vg_x.parquet",
-    2: f"{COUNTRY}_{HORIZON_IN_QUARTERS}q_uar_x.parquet"
+    0: f"{COUNTRY}_{HORIZON_IN_QUARTERS}q_iar_x.csv",
+    1: f"{COUNTRY}_{HORIZON_IN_QUARTERS}q_vg_x.csv",
+    2: f"{COUNTRY}_{HORIZON_IN_QUARTERS}q_uar_x.csv"
 }
 model_name_dict = {0: 'IAR', 1: 'VG', 2: 'UAR'}
 

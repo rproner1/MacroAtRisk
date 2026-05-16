@@ -60,10 +60,10 @@ oap_datasets:
 # ========== Model Training ==========
 fit_models: true
 input_files: [
-  "us_4q_fred_x.parquet",
-  # "us_4q_oap_vw_x.parquet"
+  "us_4q_fred_x.csv",
+  # "us_4q_oap_vw_x.csv"
 ]
-target_file: 'us_4q_fred_y.parquet'
+target_file: 'us_4q_fred_y.csv'
 
 trials: 50
 time_steps: 12
