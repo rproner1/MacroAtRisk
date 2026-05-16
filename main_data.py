@@ -2,12 +2,14 @@
 Data Pipeline Entry Point
 Processes raw data into formats ready for final preprocessing and model training.
 """
+import argparse
 import logging
 from dotenv import load_dotenv
 import pandas as pd
 from pathlib import Path
 import os
 import yaml
+
 
 from src.data.prepare_ar1_x import get_ar1_x
 from src.data.prepare_fred import get_fred_md_x, get_targets
@@ -22,6 +24,12 @@ load_dotenv()
 with open("./config/config.yaml", "r") as f:
     config = yaml.safe_load(f)
 
+parser = argparse.ArgumentParser(description="Generate results and tables")
+parser.add_argument("--run-locally", action="store_true", help="Whether to run locally (adjusts file paths accordingly)")
+
+args = parser.parse_args()
+RUN_LOCALLY = args.run_locally
+
 logging.basicConfig(level=config['logging_level'])
 
 DESIRED_START_DATE_OF_SAMPLES = pd.to_datetime(config['desired_start_date_of_samples'])
@@ -30,13 +38,12 @@ LAST_DATE_OF_SAMPLE = pd.to_datetime(config['last_date_of_sample'])
 REMOVE_COLS_THRESHOLD = config['remove_cols_threshold']
 CONSTRUCT_OAP_SIGNALS = config["construct_oap_signals"]
 SKIP_PROCESSED_DATA = config["skip_processed_data"]
-RUN_LOCALLY = config['run_locally']
 HORIZON_IN_QUARTERS = config['horizon_in_quarters']
 
 # ----- Paths -----
-DATADIR = Path(os.getenv("LOCDATADIR" if RUN_LOCALLY else "DATADIR"))
-raw_data_dir = DATADIR / "raw/"
-processed_data_dir = DATADIR / "processed/"
+data_dir = Path('./data')
+raw_data_dir = data_dir / "raw"
+processed_data_dir = data_dir / "processed"
 
 os.makedirs(raw_data_dir, exist_ok=True)
 os.makedirs(processed_data_dir, exist_ok=True)
