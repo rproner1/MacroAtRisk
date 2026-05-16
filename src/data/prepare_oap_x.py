@@ -26,7 +26,7 @@ def get_firm_level_x(
     df.set_index('date', inplace=True)
 
     # Subset data to avoid removing too many columns due to initial NaNs
-    buffer = int(first_difference)
+    buffer = int(first_difference) 
     df = df.loc[desired_start_date_of_samples - relativedelta(months=3*horizon_in_quarters + buffer): last_date_of_sample]
 
     # First difference if specified

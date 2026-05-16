@@ -4,6 +4,7 @@ import warnings
 
 def get_value_weights(df: pd.DataFrame) -> pd.DataFrame:
 
+    # Weights are size of firm relative to size of all firms in the month
     df['weight'] = df.groupby('yyyymm')['size'].transform(lambda x: x / x.sum())
 
     return df[['yyyymm', 'permno', 'weight']]
@@ -37,10 +38,17 @@ def get_firm_avg(df: pd.DataFrame, value_weight: bool = False, size: pd.DataFram
 
         df['permno'] = pd.to_numeric(df['permno'], errors='coerce').astype('Int64')
         size['permno'] = pd.to_numeric(size['permno'], errors='coerce').astype('Int64')
+
+        # Compute size weights 
         weights = get_value_weights(size)
+
+        # Ensure weights sum to 1 for each date. If not, raise an error. This is a sanity check to catch misalignments between df and size.
         if not weights.groupby('yyyymm')['weight'].sum().round(6).eq(1.0).all():
             raise ValueError("Weights do not sum to 1 for all dates.")
+        
         before_rows = len(df)
+
+        # Merge weights with characteristics df
         df = df.merge(weights, on=['yyyymm', 'permno'], how='inner')
         dropped_share = 1 - (len(df) / before_rows)
         if dropped_share > 0:
@@ -52,6 +60,8 @@ def get_firm_avg(df: pd.DataFrame, value_weight: bool = False, size: pd.DataFram
         
         df.replace([-np.inf, np.inf], np.nan, inplace=True)
         signal_cols = df.drop(columns=['permno', 'yyyymm', 'weight']).columns 
+        
+        # Take the weighted average of each signal by month. This is done by multiplying each signal by the weight and then summing across firms for each month.
         firm_avg_df = (
             df[signal_cols]
             .mul(df['weight'], axis=0)
@@ -61,6 +71,7 @@ def get_firm_avg(df: pd.DataFrame, value_weight: bool = False, size: pd.DataFram
         )
 
     else:
+        # Take the average signal value across firms for each month. 
         firm_avg_df = (
             df
             .replace([-np.inf, np.inf], np.nan)
@@ -104,12 +115,16 @@ def get_firm_spread(df: pd.DataFrame, quantiles: int = 10) -> pd.DataFrame:
             if len(x) < quantiles:
                 result[col] = np.nan
                 continue
+            # Cut the column into quanitle bins and compute the mean of the top and bottom bins
             bins = pd.qcut(x, quantiles, labels=False, duplicates='drop')
             top = x[bins == bins.max()].mean()
             bottom = x[bins == 0].mean()
+
+            # Spread is the average signal value of the top quantile bin minus the average signal value of the bottom quantile bin
             result[col] = top - bottom
         return pd.Series(result)
     
+    # Apply the function to each signal column grouping by date
     spread_df = df.groupby('yyyymm', group_keys=False).apply(compute_spread_for_group)
     spread_df.reset_index(inplace=True)
 
