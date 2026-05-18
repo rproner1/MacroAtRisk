@@ -10,7 +10,7 @@ matplotlib:
 
 # ========== Data Processing ==========
 oap_release: 202510
-construct_oap_signals: false
+construct_oap_signals: true
 skip_processed_data: false
 desired_start_date_of_samples: "1961-01-01"
 desired_end_date_of_samples: "2024-12-01"
