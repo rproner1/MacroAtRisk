@@ -61,7 +61,7 @@ oap_datasets:
 fit_models: true
 input_files: [
   "us_4q_fred_x.csv",
-  # "us_4q_oap_vw_x.csv"
+  "us_4q_oap_vw_fd_x.csv"
 ]
 target_file: 'us_4q_fred_y.csv'
 
