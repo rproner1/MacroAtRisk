@@ -249,13 +249,13 @@ base_models_subset: [
   # 'QPCR',
   'QRF',
   'QGB',
-  # 'sDMQ',
-  'DMQv0',
+  'sDMQ',
+  # 'DMQv0',
   # 'DMQv1',
-  # 'DMQs',
-  # 'DMQm',
-  # 'DMQl',
-  # 'DMQe'
+  'DMQs',
+  'DMQm',
+  'DMQl',
+  'DMQe'
   # 'DMQv2c'
 ]
 test_start: "1998-01-01"
