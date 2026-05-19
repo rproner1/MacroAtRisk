@@ -20,3 +20,4 @@ results/
 results_figures/
 results_tables/
 data/
+*.db
