@@ -1,0 +1,858 @@
+\documentclass[12pt]{article}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{amssymb}
+\usepackage{amsfonts} 
+\usepackage{amsmath}
+\usepackage{natbib}
+\usepackage{hyperref}
+\usepackage{mathabx} %to get widebar
+\usepackage{booktabs}
+\hypersetup{
+  colorlinks,
+  citecolor=blue,
+  linkcolor=red,
+  urlcolor=blue}
+\usepackage{rotating} %to rotate text 90 degrees
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{comment}
+\usepackage{float}
+\usepackage{dcolumn}
+\usepackage{setspace}
+\usepackage[flushleft]{threeparttable}
+\usepackage[symbol]{footmisc}
+\usepackage{url}
+\usepackage{subcaption}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{color, colortbl}
+\usepackage{bbm}
+\usepackage{lscape}
+\definecolor{Gray}{gray}{0.9}
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\setcounter{MaxMatrixCols}{10}
+\newtheorem{theorem}{Theorem}
+\newtheorem{acknowledgement}[theorem]{Acknowledgement}
+\newtheorem{algorithm}[theorem]{Algorithm}
+\newtheorem{axiom}[theorem]{Axiom}
+\newtheorem{case}[theorem]{Case}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{conclusion}[theorem]{Conclusion}
+\newtheorem{condition}[theorem]{Condition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{criterion}[theorem]{Criterion}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{exercise}[theorem]{Exercise}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{notation}[theorem]{Notation}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{solution}[theorem]{Solution}
+\newtheorem{summary}[theorem]{Summary}
+\newenvironment{proof}[1][Proof]{\noindent\textbf{#1.} }{\ \rule{0.5em}{0.5em}}
+\geometry{top=1.2in,bottom=1.2in,left=1.2in,right=1.2in}
+%\geometry{top=1.425in,bottom=1.425in,left=1.5in,right=1.5in}
+%\geometry{top=1.5in,bottom=1.5in,left=1.35in,right=1.35in}
+\renewcommand{\rmdefault}{ptm}
+\setcounter{topnumber}{2}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{4}
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\bottomfraction}{0.85}
+\renewcommand{\textfraction}{0.15}
+\renewcommand{\floatpagefraction}{0.7}
+\usepackage{setspace} 
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\setlength{\bibsep}{3.9pt}
+\linespread{1.5}
+\usepackage{chngcntr}
+\usepackage{etoolbox}
+\makeatletter
+\AtBeginDocument{\preto\@title{\singlespacing}}% in case it isn't single spaced
+\makeatother
+\usepackage{tikz} %to draw figures in latex
+\usepackage{ragged2e}
+
+
+% Set the default font family to sans-serif for a modern look
+% \renewcommand{\familydefault}{\sfdefault}
+
+\newcommand{\resultsdate}{2026-02-05}
+
+\begin{document}
+
+
+\title{{\bf \Large Deep Learning Macro-financial Tail Risk}
+% \thanks{The views expressed in this paper are those of the authors and do not necessarily reflect those of the Bank of Canada. We thank ...}
+}
+
+%Alternative titles:
+%Deep in the Tails: Multi-Task Learning for Macroeconomic Tail Risk
+%Don't be mean, get into shape! Multi-task neural network for macroeconomic risks
+
+\author{Robert \textsc{Proner}\thanks{University of Toronto. Email: \texttt{robert.proner@mail.utoronto.ca}.}} 
+% \qquad Thibaut \textsc{Duprey}\thanks{Bank of Canada, 234 Wellington Street West, Ottawa, ON K1A0G9, Canada. Email: \texttt{tduprey@bank-banque-canada.ca}. Corresponding author.} \qquad Fred \textsc{Liu}\thanks{University of Guelph. Email: \texttt{fred.liu@uoguelph.ca}.}}
+
+\date{\today}
+%\date{}
+\maketitle
+\begin{abstract}
+\noindent 
+We develop a deep multi-quantile neural network (DMQ) to analyze macro-financial risk in the US. By jointly forecasting the conditional quantiles of inflation, industrial production, and unemployment, DMQ captures nonlinearities and interactions among predictors while avoiding quantile crossing. Using data from 1998 to 2024, we demonstrate that DMQ significantly improves forecast accuracy. Feature attribution analysis reveals that the interaction between housing activity and credit conditions are key drivers of inflation risk, while the interaction between financial conditions and policy transmission speeds influence growth and unemployment risks. Our findings highlight the importance of modeling the entire conditional distribution to better understand macroeconomic tail risks.
+\end{abstract}
+
+\textbf{Keywords}: \\
+\textbf{JEL Codes}: 
+
+
+\section{Introduction}
+
+% Motivation
+Leading up to the Global Financial Crisis (GFC), traditional forecasts failed to anticipate the magnitude of the recession, underscoring the need for models that capture the full distribution of macroeconomic risks. Point forecasts, while useful, often fail to capture the full complexity of economic uncertainty. By focusing solely on the central tendency of a distribution, they overlook critical asymmetries and tail risks that can significantly influence policy decisions. Policymakers, such as those in the Federal Open Market Committee (FOMC), rely on a deeper understanding of the entire conditional distribution of key macroeconomic indicators—such as inflation, industrial production, and unemployment—to assess risks and uncertainties. For instance, the skewness of the inflation distribution during periods of heightened uncertainty can lead to vastly different policy responses compared to symmetric confidence intervals. As \cite{andradeTAILSINFLATIONFORECASTS2012} demonstrate, the level of inflation-at-risk directly influences monetary policy decisions, even after accounting for the Fed's own inflation forecasts. This underscores the need for accurate and flexible methods to forecast the conditional distribution, particularly in capturing tail risks that are vital during economic crises like the Global Financial Crisis (GFC) and the COVID-19 pandemic. 
+
+% Quick outline of literature and gaps
+The seminal papers of this literature have modelled macro-financial risk via quantile regressions \citep{adrianVulnerableGrowth2019,kileyUnemploymentRisk2022,lopez-salidoInflationRisk2024}, which can capture asymmetries and tail effects, but independently estimated quantiles can overfit and cross out-of-sample. Instead, extending quantile regression to a multivariate setting, quantile vector autoregressions (QVAR) can model dependence between quantiles \citep{chavleishviliForecastingStressTesting2024}. Without adjustment however, these models remain susceptible to quantile crossing. However, the number of parameters rapidly grows with the number of lags and predictors making it susceptible to overfitting and limits its ability to model rich nonlinearities and interactions, which have been shown to be important for macroeconomic forecasting \citep{gouletcoulombeHowMachineLearning2022,pruserNonlinearitiesMacroeconomicTail2024}. While Bayesian VAR (BVAR) provide forecasting benefits by incorporating nonlinearities \citep{pruserNonlinearitiesMacroeconomicTail2024}, machine learning (ML) offers easily scalable models that can capture nonlinearities and interactions of hundreds of features for many quantiles without parametric assumptions. 
+
+% Our contribution + results
+We develop a deep multi-quantile neural network (DMQ) that forecasts the conditional quantiles of a target distribution jointly. DMQ learns nonlinearities and interactions among hundreds of predictors to forecast several quantiles jointly while avoiding quantile crossing. Our framework is highly scalable, allowing us to add additional multi-modal predictors, such as news-based predictors, asset returns, and images, as well as additional quantiles, addressing all the aforementioned challenges within a single framework. We demonstrate statistically significant improvements in forecasts for inflation, industrial production (IP) growth, and changes in the unemployment rate at the yearly horizon. Additionally, using an innovative feature attribution method known as Expected Gradients \citep{erionImprovingPerformanceDeep2021}, we document two key insights from the DMQ. 
+
+First, inflation is strongly positively related to housing. Booming housing markets are associated with lower downside risk and even higher upside risk to inflation. In other words, high housing activity is predictive of a rightward shift in the inflation distribution and skewness to the upside. Consistent with \cite{gilchristCreditSpreadsBusiness2012}, who find tight credit conditions lead to considerable disinflation through reduced economic output, we document a positive relationship between the BAA-Federal funds spread and downside risk to inflation. Upon inspection of the relationship between credit conditions, housing activity, and inflation risk, we find a positive interaction between housing activity and credit conditions suggesting that the disinflation effect of tighter credit conditions occurs through their negative effect on real economic activity.
+
+Second, financial conditions are positively associated with growth risk and unemployment risk. However, this effect depends on the ten-year Treasury-federal funds spread. We study the interaction of these two variables during the GFC and find evidence suggesting the effect of financial conditions on recession risk depends on speed of policy transmission.  
+
+The remainder of this paper is structured as follows. Section 2 reviews the related literature, Section 3 describes our data, Section 4 outlines our methodology, Section 5 presents the results, and Section 6 concludes.  
+
+% volatility surged while the ten-year Treasury-federal funds spread remained relatively constant. Once the Treasury spread had increased by about two standard deviations by the end of 2008 by which time the Fed had cut rates from 5.25\% to 0-0.25\%, growth risk and unemployment risk subsided.
+
+% Forecasting the conditional distribution of macroeconomic indicators is challenging for several reasons. First, the conditional distribution is highly time-varying, both in location, scale, and shape \citep{adrianVulnerableGrowth2019,lopez-salidoInflationRisk2024,kileyUnemploymentRisk2022,clarkRealTimeDensityForecasts2011,pruserNonlinearitiesMacroeconomicTail2024,andradeTAILSINFLATIONFORECASTS2012}.
+% Second, the functional form linking the quantiles of the conditional distribution to the predictors is likely 
+% non-linear \citep{adrianVulnerableGrowth2019,lopez-salidoInflationRisk2024,pruserNonlinearitiesMacroeconomicTail2024,gouletcoulombeHowMachineLearning2022},
+% and depends on many macroeconomic and financial predictors \citep{pruserNonlinearitiesMacroeconomicTail2024,carrieroSpecificationChoicesQuantile2025,adrianMachinelearningGrowthRisk2025}.
+% Third, linear models, specifically quantile regressions (QR) are susceptible to overfitting and quantile crossing \citep{schmidtQuantileSpacingsSimple2016}.
+% In this paper we remedy these issues by developing a deep multi-quantile neural network (DMQ) to forecast the conditional distribution 
+% of inflation, industrial productions (IP) growth, and percent change in unemployment. We demonstrate that DMQ provides significant gains in out-of-sample forecast accuracy in both the conditional quantiles and the conditional mean, especially during the GFC and Covid. We find [INSERT RESULTS ABOUT FEATURE IMPORTANCE]. We also show that forecasting the entire conditional distribution jointly eliminates the need for quantile-crossing
+% corrections and provides more accurate forecasts than forecasting each quantile separately.
+
+\section{Related literature}
+
+% This paper relates to the literature in at least three ways. First, it contributes to the rapidly growing literature on macro-financial tail risk. Second, it adds to the body of literature investigating the usefulness of machine learning for macroeconomic forecasting. Third, it provides evidence in favor of incorporating economic restrictions in machine learning models.
+
+% More detailed review of the literature
+Measuring and forecasting macro-financial tail risk has gained popularity in recent years. A seminal contribution in this area is the work of \cite{adrianVulnerableGrowth2019} who study the distribution of GDP growth over time, about which they establish several key facts. First, the distribution of growth is highly time varying. Second, the bulk of this time variance is attributable to the left tail of the distribution. Third, the left tail is mostly driven by and is negatively correlated with tightening financial conditions, which induce a sustained decline in output and an increase in unemployment \citep{caldaraMonetaryPolicyReal2019}. Therefore, \cite{adrianVulnerableGrowth2019} highlight and quantify the tradeoff decision of monetary policy between current and future macroeconomic objectives. At the same time, tightening financial conditions introduce downside risk to inflation \citep{lopez-salidoInflationRisk2024}. In a DSGE model with financial panics, the mechanism through which this occurs is suppressed investment demand following bank runs resulting from capital quality shocks \cite{gertlerMacroeconomicModelFinancial2020}. Likewise, tightening financial conditions increase unemployment risk \citep{kileyUnemploymentRisk2022}. However, all the aforementioned studies rely on linear quantile regressions that model each quantile of the same distribution independently, which poses two problems. First, by ignoring the dependence between quantiles, the out-of-sample forecasts of these models result in quantile crossing. Second, these models cannot accommodate rich information sets and are limited in their ability to model nonlinearities and interactions. While dependence between quantiles can be captured by VARs, these models still lack capacity for big data and non-linearities. Instead, we develop a multitask neural network that forecasts the quantiles of a distribution jointly, allowing for heterogeneity for the relationships between quantiles and predictors, while preserving dependence between quantiles. 
+
+
+%  A glaring feature of distributions of macroeconomic variables has been the importance of financial conditions, which often have asymmetric impacts on the tails. 
+
+\section{Data}
+
+We collect data on a variety of key macroeconomic indicators spanning eight groups including: Output and income; Labor market; Housing; Consumption, orders and inventories; Money and credit; Interest and exchange rates; Prices; and Stock market from FRED-MD data set compiled by \cite{mccrackenFREDMDMonthlyDatabase2016}. Our entire sample spans from January 1961 to December 2024.
+
+We define our forecast targets as 
+\begin{align}\label{eq: forecast targets}
+  \pi_{t+h} &= \ln(CPIAUCSL_{t+h}) - \ln(CPIAUCSL_{t}) \\
+  y_{t+h} &= \ln(INDPRO_{t+h}) - \ln(INDPRO_{t}) \\ 
+  u_{t+h} &= \ln(UNRATE_{t+h}) - \ln(UNRATE_{t})
+\end{align}
+where CPIAUCSL, INDPRO, and UNRATE are CPI for all items, industrial production index, and civilian unemployment rate. These transformations render the forecast targets stationary. 
+
+The predictors used for all methods are also derived from the FRED-MD dataset. The beginning of the sample contains many missing values. To ensure reliable imputation, we simply drop all predictors that are more than 30\% missing in the initial training window January 1961 to December 1997. After filtering, there are 116 predictors remaining, which we transform to be stationary according to the transformation codes laid out in \cite{mccrackenFREDMDMonthlyDatabase2016}. 
+
+In addition to some of the predictors from FRED-MD, for the benchmark models we consider we also collect data on the National Financial Conditions Index (NFCI)\footnote{https://fred.stlouisfed.org/series/NFCI}, the Natural Rate of Unemployment (NROU)\footnote{https://fred.stlouisfed.org/series/NROU}, and long-term inflation expectations (EXPINF10YR)\footnote{https://fred.stlouisfed.org/series/EXPINF10YR} from the FRED database as well as data on the excess bond premium (EBP) from the Federal Reserve\footnote{https://www.federalreserve.gov/econres/notes/feds-notes/updating-the-recession-risk-and-the-excess-bond-premium-20161006.html}. The earliest date at which all of these data are available is February 1974. Therefore, the total sample for the benchmark models is February 1974 to December 2024. All non-financial predictors are lagged by an additional month to reflect release delays.
+
+\section{Methodology}\label{sec: methodology}
+% Present model setup, estimation strategy, and evaluation metrics.
+
+In the most general form we describe a forecast target's conditional quantile as 
+\begin{equation}
+	Q_\tau \equiv Q_{\tau}(x_{t+h} | \mathcal F_t) = g_\tau(z_t)
+\end{equation}
+where $x_{t+h}$ denotes the forecast target (inflation, growth, unemployment change) at horizon $h$. Our objective is to estimate the function $g_\tau(\cdot)$ that links the conditional quantile of the future forecast targets to the $P$-dimensional set of predictors $z_t$. 
+
+\subsection{Estimation}
+
+\subsubsection{Quantile loss}
+
+A common choice of objective function in forecasting macroeconomic time series is the well-known MSE objective function. However, because the MSE penalizes large errors heavily, it is sensitive to extreme outliers and does not capture heteroskedasticity, which are common characteristics of macroeconomic time series.
+% [CITE]. 
+In contrast, quantiles are by construction less sensitive to extreme outliers, and forecasting the conditional quantiles of the return distribution inherently models heteroskedasticity. Therefore, we estimate quantiles using the quantile loss objective function 
+\begin{equation}
+	L(\theta_t) = \sum_{t=1}^T \rho_\tau(x_{t+h} - g(z_t; \theta_t))
+\end{equation}
+where,
+\begin{equation}\label{eq: quantile loss}
+	\rho_\tau(x_{t+h} - g(z_t; \theta_t)) = \max\{ \tau (x_{t+h} - g(z_t; \theta_t)), (\tau-1) (x_{t+h} - g(z_t; \theta_t)) \}.
+\end{equation}
+Equation \ref{eq: quantile loss} penalizes realizations which are above the estimated quantile more heavily for $\tau \in (0.5, 1)$ pushing the estimated quantile upwards and penalizes realizations which are below the estimated quantile more heavily for $\tau \in (0, 0.5)$ pushing the estimated quantile downwards. For $\tau = 0.5$, the loss reduces to the mean absolute error (MAE) in which case both realizations above and below the quantile are penalized equally. In our baseline analysis we focus on $\tau \in \{0.05, 0.25, 0.5, 0.75, 0.95\}$, which is standard in the literature \citep{adrianVulnerableGrowth2019,kileyUnemploymentRisk2022,lopez-salidoInflationRisk2024}.
+
+\subsubsection{Benchmark models}\label{sec: benchmark models}
+
+As benchmarks, we select the models from the seminal papers in the literature. Specifically, for estimating the conditional quantiles of inflation we adapt the Phillips curve specification of \cite{blanchardNBERWORKINGPAPER}, as implemented by \cite{lopez-salidoInflationRisk2024}
+% \begin{equation}
+%   \hat Q_{\tau,t+h} = \hat \mu_\tau + (1-\hat \lambda_\tau) \pi^*_{t-1} + \lambda_\tau \pi_t^{LTE} + \hat \theta_\tau (u_t - u_t^*)+ \hat \gamma_\tau \pi^O + \hat \delta f_t
+% \end{equation}
+% where $\pi^*_{t-1}$ is the average inflation over the past twelve months, $\pi_t^{LTE}$ is a measure of long-term inflation expectations, $u_t$ is the unemployment rate, $u_t^*$ is a proxy for the natural rate of unemployment, $\pi_t^O$ is changes in oil prices, and $f_t$ is the EBP. 
+which we denote Inflation at Risk (IAR) and estimate as 
+\begin{equation}\label{eq: IAR}
+  \begin{aligned}
+    \hat Q_{\tau,t+h} = \hat \beta_{\tau,0,t} &+  \hat \beta_{\tau,1,t} \overline{\pi}_{t-1} + \hat \beta_{\tau,2,t} EXPINF10YR_{t-1} + \hat \beta_{\tau,3,t} (UNRATE_{t-1} - NROU_t) \\  
+    &+ \hat\beta_{\tau,4,t} \ln\left(\frac{OILPRICEx_t}{OILPRICEx_{t-12}}\right) + \hat\beta_{\tau,5,t} EBP_t.
+  \end{aligned}
+\end{equation}
+
+For estimating the conditional quantiles of industrial production, we adapt the Vulnerable Growth (VG) model of \cite{adrianVulnerableGrowth2019}
+\begin{equation}\label{eq: VG}
+  \hat Q_{\tau,t+h} = \hat\beta_{\tau,0,t} + \hat\beta_{\tau,1,t} NFCI_t + \hat\beta_{\tau,2,t} \Delta_3\ln(INDPRO_t) + \hat\beta_{\tau,3,t} \Delta_{12} \ln(INDPRO_t).
+\end{equation}
+
+Finally, our Unemployment at Risk (UAR) model is adapted from \cite{kileyUnemploymentRisk2022} as follows
+\begin{equation}\label{eq: UAR}
+  \begin{aligned}
+    \hat Q_{\tau,t+h} = \hat \beta_{\tau,0,t} &+  \hat \beta_{\tau,1,t} UNRATE_{t-1} + \hat \beta_{\tau,2,t} \ln\left( PCE_{t-1} / PCE_{t-13} \right) + \hat \beta_{\tau,3,t}  \\ &+ \ln \left( \frac{BUSLOANS/INDPRO_{t-1}}{BUSLOANS/INDPRO_{t-49}} \right) + \hat\beta_{\tau,4,t} (BAA_{t-1} - GS10_{t-1}) \\ &+ \hat\beta_{\tau,5,t} (GS10_{t-1} - FEDFUNDS_{t-1}).
+  \end{aligned}
+\end{equation}
+
+\subsubsection{Off-the-shelf models}
+
+Following much the literature applying ML in economics and finance, we select as comparative benchmarks a variety of well-known linear and non-linear ML methods. As linear benchmarks we select quantile regression (LR) and LASSO (LAS).
+%  ridge regression (RID), and elastic net regression (EN) 
+% as well as a quantile regression augmented with an elastic-net penalty (EN), which encapsulates as a subset of models both ridge regression and LASSO. 
+As non-linear benchmarks we select quantile gradient boosted regression trees (QGB) and quantile random forest (QRF). 
+
+\subsubsection{Multi-quantile neural networks}
+
+Excluding QRF, the off-the-shelf models estimate the conditional quantiles independently of one another, implicitly assuming the quantiles of the distribution are independent of one another. This assumption is not only contrary to intuition but results in the problem of quantile crossing, in which quantile forecasts from a given model family do not preserve monotonicity. Instead, presented in Figure \ref{fig: DMQ} we propose the dynamic multi-quantile neural network (DMQ) which estimates the conditional quantiles of a forecast target jointly. Intuitively, the DMQ imposes the assumption that the conditional quantiles are related and stem from a set of common latent factors. The DMQ estimates these latent factors while allowing for each quantile to load on them uniquely. The result is a flexible model which preserves quantile forecast integrity while remaining flexible enough to allow for differing drivers of the quantiles of the distribution. For example, while the entire distribution may be driven by a set of common variables representing broad macroeconomic conditions stemming from money, labor, or output, each quantile may also be affected differently by individual predictors. In addition to imposing realistic economic restrictions and monotonicity of quantile forecasts, multitask neural networks, such as DMQ, benefit from improved generalization \citep{caruanaMultitaskLearning1997} and improved signal-to-noise ratios by averaging task-specific noise \citep{ruderOverviewMultiTaskLearning2017}, which is especially beneficial in low signal-to-noise settings.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{figures/DMQv0.png}
+	\caption{This figure illustrates the dynamic multi-quantile neural network. The recurrent layers reduce the dimensionality of the feature space into a set of latent business cycle features. Business cycle features are then interacted before non-linear exposures to this common set of latent factors are estimated for each quantile and aggregated into a prediction for each quantile.}
+	\label{fig: DMQ}
+\end{figure}
+
+% In addition to the above DMQ which we denote MQv0 in Section \ref{sec: baseline results}, we also implement a version of MQ that guarantees there is no quantile crossing by implementing quantile spacings (MQv1) which is depicted in Figure \ref{fig: MQ spaced}. Intuitively, instead of estimating each quantile directly, MQv1 estimates the median directly and then estimates the distances of the twenty-fifth and seventy-fifth quantiles from the median. For all subsequent quantiles, the model estimates the distance of these quantiles from the previously estimated quantiles. For a detailed description of this implementation we refer to \cite{liuStockDistributionRisk2023}.
+
+% \begin{figure}[htbp]
+% 	\centering
+% 	\includegraphics[width=\textwidth]{figures/MQ Spaced.png}
+% 	\caption{Multi-quantile neural network with quantile spacings where $h(x) = \ln(1 + \exp(x))$}
+% 	\label{fig: MQ spaced}
+% \end{figure}
+
+\subsubsection{Estimation procedure}
+
+As typical in the literature, we allow for time-variation in model specifications by employing an expanding window estimation procedure, performing hyperparameter optimization and re-training models every 12 months. We begin by performing hyperparameter optimization and model training using data up to and including December 1997. Specifically, we use 10-fold cross-validation without shuffling to perform hyperparameter optimization. Using the best found hyperparameters, we then train the model on the same window, reserving the last two years as a validation set for early stopping. We then use this model to forecast the next month's quantiles of factor returns for each of the next twelve months January 1998 to December 1998. We then include 1998 into our training set and repeat this procedure until we produce out-of-sample forecasts for the entire period of January 1998 to December 2024 for a total of 27 years. As part of this procedure, we impute missing values using the training set mean and standardize all predictors to be mean-zero with unit variance, also using training data.
+
+\subsection{Evaluation}\label{sec:evaluation}
+% Explain forecasting setup (train/validation/test), performance metrics, and statistical tests.
+
+To evaluate the accuracy of conditional quantile forecasts, we use an analogous measure to out-of-sample $R^2$, the out-of-sample $R^1$ statistic as defined in \cite{koenkerGoodnessFitRelated1999}
+\begin{equation}
+	R^1 = 1 - \frac{\sum_{t=1}^T \rho_\tau(x_{t+h} - \hat Q_{\tau}(x_{t+h}))}{\sum_{t=1}^T \rho_\tau(x_{t+h} - \bar Q_{\tau})}
+\end{equation}
+where $\hat Q_{\tau}(x_{t+h})$ is the forecasted $\tau$ quantile of target $x_{t+h}$ and $\bar Q_\tau$ is the expanding historical $\tau$ quantile of $x_t$ up to month $t$. Like $R^2$, the $R^1$ statistic measures the performance of a model's forecasts relative to a benchmark.    
+
+In addition to $R^1$, we evaluate each model's ability to predict the mean of the forecast target by aggregating quantiles into a robust estimate of the mean as defined in \cite{liuStockDistributionRisk2023} and computing the out-of-sample $R^2$ as
+\begin{equation}
+	R^2 = 1 - \frac{\sum_{t=1}^T (x_{t+h} - \hat x_{t+h})^2}{\sum_{t=1}^T (x_{t+h} - \bar x_t)^2}
+\end{equation}
+where $\hat x_{t+h}$ is the robust estimate of $x_{t+h}$
+\begin{equation}
+	\hat x_{t+h} = 0.15\hat Q_{0.05} + 0.225 \hat Q_{0.25} + 0.25 \hat Q_{0.50} + 0.225 \hat Q_{0.75} + 0.15 \hat Q_{0.95}
+\end{equation}
+and $\bar x_t$ is the expanding mean of the forecast target up to month $t$. 
+
+In addition to computing $R^1$ and $R^2$ for each model, we perform pairwise comparisons of statistical performance of models for each forecast target and quantile using a modified \cite{dieboldComparingPredictiveAccuracy2002} test statistic defined as 
+$DM_{1,2} = \bar d_{1,2} / \sigma_{1, 2}$ where $\bar d_{1,2}$ and $\sigma_{1, 2}$ are the mean and \cite{neweyAutomaticLagSelection1994} standard error, respectively, and where the loss differential between models 1 and 2 is given by
+\begin{equation}\label{eq: pooled DM statistic}
+	\bar d_{1,2} = \frac{1}{T|\mathcal T|}\sum_{t=1}^T \sum_{\tau \in \mathcal T} [\rho_\tau (x_{t+h} - \hat Q^{(1)}_\tau (x_{t+h})) - \rho_\tau(x_{t+h} - \hat Q^{(2)}_\tau (x_{t+h}))].
+\end{equation}
+Equation \ref{eq: pooled DM statistic} pools quantile losses across quantiles to get an overall measure of comparative accuracy of quantile forecasts between models. For DM tests for every quantile, we provide Tables \ref{tab: dm_quantile_infl}, \ref{tab: dm_quantile_ip}, \ref{tab: dm_quantile_unrate}, in the appendix, where we also provide Table \ref{tab: dm mean}, comparing the predictive accuracy of the mean forecasts.
+
+\section{Results}\label{sec: baseline results}
+
+In this section we present our main results. For each model and forecast target we present the out-of-sample $R^1$ for each quantile and the average $R^1$ over all quantiles, followed by the out-of-sample $R^2$ statistics and concluding with Diebold-Mariano tests for point estimates. 
+
+Table \ref{tab: baseline r1 table} presents the $R^1$ statistics for the period January 1998 to December 2024. Each panel shows that LR severely overfits resulting in very negative $R^1$ statistics indicating that this model cannot outperform an expanding historical quantile for any portion of the distribution. Due to their simpler functional form, the benchmark models greatly improve upon LR, though still fail to outperform the historical quantile on at least some quantiles. In the case of inflation, the IAR model of \cite{lopez-salidoInflationRisk2024} underperforms the historical quantile for every quantile. As for IP and unemployment, the benchmarks outperform in forecasting upside but not downside risk, which in the case of IP is more important. In general, imposing an $\ell_1$ penalty onto LR with LAS greatly improves forecasts resulting in positive $R^1$ statistics for the center of the distribution for inflation and unemployment. The importance of nonlinearities, however, becomes apparent, especially at the tails of the distribution. On average, QRF outperforms the linear models by a wide margin. While QGB also posts impressive results at some quantiles, for example an $R^1$ of almost 40\% on the ninety-fifth quantile of inflation, it also earns very negative $R^1$ for the fifth-quantile of inflation (-61\%) and the ninety-fifth quantile of unemployment (-27.5\%), rendering its average performance on par with an $AR(1)$ model. Finally, incorporating dynamics and complex nonlinearities with DMQ provides large gains across all forecast targets due to its more balanced performance across quantiles and superior accuracy in the tails. Table \ref{tab: dm_qpooled} shows that the DMQ significantly outperforms most models across all forecast targets. For each target, we also provide DM tests for each quantile and for mean forecasts in appendix Tables \ref{tab: dm_quantile_infl}, \ref{tab: dm_quantile_ip}, \ref{tab: dm_quantile_unrate}, and \ref{tab: dm mean}, respectively.
+
+\begin{table}[htbp]
+  \centering
+  \resizebox{\textwidth}{!}{
+  \input{../results_tables/\resultsdate/r1_combined_body_us_4q_1998-01-01-2024-12-01.tex}
+  }
+  \caption{$R^1$ table for annual inflation, annual IP growth, and annual percent change in the unemployment rate for the period January 1998 to December 2024}
+  \label{tab: baseline r1 table}
+\end{table}
+
+
+\begin{table}[htbp]
+  \centering
+  \caption{Pairwise DM $t$-statistics pooled across quantiles (upper triangular). Significant values at 5\% are in bold.}
+  \label{tab: dm_qpooled}
+
+  \begin{subtable}{\textwidth}
+    \centering
+    \caption*{Panel A: INFL}
+    \resizebox{\textwidth}{!}{
+    \input{../results_tables/\resultsdate/dm_qpooled_upper_Infl_yoy_us_4q_1998-01-01-2024-12-01.tex}
+    }
+  \end{subtable}
+
+  \vspace{0.75em}
+  \begin{subtable}{\textwidth}
+    \centering
+    \caption*{Panel B: IP}
+    \resizebox{\textwidth}{!}{
+    \input{../results_tables/\resultsdate/dm_qpooled_upper_IP_yoy_us_4q_1998-01-01-2024-12-01.tex}
+    }
+  \end{subtable}
+
+  \vspace{0.75em}
+  \begin{subtable}{\textwidth}
+    \centering
+    \caption*{Panel C: UNRATE}
+    \resizebox{\textwidth}{!}{
+    \input{../results_tables/\resultsdate/dm_qpooled_upper_Unrate_yoy_us_4q_1998-01-01-2024-12-01.tex}
+    }
+  \end{subtable}
+\end{table}
+
+Table \ref{tab: baseline r2 table} presents the $R^2$ statistics of each model's mean forecasts for each target. The results indicate non-linear models generally outperform linear models, except for an AR(1) (34.4\%) which outperforms QRF (29\%). Excluding the inflation AR(1) model and the UAR model, linear models produce mean forecasts that underperform the historical mean. In contrast, nonlinear models record a positive $R^2$ for each forecast target. DMQ delivers the highest $R^2$ statistics of 47\%, 22\% and 5\% for inflation, IP, and unemployment, respectively. These results underscore the benefits of estimating the mean from the forecasted quantiles, which are robust to outliers and heteroskedasticity that marks macroeconomic time series. 
+
+\begin{table}[htbp]
+  \centering
+  \resizebox{\textwidth}{!}{
+  \input{../results_tables/\resultsdate/r2_combined_us_4q_1998-01-01-2024-12-01.tex}
+  }
+  \caption{$R^2$ table}
+  \label{tab: baseline r2 table}
+\end{table}
+
+Figures \ref{fig:infl_model_comparison}, \ref{fig:ip_model_comparison}, and \ref{fig:unrate_model_comparison} plot the quantiles forecasts of the benchmark model, QRF, and DMQ as well as the mean forecasts of the DMQ model for the inflation, IP, and unemployment targets, respectively. The plots show the benchmark models tendency to overfit and to cross quantiles. The IAR model displays the most severe case of overfitting and quantile crossing, while the VG model of \cite{adrianVulnerableGrowth2019} is the most stable. Next, the upper-right panel of each figure displays the quantile forecasts of the QRF model. By virtue of its joint estimation of quantiles, the QRF does not display instances of quantile crossing. However, depending on the forecast target, the forecasts of QRF tend to be extremely noisy in one of the quantiles. For example, the forecasts of the ninety-fifth quantiles of inflation and unemployment and the fifth quantile of IP feature large spikes. From a policymaking perspective, this is undesirable because such instability in forecasts adds to uncertainty around policy decisions. In contrast, DMQ avoids quantile crossing while delivering accurate and stable distributional forecasts. Most notable is the performance of DMQ on IP during the GFC where it provided timely indications of recession risk with an emphasis on an extreme left tail. Finally, the lower-right panel of each figure plots the mean forecasts of the DMQ, which demonstrate the robustness benefits of quantile estimation. 
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/IAR_quantile_plot_us_4q_Infl_yoy.png}
+    \caption*{Top left: Benchmark quantile forecasts (IAR)}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/QRF_quantile_plot_us_4q_Infl_yoy.png}
+    \caption*{Top right: QRF quantile forecasts}
+  \end{subfigure}
+
+  \vspace{0.5em}
+
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/DMQv0c_quantile_plot_us_4q_Infl_yoy.png}
+    \caption*{Bottom left: DMQv0c quantile forecasts}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/DMQv0c_mean_plot_us_4q_Infl_yoy.png}
+    \caption*{Bottom right: DMQv0c mean forecasts}
+  \end{subfigure}
+  \caption{Inflation forecast comparison across benchmark, QRF, and DMQv0c.}
+  \label{fig:infl_model_comparison}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/VG_quantile_plot_us_4q_IP_yoy.png}
+    \caption*{Top left: Benchmark quantile forecasts (VG)}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/QRF_quantile_plot_us_4q_IP_yoy.png}
+    \caption*{Top right: QRF quantile forecasts}
+  \end{subfigure}
+
+  \vspace{0.5em}
+
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/DMQv0c_quantile_plot_us_4q_IP_yoy.png}
+    \caption*{Bottom left: DMQv0c quantile forecasts}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/DMQv0c_mean_plot_us_4q_IP_yoy.png}
+    \caption*{Bottom right: DMQv0c mean forecasts}
+  \end{subfigure}
+  \caption{Industrial production forecast comparison across benchmark, QRF, and DMQv0c.}
+  \label{fig:ip_model_comparison}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/UAR_quantile_plot_us_4q_Unrate_yoy.png}
+    \caption*{Top left: Benchmark quantile forecasts (UAR)}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/QRF_quantile_plot_us_4q_Unrate_yoy.png}
+    \caption*{Top right: QRF quantile forecasts}
+  \end{subfigure}
+
+  \vspace{0.5em}
+
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/DMQv0c_quantile_plot_us_4q_Unrate_yoy.png}
+    \caption*{Bottom left: DMQv0c quantile forecasts}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/DMQv0c_mean_plot_us_4q_Unrate_yoy.png}
+    \caption*{Bottom right: DMQv0c mean forecasts}
+  \end{subfigure}
+  \caption{Unemployment forecast comparison across benchmark, QRF, and DMQv0c.}
+  \label{fig:unrate_model_comparison}
+\end{figure}
+
+\section{Drivers of tail risk}
+
+In this section, we investigate the drivers of tail risk of inflation, IP, and unemployment. Since we estimate five quantiles for each of the forecast targets, a comprehensive analysis of the drivers of every quantile for each target across all models is infeasible. Instead, we focus on the most important measures of risk for each forecast target according to the best model DMQ. Specifically, we consider the risks to inflation to be two-sides, since most central banks have an inflation target, and we consider the risks to growth and unemployment to be one-sided. Therefore, we consider the fifth and ninety-fifth quantiles of inflation, while focusing only on the fifth and ninety-fifth quantiles of growth and unemployment, respectively. 
+
+To investigate the drivers of tail risk, we decompose the model's predictions at time $t$ for quantile $\tau$ into additive contributions $\phi_{tsj\tau}$ where $s$ is the time-step and $j$ is the feature index such that 
+\begin{equation}\label{eq: additivity}
+  \sum_{s,j} \phi_{tsj\tau} = f_\tau(X_t) - E[f_\tau(X')]
+\end{equation}
+where $f$ is the function estimated by DMQ where $f_\tau$ denotes the output of $f$ for quantile $\tau$, and $X'$ is the reference data, in our case taken to be the training data at time $t$. 
+
+To estimate feature attributions, we employ the expected gradients method of \cite{erionImprovingPerformanceDeep2021} where $\phi_{tsj\tau}$ is given by
+\begin{equation}
+  \phi_{sj\tau} = E_{x' \sim D, \alpha \sim U(0,1) } \left[ (x_{sj} - x'_{sj}) \times \frac{\partial f_\tau(x + \alpha (x-x'))}{\partial x_{sj}} \right]
+\end{equation} 
+$\phi_{tsj\tau}$ measures the impact of feature $j$ at time-step $s$ on the prediction of quantile $\tau$ at time $t$. Intuitively, it asks "what is the impact feature $j$ had on the prediction when its value was $x$ rather than $x'$?    
+
+We begin by presenting the global feature importance in Figure \ref{fig: dmq overall importance main quantile-targets} which we measure as the mean absolute attribution across samples and time-steps. Therefore, Figure \ref{fig: dmq overall importance main quantile-targets} measures the overall importance of features, regardless of where in the sample they fall or in what order they are processed in the GRU sequence.  
+
+Panel (a) and (b) of Figure \ref{fig: dmq overall importance main quantile-targets} present the twenty-five most important predictors for both tails of inflation, forty-eight of which belong to just four FRED-MD groups: Housing, Labour market, Interest and exchange rates, and Consumption, orders, and inventories, largely consistent with \cite{adrianMachinelearningGrowthRisk2025}. Taken together with panels (c) and (d), this suggests that macroeconomic variables are driven by a small set of common factors, consistent with \cite{stockMacroeconomicForecastingUsing2002}. On the contrary, however, past prices do not seem at all important for inflation. Among the most important predictors for both inflation tails are housing starts and permits as well as the BAA-federal funds spread and yield curve information. The Midwest, the Northeast, and the West are particularly important geographical regions likely because during the Great Recession, the West and Eastern coasts faced disproportionately higher delinquency rates and larger shocks to house prices and income, while the Midwest was relatively stable \citep{famigliettiGeographyHousingMarket2020}.  
+
+Panel (c) presents the twenty-five most important predictors for downside risk to growth. We find that the VIX as well as Treasury and credit spreads are the most influential predictors of downside risk, even after accounting for a large set of non-financial macroeconomic variables, consistent with \cite{adrianVulnerableGrowth2019,adrianMachinelearningGrowthRisk2025}. Measures of housing activity such as building permits and housing starts are also important predictors of downside risk. 
+
+Finally, Panel (d) presents the twenty-five most important predictors of upside risk to unemployment. Interest rate measures such Treasury-federal funds spreads and the BAA-federal funds spread are the most important predictors followed by the VIX and other interest rate variables. Overall, the importance of the predictors of unemployment largely mirror those of growth. 
+
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/overall_importance_DMQv0c_Infl_yoy_q5.png}
+    \caption{$\tau=0.05$ inflation}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/overall_importance_DMQv0c_Infl_yoy_q95.png}
+    \caption{$\tau=0.95$ inflation}
+  \end{subfigure}
+
+  \vspace{0.5em}
+
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/overall_importance_DMQv0c_IP_yoy_q5.png}
+    \caption{$\tau=0.05$ IP}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/overall_importance_DMQv0c_Unrate_yoy_q95.png}
+    \caption{$\tau=0.95$ unemployment}
+  \end{subfigure}
+  \caption{Twenty-five most important predictors. Attributions are first summed across time-steps. Then, we take the median absolute attribution for each feature across time to get a single measure of importance.}
+  \label{fig: dmq overall importance main quantile-targets}
+\end{figure}
+
+In Figure \ref{fig: dmq overall importance main quantile-targets} we identified the most influential predictors of risks to inflation, growth, and unemployment on a global level. Now, we turn our attention to the interpretation of how these predictors affect the predictions of DMQ. Specifically, in Figure \ref{fig: dmq top 5 contribution over time} we plot the contributions of the top five global features over time, scaling the color of contribution by the feature value such that the lightest contributions indicate feature values of more than two standard deviations lower than historical mean, while the darkest contributions indicate features values of more than two standard deviations above the historical mean. Because we are forecasting one year ahead, the feature values lag the dates on the x-axis by one year. For example, in panel (a) we see that housing activity appears to decline mid-GFC. Because these feature value correspond to one year prior when the forecast was made, housing activity actually began to decline at the start of the GFC which corresponds to the end of 2007. 
+
+Panel (a) and (b) plot the contributions of the five most influential predictors over time for the tails of inflation. Beginning with panel (a), we find decreases in housing activity increase downside risk to inflation, while the opposite is true during housing booms. In addition to housing activity, the BAA-federal funds spread tends to be positively associated with downside risk, which is consistent with \cite{gilchristCreditSpreadsBusiness2012} who find tightening credit conditions result in disinflation through reduced economic activity.
+
+% In addition to housing activity, the BAA-federal funds spread has a mixed effect. Taken together with panel (d), this suggests an interaction between credit conditions and the state of the economy, which we discuss along with panel (d) below. Panel (b) reveals a similar pattern. High housing activity, for example leading up to the GFC, is associated with increased upside risk to inflation. 
+
+Panel (c) shows the contributions of the five most influential features for downside risk to growth over time. We find increases in the VIX, for example around the dot com bubble and the GFC, were associated with growth vulnerabilities. Post COVID however, the surge in the VIX was due to expected upside volatility as the Fed aggressively cut rates, which suggests why it was associated with reduced downside risk. This pattern is indicative of an interaction between financial markets and monetary policy which we investigate in Figure \ref{fig: dmq interactions}. Additionally, a steepening of the spread between the ten-year Treasury bill rate and the Federal Funds rate, for example following the dot com bubble and the GFC, is associated with reduced downside risk to growth. This is consistent with the view that the steepening of the yield curve is indicative of economic recovery arising through the channel of monetary policy normalization. Housing is also an important indicator of downside risk. Prior to the GFC, high housing activity reflected by large increases in total building permits, especially in the Southern US signaled a large increase in downside risk. Specifically, around this time, increases in (log) housing permits far above their historical mean were associated with an extreme left tail growth event 1-1.5\% lower. We also find that the aggressive rate cuts that spurred higher housing activity post COVID, dramatically increased downside risk. 
+
+Finally, panel (d) presents the contributions of the five most influential features for unemployment risk over time. The plot reveals widening of the spread between Treasury rates and the Federal Funds rate reduces unemployment risk, consistent with the effect these variables have on growth vulnerabilities presented in panel (c). Also as in panel (d), high stock market volatility is associated with higher unemployment risk. Additionally, we find credit conditions, specifically the BAA-federal funds spread is the most important predictor of unemployment. However, the attributions of the BAA-federal funds spread appear to be in the wrong direction. For example, panel (d) reveals a tightening in credit conditions indicates lower unemployment risk while a loosening credit conditions signals a rise in unemployment risk. However, this seems to be at odds with \cite{gilchristCreditSpreadsBusiness2012} and warrants further investigation. 
+
+% This is consistent with \cite{gilchristCreditSpreadsBusiness2012} who find shocks to credit conditions that are orthogonal to the state of the economy predict declines in consumption, investment, and output as well as disinflation. 
+% This is consistent with the attribution of the BAA-federal funds spread in panel (a), where tightening credit conditions during a strong expansion in 2006 signaled lower inflation. Also, loose credit conditions in 2015, which featured slower growth towards the end of the year, also signaled lower inflation. We investigate this relationship further in panels (a) and (b) of Figure \ref{fig: dmq interactions}. 
+
+
+% Contributions of top 5 over time
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/contrib_timeseries_DMQv0c_Infl_yoy_top5_q5_ma12_valuecolor.png}
+    \caption{$\tau=0.05$ inflation}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/contrib_timeseries_DMQv0c_Infl_yoy_top5_q95_ma12_valuecolor.png}
+    \caption{$\tau=0.95$ inflation}
+  \end{subfigure}
+
+  \vspace{0.5em}
+
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/contrib_timeseries_DMQv0c_IP_yoy_top5_q5_ma12_valuecolor.png}
+    \caption{$\tau=0.05$ IP}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/contrib_timeseries_DMQv0c_Unrate_yoy_top5_q95_ma12_valuecolor.png}
+    \caption{$\tau=0.95$ unemployment}
+  \end{subfigure}
+  \caption{Time series of attributions of the five most important predictors. For each target-quantile combination, we rank the predictors according to the median absolute EG for the $\tau$-th quantile over the entire test sample.}
+  \label{fig: dmq top 5 contribution over time}
+\end{figure}
+
+
+Figure \ref{fig: dmq interactions} presents interactions between pairs of some of the most important variables identified in Figures \ref{fig: dmq overall importance main quantile-targets} and \ref{fig: dmq top 5 contribution over time}. For brevity, we restrict our attention to two-sided risk to inflation, downside risk to growth, and upside risk to unemployment. For inflation in we plot the interaction between housing starts and BAA corporate spread, while for IP and unemployment we plot the interaction between the VIX and the 10-year Treasury spread. 
+
+\href{../results_figures/\resultsdate/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_infl_yoy_q5_housing_starts_mw_vs_rates_baa_ff_spread.html}{Panel (a)} and \href{../results_figures/\resultsdate/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_infl_yoy_q95_housing_starts_mw_vs_rates_baa_ff_spread.html}{panel (b)}\footnote{The reader is encouraged to click on the hyperlink to open an interactive version of the plot.} demonstrate the interaction between housing starts and credit conditions. Consistent with \cite{gilchristCreditSpreadsBusiness2012}, we find that tighter credit conditions paired with less housing starts is associated with increased downside risk and reduced upside risk to inflation, suggesting that housing is an important channel through which tighter credit conditions affect prices.  
+
+\href{../results_figures/\resultsdate/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_ip_yoy_q5_rates_10_yr_ff_spread_vs_stocks_vix.html}{Panel (c)} reveals that increases in stock market volatility outpacing those of the ten-year Treasury-Federal funds spread, are associated by increased growth risk, suggesting an interaction between financial conditions and the speed of monetary policy transmission through the yield curve. Taking the GFC as a case study, surging market volatility was associated with increasing risk to growth. After several rate cuts, it wasn't until at least April 2008 after several aggressive cuts bringing the rate from 5.25\% to 2.00\%, that growth risk was abated. \href{../results_figures/\resultsdate/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_unrate_yoy_q95_rates_10_yr_ff_spread_vs_stocks_vix.html}{Panel (d)} reveal a similar pattern in which large increases in volatility that outpace the steepening of the yield curve is associated in elevated unemployment risk. It isn't until the ten-year Treasury-federal funds spread increases by 2.5 standard deviations that unemployment risk subsides.  
+
+% Fed decisions
+% Sept. 18, 2007: first cut of the cycle, from 5.25% to 4.75%.
+
+% Oct. 31, 2007: cut to 4.50%.
+
+% Dec. 11, 2007: cut to 4.25%.
+
+% Jan. 22, 2008: unusually large 75 bps cut to 3.50%.
+
+% Jan. 30, 2008: cut to 3.00%.
+
+% Mar. 18, 2008: 75 bps cut to 2.25% after Bear Stearns-related turmoil.
+
+% Apr. 30, 2008: cut to 2.00%.
+
+% Oct. 8, 2008: cut to 1.50%, then Oct. 29 to 1.00%, and Dec. 16 to 0.00%–0.25%.
+
+% Market volatility backdrop
+% From 2004 to early 2007, markets were relatively calm; volatility was below long-term averages.
+
+% Volatility rose sharply starting in August 2007, when subprime stress and liquidity fears hit markets.
+
+% The S&P 500 peaked in October 2007 and then fell for 17 months, ending down more than 55% by March 2009.
+
+% After Lehman’s failure in September 2008, volatility spiked to crisis levels, and October 2008 was especially extreme.
+
+% One telling sign was the market reaction to policy moves: the Dec. 11, 2007 cut disappointed investors, and markets fell after it.
+
+% Interactions
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_infl_yoy_q5_housing_starts_mw_vs_rates_baa_ff_spread.png}
+    \caption{$\tau=0.05$ inflation}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_infl_yoy_q95_housing_starts_mw_vs_rates_baa_ff_spread.png}
+    \caption{$\tau=0.95$ inflation}
+  \end{subfigure}
+
+  \vspace{0.5em}
+
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_ip_yoy_q5_rates_10_yr_ff_spread_vs_stocks_vix.png}
+    \caption{$\tau=0.05$ IP}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{../results_figures/\resultsdate/interaction_3d_spline_requested_quantiles/spline3d_dmqv0c_unrate_yoy_q95_rates_10_yr_ff_spread_vs_stocks_vix.png}
+    \caption{$\tau=0.95$ unemployment}
+  \end{subfigure}
+  \caption{Interactions plots. Feature values are standardized at the time of prediction using statistics of the training data. Dates reflect the prediction date ($t+h$). Feature values reflect the standardized feature values at time $t$. Attributions are also smoothed using a twelve-month rolling average.}
+  \label{fig: dmq interactions}
+\end{figure}
+
+
+% Ranked importance by lag
+% \begin{figure}[htbp]
+%   \centering
+%   \begin{subfigure}{0.49\textwidth}
+%     \centering
+%     \includegraphics[width=\linewidth]{../results_figures/\resultsdate/feature_rank_heatmap_Infl_yoy_q0.05.png}
+%     \caption{$\tau=0.05$ inflation}
+%   \end{subfigure}
+%   \hfill
+%   \begin{subfigure}{0.49\textwidth}
+%     \centering
+%     \includegraphics[width=\linewidth]{../results_figures/\resultsdate/feature_rank_heatmap_Infl_yoy_q0.95.png}
+%     \caption{$\tau=0.95$ inflation}
+%   \end{subfigure}
+
+%   \vspace{0.5em}
+
+%   \begin{subfigure}{0.49\textwidth}
+%     \centering
+%     \includegraphics[width=\linewidth]{../results_figures/\resultsdate/feature_rank_heatmap_IP_yoy_q0.05.png}
+%     \caption{$\tau=0.05$ IP}
+%   \end{subfigure}
+%   \hfill
+%   \begin{subfigure}{0.49\textwidth}
+%     \centering
+%     \includegraphics[width=\linewidth]{../results_figures/\resultsdate/feature_rank_heatmap_Unrate_yoy_q0.95.png}
+%     \caption{$\tau=0.95$ unemployment}
+%   \end{subfigure}
+%   \caption{Feature ranking according to mean absolute SHAP value by lag}
+%   \label{fig: dmq ranked importance by lag main quantile-targets}
+% \end{figure}
+
+
+
+%\clearpage
+
+\section{Conclusion} \label{section:conclusion}
+
+This paper introduces a deep multi-quantile neural network (DMQ) to forecast macroeconomic tail risks by jointly modeling the conditional quantiles of inflation, industrial production, and unemployment. Our results demonstrate that DMQ significantly improves forecast accuracy. By leveraging feature attribution methods, we identify housing activity, credit conditions, financial conditions, and their interactions as key drivers of macroeconomic risks. These findings underscore the importance of modeling the entire conditional distribution to better inform policy decisions and manage economic risks. Future research could extend this framework to incorporate additional predictors, such as real-time news data, or explore its applicability to other economic contexts.
+
+
+
+\newpage
+\singlespacing
+
+%%% BibTeX style.
+\bibliographystyle{ecta}%{aer}
+%% BibTeX database file.
+\bibliography{references.bib}
+
+\clearpage
+\appendix
+\counterwithin{figure}{section}
+\counterwithin{table}{section}
+
+
+\appendix
+
+\section{Appendix}
+
+\begin{table}[H]
+  \centering
+  \caption{INFL: Pairwise DM $t$-statistics by quantile (upper triangular). Significant values at 5\% are in bold.}
+  \label{tab: dm_quantile_infl}
+
+  \begin{subtable}{\textwidth}
+    \centering
+    \caption*{Panel A: $q=0.05$}
+    \resizebox{\textwidth}{!}{
+    \input{../results_tables/\resultsdate/dm_quantile_upper_Infl_yoy_Q5_us_4q_1998-01-01-2024-12-01.tex}
+    }
+  \end{subtable}
+
+  \vspace{0.5em}
+  \begin{subtable}{\textwidth}
+    \centering
+    \caption*{Panel B: $q=0.25$}
+    \resizebox{\textwidth}{!}{
+    \input{../results_tables/\resultsdate/dm_quantile_upper_Infl_yoy_Q25_us_4q_1998-01-01-2024-12-01.tex}
+    }
+  \end{subtable}
+
+  \vspace{0.5em}
+  \begin{subtable}{\textwidth}
+    \centering
+    \caption*{Panel C: $q=0.50$}
+    \resizebox{\textwidth}{!}{
+    \input{../results_tables/\resultsdate/dm_quantile_upper_Infl_yoy_Q50_us_4q_1998-01-01-2024-12-01.tex}
+    }
+  \end{subtable}
+
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \caption*{INFL: Pairwise DM $t$-statistics by quantile (continued)}
+
+  \begin{subtable}{\textwidth}
+    \centering
+    \caption*{Panel D: $q=0.75$}
+    \resizebox{\textwidth}{!}{
+    \input{../results_tables/\resultsdate/dm_quantile_upper_Infl_yoy_Q75_us_4q_1998-01-01-2024-12-01.tex}
+    }
+  \end{subtable}
+
+  \vspace{0.5em}
+  \begin{subtable}{\textwidth}
+    \centering
+    \caption*{Panel E: $q=0.95$}
+    \resizebox{\textwidth}{!}{
+    \input{../results_tables/\resultsdate/dm_quantile_upper_Infl_yoy_Q95_us_4q_1998-01-01-2024-12-01.tex}
+    }
+  \end{subtable}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \caption{IP: Pairwise DM $t$-statistics by quantile (upper triangular). Significant values at 5\% are in bold.}
+  \label{tab: dm_quantile_ip}
+
+  \begin{subtable}{\textwidth}
+    \centering
+    \caption*{Panel A: $q=0.05$}
+    \resizebox{\textwidth}{!}{
+    \input{../results_tables/\resultsdate/dm_quantile_upper_IP_yoy_Q5_us_4q_1998-01-01-2024-12-01.tex}
+    }
+  \end{subtable}
+
+  \vspace{0.5em}
+  \begin{subtable}{\textwidth}
+    \centering
+    \caption*{Panel B: $q=0.25$}
+    \resizebox{\textwidth}{!}{
+    \input{../results_tables/\resultsdate/dm_quantile_upper_IP_yoy_Q25_us_4q_1998-01-01-2024-12-01.tex}
+    }
+  \end{subtable}
+
+  \vspace{0.5em}
+  \begin{subtable}{\textwidth}
+    \centering
+    \caption*{Panel C: $q=0.50$}
+    \resizebox{\textwidth}{!}{
+    \input{../results_tables/\resultsdate/dm_quantile_upper_IP_yoy_Q50_us_4q_1998-01-01-2024-12-01.tex}
+    }
+  \end{subtable}
+
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \caption*{IP: Pairwise DM $t$-statistics by quantile (continued)}
+
+  \begin{subtable}{\textwidth}
+    \centering
+    \caption*{Panel D: $q=0.75$}
+    \resizebox{\textwidth}{!}{
+    \input{../results_tables/\resultsdate/dm_quantile_upper_IP_yoy_Q75_us_4q_1998-01-01-2024-12-01.tex}
+    }
+  \end{subtable}
+
+  \vspace{0.5em}
+  \begin{subtable}{\textwidth}
+    \centering
+    \caption*{Panel E: $q=0.95$}
+    \resizebox{\textwidth}{!}{
+    \input{../results_tables/\resultsdate/dm_quantile_upper_IP_yoy_Q95_us_4q_1998-01-01-2024-12-01.tex}
+    }
+  \end{subtable}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \caption{UNRATE: Pairwise DM $t$-statistics by quantile (upper triangular). Significant values at 5\% are in bold.}
+  \label{tab: dm_quantile_unrate}
+
+  \begin{subtable}{\textwidth}
+    \centering
+    \caption*{Panel A: $q=0.05$}
+    \resizebox{\textwidth}{!}{
+    \input{../results_tables/\resultsdate/dm_quantile_upper_Unrate_yoy_Q5_us_4q_1998-01-01-2024-12-01.tex}
+    }
+  \end{subtable}
+
+  \vspace{0.5em}
+  \begin{subtable}{\textwidth}
+    \centering
+    \caption*{Panel B: $q=0.25$}
+    \resizebox{\textwidth}{!}{
+    \input{../results_tables/\resultsdate/dm_quantile_upper_Unrate_yoy_Q25_us_4q_1998-01-01-2024-12-01.tex}
+    }
+  \end{subtable}
+
+  \vspace{0.5em}
+  \begin{subtable}{\textwidth}
+    \centering
+    \caption*{Panel C: $q=0.50$}
+    \resizebox{\textwidth}{!}{
+    \input{../results_tables/\resultsdate/dm_quantile_upper_Unrate_yoy_Q50_us_4q_1998-01-01-2024-12-01.tex}
+    }
+  \end{subtable}
+
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \caption*{UNRATE: Pairwise DM $t$-statistics by quantile (continued)}
+
+  \begin{subtable}{\textwidth}
+    \centering
+    \caption*{Panel D: $q=0.75$}
+    \resizebox{\textwidth}{!}{
+    \input{../results_tables/\resultsdate/dm_quantile_upper_Unrate_yoy_Q75_us_4q_1998-01-01-2024-12-01.tex}
+    }
+  \end{subtable}
+
+  \vspace{0.5em}
+  \begin{subtable}{\textwidth}
+    \centering
+    \caption*{Panel E: $q=0.95$}
+    \resizebox{\textwidth}{!}{
+    \input{../results_tables/\resultsdate/dm_quantile_upper_Unrate_yoy_Q95_us_4q_1998-01-01-2024-12-01.tex}
+    }
+  \end{subtable}
+\end{table}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Pairwise Diebold-Mariano $t$-statistics (upper triangular). Significant values at 5\% are in bold.}
+  \label{tab: dm mean}
+
+  \begin{subtable}{\textwidth}
+    \centering
+    \caption*{Panel A: INFL}
+    \resizebox{\textwidth}{!}{
+    \input{../results_tables/\resultsdate/dm_upper_Infl_yoy_us_4q_1998-01-01-2024-12-01.tex}
+    }
+  \end{subtable}
+
+  \vspace{0.75em}
+
+  \begin{subtable}{\textwidth}
+    \centering
+    \caption*{Panel B: IP}
+    \resizebox{\textwidth}{!}{
+    \input{../results_tables/\resultsdate/dm_upper_IP_yoy_us_4q_1998-01-01-2024-12-01.tex}
+    }
+  \end{subtable}
+
+  \vspace{0.75em}
+
+  \begin{subtable}{\textwidth}
+    \centering
+    \caption*{Panel C: UNRATE}
+    \resizebox{\textwidth}{!}{
+    \input{../results_tables/\resultsdate/dm_upper_Unrate_yoy_us_4q_1998-01-01-2024-12-01.tex}
+    }
+  \end{subtable}
+\end{table}
+
+\end{document}

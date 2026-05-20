@@ -1,0 +1,197 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{float}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{multirow}
+
+\geometry{margin=1in}
+\onehalfspacing
+
+\title{Sample}
+\date{\today}
+\author{Robert Proner}
+% Date variable for results paths
+\newcommand{\resultsdate}{2026-05-17}
+
+% Toggle to show/hide figures. Default shows figures.
+% To override from the command line, pass e.g.:
+%   pdflatex "\def\NoFigures{}\input{latex/results.tex}"
+\newif\ifshowfigures
+% \showfigurestrue
+% If the user defined \NoFigures (via command line), hide figures
+\ifdefined\NoFigures
+    \showfiguresfalse
+\fi
+
+
+\begin{document}
+
+\maketitle
+
+\section{Main tables}
+
+\begin{table}[htbp]
+  \centering
+  \resizebox{\textwidth}{!}{
+  \input{../results_tables/\resultsdate/r1_combined_body_us_4q_1998-01-01-2024-12-01.tex}
+  }
+  \caption{$R^1$ table for annual inflation, annual IP growth, and annual percent change in the unemployment rate for the period January 1998 to December 2024}
+  \label{tab: baseline r1 table}
+\end{table}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Pairwise DM $t$-statistics pooled across quantiles (upper triangular). Significant values at 5\% are in bold.}
+  \label{tab: dm_qpooled}
+
+  \begin{subtable}{\textwidth}
+    \centering
+    \caption*{Panel A: INFL}
+    \resizebox{\textwidth}{!}{
+    \input{../results_tables/\resultsdate/dm_qpooled_upper_Infl_yoy_us_4q_1998-01-01-2024-12-01.tex}
+    }
+  \end{subtable}
+
+  \vspace{0.75em}
+  \begin{subtable}{\textwidth}
+    \centering
+    \caption*{Panel B: IP}
+    \resizebox{\textwidth}{!}{
+    \input{../results_tables/\resultsdate/dm_qpooled_upper_IP_yoy_us_4q_1998-01-01-2024-12-01.tex}
+    }
+  \end{subtable}
+
+  \vspace{0.75em}
+  \begin{subtable}{\textwidth}
+    \centering
+    \caption*{Panel C: UNRATE}
+    \resizebox{\textwidth}{!}{
+    \input{../results_tables/\resultsdate/dm_qpooled_upper_Unrate_yoy_us_4q_1998-01-01-2024-12-01.tex}
+    }
+  \end{subtable}
+\end{table}
+
+\begin{table}[htbp]
+  \centering
+  \resizebox{\textwidth}{!}{
+  \input{../results_tables/\resultsdate/r2_combined_us_4q_1998-01-01-2024-12-01.tex}
+  }
+  \caption{$R^2$ table}
+  \label{tab: baseline r2 table}
+\end{table}
+
+
+
+% \section{Figures}
+% % Figures can be toggled with the `\ifshowfigures` conditional
+% % \ifshowfigures
+% \begin{figure}[htbp]
+%   \centering
+%   \begin{subfigure}{0.49\textwidth}
+%     \centering
+%     \includegraphics[width=\linewidth]{../results_figures/\resultsdate/IAR_quantile_plot_us_4q_Infl_yoy_1998-01-01-2024-12-01.png}
+%     \caption*{Top left: Benchmark quantile forecasts (IAR)}
+%   \end{subfigure}
+%   \hfill
+%   \begin{subfigure}{0.49\textwidth}
+%     \centering
+%     \includegraphics[width=\linewidth]{../results_figures/\resultsdate/QRF_quantile_plot_us_4q_Infl_yoy_1998-01-01-2024-12-01.png}
+%     \caption*{Top right: QRF quantile forecasts}
+%   \end{subfigure}
+
+%   \vspace{0.5em}
+
+%   \begin{subfigure}{0.49\textwidth}
+%     \centering
+%     \includegraphics[width=\linewidth]{../results_figures/\resultsdate/DMQv0_quantile_plot_us_4q_Infl_yoy_1998-01-01-2024-12-01.png}
+%     \caption*{Bottom left: DMQv0 quantile forecasts}
+%   \end{subfigure}
+%   \hfill
+%   \begin{subfigure}{0.49\textwidth}
+%     \centering
+%     \includegraphics[width=\linewidth]{../results_figures/\resultsdate/DMQv0_mean_plot_us_4q_Infl_yoy_1998-01-01-2024-12-01.png}
+%     \caption*{Bottom right: DMQv0 mean forecasts}
+%   \end{subfigure}
+%   \caption{Inflation forecast comparison across benchmark, QRF, and DMQv0.}
+%   \label{fig:infl_model_comparison}
+% \end{figure}
+
+% \begin{figure}[htbp]
+%   \centering
+%   \begin{subfigure}{0.49\textwidth}
+%     \centering
+%     \includegraphics[width=\linewidth]{../results_figures/\resultsdate/VG_quantile_plot_us_4q_IP_yoy_1998-01-01-2024-12-01.png}
+%     \caption*{Top left: Benchmark quantile forecasts (VG)}
+%   \end{subfigure}
+%   \hfill
+%   \begin{subfigure}{0.49\textwidth}
+%     \centering
+%     \includegraphics[width=\linewidth]{../results_figures/\resultsdate/QRF_quantile_plot_us_4q_IP_yoy_1998-01-01-2024-12-01.png}
+%     \caption*{Top right: QRF quantile forecasts}
+%   \end{subfigure}
+
+%   \vspace{0.5em}
+
+%   \begin{subfigure}{0.49\textwidth}
+%     \centering
+%     \includegraphics[width=\linewidth]{../results_figures/\resultsdate/DMQe_quantile_plot_us_4q_IP_yoy_1998-01-01-2024-12-01.png}
+%     \caption*{Bottom left: DMQv0 quantile forecasts}
+%   \end{subfigure}
+%   \hfill
+%   \begin{subfigure}{0.49\textwidth}
+%     \centering
+%     \includegraphics[width=\linewidth]{../results_figures/\resultsdate/DMQe_mean_plot_us_4q_IP_yoy_1998-01-01-2024-12-01.png}
+%     \caption*{Bottom right: DMQv0 mean forecasts}
+%   \end{subfigure}
+%   \caption{Industrial production forecast comparison across benchmark, QRF, and DMQv0.}
+%   \label{fig:ip_model_comparison}
+% \end{figure}
+
+% \begin{figure}[htbp]
+%   \centering
+%   \begin{subfigure}{0.49\textwidth}
+%     \centering
+%     \includegraphics[width=\linewidth]{../results_figures/\resultsdate/UAR_quantile_plot_us_4q_Unrate_yoy_1998-01-01-2024-12-01.png}
+%     \caption*{Top left: Benchmark quantile forecasts (UAR)}
+%   \end{subfigure}
+%   \hfill
+%   \begin{subfigure}{0.49\textwidth}
+%     \centering
+%     \includegraphics[width=\linewidth]{../results_figures/\resultsdate/QRF_quantile_plot_us_4q_Unrate_yoy_1998-01-01-2024-12-01.png}
+%     \caption*{Top right: QRF quantile forecasts}
+%   \end{subfigure}
+
+%   \vspace{0.5em}
+
+%   \begin{subfigure}{0.49\textwidth}
+%     \centering
+%     \includegraphics[width=\linewidth]{../results_figures/\resultsdate/DMQv0_quantile_plot_us_4q_Unrate_yoy_1998-01-01-2024-12-01.png}
+%     \caption*{Bottom left: DMQv0 quantile forecasts}
+%   \end{subfigure}
+%   \hfill
+%   \begin{subfigure}{0.49\textwidth}
+%     \centering
+%     \includegraphics[width=\linewidth]{../results_figures/\resultsdate/DMQv0_mean_plot_us_4q_Unrate_yoy_1998-01-01-2024-12-01.png}
+%     \caption*{Bottom right: DMQv0 mean forecasts}
+%   \end{subfigure}
+%   \caption{Unemployment forecast comparison across benchmark, QRF, and DMQv0.}
+%   \label{fig:unrate_model_comparison}
+% \end{figure}
+
+% \fi
+
+
+\newpage
+
+
+\end{document}

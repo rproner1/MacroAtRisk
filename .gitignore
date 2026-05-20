@@ -21,3 +21,9 @@ results_figures/
 results_tables/
 data/
 *.db
+*.pdf
+*.png
+*.jpg
+latex/*
+!latex/*.tex
+!latex/*.bib
