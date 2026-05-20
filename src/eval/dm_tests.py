@@ -89,9 +89,10 @@ def _build_model_mean_forecasts(
 
     model_forecasts: dict[str, np.ndarray] = {}
 
-    if "AR1_Mean" not in preds.columns:
-        raise ValueError("Expected AR1_Mean column in predictions file.")
-    model_forecasts["AR1"] = preds["AR1_Mean"].values
+    # if "AR1_Mean" not in preds.columns:
+    #     raise ValueError("Expected AR1_Mean column in predictions file.")
+    if 'AR1_Mean' in preds.columns:
+        model_forecasts["AR1"] = preds["AR1_Mean"].values
 
     ordered_models = [benchmark_model] + base_models_subset
     for model in ordered_models:
@@ -124,11 +125,6 @@ def _build_model_quantile_forecasts(
     has_ar1_q = all(col in preds.columns for col in ar1_q_cols)
     if has_ar1_q:
         model_q_forecasts["AR1"] = preds.loc[:, ar1_q_cols].values
-    elif "AR1_Mean" in preds.columns:
-        ar1_mean = preds["AR1_Mean"].values.reshape(-1, 1)
-        model_q_forecasts["AR1"] = np.repeat(ar1_mean, repeats=len(int_quantiles), axis=1)
-    else:
-        raise ValueError("Expected either AR1 quantile columns or AR1_Mean in predictions file.")
 
     for model in ordered_models:
         needed_cols = [f"{model}_Q{q}" for q in int_quantiles]
@@ -331,7 +327,13 @@ def make_dm_tables(
             quantiles=quantiles,
         )
 
-        ordered_keys = ["AR1", benchmark_model] + base_models_subset
+        ar1_q_cols = [f"AR1_Q{int(q * 100)}" for q in quantiles]
+        has_ar1_q = all(col in preds.columns for col in ar1_q_cols)
+        if "AR1_Mean" in preds.columns and has_ar1_q:
+            ordered_keys = ["AR1", benchmark_model] + base_models_subset
+        else:
+            ordered_keys = [benchmark_model] + base_models_subset
+        
         ordered_forecasts = {k: model_forecasts[k] for k in ordered_keys}
         ordered_q_forecasts = {k: model_q_forecasts[k] for k in ordered_keys}
 

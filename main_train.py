@@ -342,11 +342,6 @@ def train_deep_models():
         'verbose': 0
     }
     
-    builder_fn_map = {
-        'DMQv0': build_dmq_v0,
-        'DMQv1': build_dmq_v1
-    }
-
     model_builder_params_cfg = config['builder_params']['deep_models']
     model_names = list(model_builder_params_cfg.keys())
     
@@ -365,8 +360,6 @@ def train_deep_models():
         study_name = f'{model_type}_{target_name}_{YEAR}'
         logging.info(f"Training {model_type}...")
 
-        base_model_type = model_type.rstrip('c')
-        builder_fn = builder_fn_map[base_model_type]
         builder_params = dict(model_builder_params_cfg[model_type])
         builder_params.update(
             {
@@ -403,7 +396,7 @@ def train_deep_models():
                 y_tr=y_tr,
                 val_size=config['val_size'],
                 n_splits=K_FOLDS,
-                builder_func=builder_fn,
+                builder_func=build_dmq_v0,
                 fit_params=fit_params,
                 early_stopping_args=early_stopping_args,
                 n_jobs=deep_cv_jobs,

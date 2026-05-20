@@ -61,11 +61,11 @@ oap_datasets:
 fit_models: true
 input_files: [
   "us_4q_fred_x.parquet",
-  "us_4q_oap_vw_x.parquet"
+  # "us_4q_oap_vw_x.parquet"
 ]
 target_file: 'us_4q_fred_y.parquet'
 
-trials: 100
+trials: 50
 time_steps: 12
 quantiles: [0.05, 0.25, 0.50, 0.75, 0.95]
 n_estimators: 1
@@ -162,8 +162,32 @@ tuning:
 
 builder_params:
   deep_models:
-    DMQv0:
-      n_recurrent_layers: 3
+    # DMQv0:
+    #   n_recurrent_layers: 3
+    #   n_shared_layers: 2
+    #   n_qtask_layers: 2
+    #   n_recurrent_nodes: 32
+    #   n_shared_nodes: 32
+    #   n_task_nodes: 32
+    #   recurrent_layer_type: 'lstm'
+    #   norm_fn: 'layer'
+    #   recurrent_norm: true
+    #   shared_norm: true
+    #   task_norm: false
+    DMQs:
+      n_recurrent_layers: 1
+      n_shared_layers: 1
+      n_qtask_layers: 1
+      n_recurrent_nodes: 32
+      n_shared_nodes: 32
+      n_task_nodes: 32
+      recurrent_layer_type: 'lstm'
+      norm_fn: 'layer'
+      recurrent_norm: true
+      shared_norm: true
+      task_norm: true
+    DMQm:
+      n_recurrent_layers: 2
       n_shared_layers: 2
       n_qtask_layers: 2
       n_recurrent_nodes: 32
@@ -173,65 +197,20 @@ builder_params:
       norm_fn: 'layer'
       recurrent_norm: true
       shared_norm: true
-      task_norm: false
-    # DMQv1:
-    #   n_recurrent_layers: 3
-    #   n_shared_layers: 2
-    #   n_qtask_layers: 2
-    #   n_recurrent_nodes: 64
-    #   n_shared_nodes: 32
-    #   n_task_nodes: 16
-    #   recurrent_layer_type: 'lstm'
-    #   norm_fn: 'layer'
-    #   recurrent_norm: true
-    #   shared_norm: true
-    #   task_norm: false
-
-    # DMQv0c:
-    #   n_recurrent_layers: 3
-    #   n_shared_layers: 2
-    #   n_qtask_layers: 2
-    #   n_recurrent_nodes: 32
-    #   n_shared_nodes: 32
-    #   n_task_nodes: 32
-    #   recurrent_layer_type: 'lstm'
-    #   norm_fn: 'layer'
-    # DMQv1:
-    #   n_recurrent_layers: 3
-    #   n_shared_layers: 2
-    #   n_qtask_layers: 2
-    #   n_recurrent_nodes: 64
-    #   n_shared_nodes: 32
-    #   n_task_nodes: 16
-    #   recurrent_layer_type: 'lstm'
-    #   norm_fn: 'layer'
-    # DMQv1c:
-    #   n_recurrent_layers: 3
-    #   n_shared_layers: 2
-    #   n_qtask_layers: 2
-    #   n_recurrent_nodes: 32
-    #   n_shared_nodes: 32
-    #   n_task_nodes: 32
-    #   recurrent_layer_type: 'lstm'
-    #   norm_fn: 'layer'
-    # DMQv2:
-    #   n_recurrent_layers: 3
-    #   n_shared_layers: 2
-    #   n_qtask_layers: 2
-    #   n_recurrent_nodes: 64
-    #   n_shared_nodes: 32
-    #   n_task_nodes: 16
-    #   recurrent_layer_type: 'lstm'
-    #   norm_fn: 'layer'
-    # DMQv2c:
-    #   n_recurrent_layers: 3
-    #   n_shared_layers: 2
-    #   n_qtask_layers: 2
-    #   n_recurrent_nodes: 32
-    #   n_shared_nodes: 32
-    #   n_task_nodes: 32
-    #   recurrent_layer_type: 'lstm'
-    #   norm_fn: 'layer'
+      task_norm: true
+    DMQl:
+      n_recurrent_layers: 3
+      n_shared_layers: 3
+      n_qtask_layers: 3
+      n_recurrent_nodes: 32
+      n_shared_nodes: 32
+      n_task_nodes: 32
+      recurrent_layer_type: 'lstm'
+      norm_fn: 'layer'
+      recurrent_norm: true
+      shared_norm: true
+      task_norm: true
+    
 
 # ========== Shared Settings ==========
 year: 1997
@@ -243,19 +222,19 @@ horizon_in_quarters: 4
 make_results: true
 make_r1_tables: true
 base_models_subset: [
-  'Naive',
-  'QR',
-  'EN',
+  # 'Naive',
+  # 'QR',
+  # 'EN',
   # 'QPCR',
   'QRF',
   'QGB',
-  'sDMQ',
-  # 'DMQv0',
+  # 'sDMQ',
+  'DMQv0',
   # 'DMQv1',
-  'DMQs',
-  'DMQm',
-  'DMQl',
-  'DMQe'
+  # 'DMQs',
+  # 'DMQm',
+  # 'DMQl',
+  # 'DMQe'
   # 'DMQv2c'
 ]
 test_start: "1998-01-01"

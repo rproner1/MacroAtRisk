@@ -138,13 +138,14 @@ def _compute_r2_results_df(
         r2_report['Model'].append(model)
         r2_report['R2'].append(r2)
 
-    r2 = compute_oos_r2_score(
-        y_true=actuals.values.flatten(),
-        y_pred=preds.loc[:, 'AR1_Mean'].values.flatten(),
-        benchmark=naive_mean_test.values.flatten()
-    )
-    r2_report['Model'].append('AR1_Mean')
-    r2_report['R2'].append(r2)
+    if 'AR1_mean' in preds.columns:
+        r2 = compute_oos_r2_score(
+            y_true=actuals.values.flatten(),
+            y_pred=preds.loc[:, 'AR1_Mean'].values.flatten(),
+            benchmark=naive_mean_test.values.flatten()
+        )
+        r2_report['Model'].append('AR1_Mean')
+        r2_report['R2'].append(r2)
 
     return pd.DataFrame(r2_report).apply(lambda x: round(x, 1) if x.name == 'R2' else x)
 
