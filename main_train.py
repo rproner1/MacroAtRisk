@@ -448,7 +448,7 @@ def train_deep_models():
         estimators = fit_models(
             X_tr,
             y_tr,
-            builder_fn,
+            build_dmq_v0,
             model_name=study_name,
             hps=best_params,
             fit_params=fit_params,
