@@ -81,7 +81,7 @@ def make_quantile_plots(
     plot_list = ['AR1', benchmark_model] + base_models_subset
 
     # Load targets and predictions
-    y_full = pd.read_parquet(targets_path).loc['1961-01-01':test_end, :]
+    y_full = pd.read_csv(targets_path, index_col=0, parse_dates=True).loc['1961-01-01':test_end, :]
     preds = pd.read_csv(pred_path, index_col=0, parse_dates=True).loc[test_start:test_end]
     models_list = set([c.split('_')[0] for c in preds.columns if '_' in c])
     
@@ -256,7 +256,7 @@ def make_mean_plots(
     plot_list = ['AR1', benchmark_model] + base_models_subset
 
     # Load targets and predictions
-    y_full = pd.read_parquet(targets_path).loc['1961-01-01':test_end, :]
+    y_full = pd.read_csv(targets_path, index_col=0, parse_dates=True).loc['1961-01-01':test_end, :]
     preds = pd.read_csv(pred_path, index_col=0, parse_dates=True).loc[test_start:test_end]
     models_list = set([c.split('_')[0] for c in preds.columns if '_' in c])
     

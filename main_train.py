@@ -49,9 +49,9 @@ logging.basicConfig(level=config['logging_level'])
 parser = argparse.ArgumentParser(description="Train models")
 parser.add_argument("--year", type=int, required=True, help="Training cutoff year")
 parser.add_argument("--target", type=int, required=True, help="Target index (0=Infl, 1=IP, 2=Unrate)")
-parser.add_argument("--model-type", type=str, default="all", 
-                    choices=["shelf", "deep", "all"],
-                    help="Type of models to train")
+parser.add_argument("--model-type", type=str, nargs='+', default=["all"],
+                    choices=["linear", "trees", "deep", "all"],
+                    help="Type(s) of models to train (e.g. --model-type trees deep)")
 parser.add_argument("--date", type=str, default=str(date.today()), help="Date for organizing outputs (default: today's date)")
 parser.add_argument("--run-locally", action="store_true", help="Whether to run locally (reduces hyperparameter tuning for quick testing)")
 parser.add_argument("--fit-lit-bench", action="store_true", help="Fit models from the literature. Only needs to be run once.")
@@ -85,7 +85,7 @@ BATCH_SIZE = config['batch_size']
 
 path_quantiles = [int(q*100) for q in QUANTILES]
 
-BASE_DIR = Path(os.getenv('REMOTE_BASE_DIR')) if not RUN_LOCALLY else Path(os.getenv('LOCAL_BASE_DIR'))
+BASE_DIR = Path('./')
 
 DATA_DIR = BASE_DIR / 'data' / 'processed'
 SHELF_MODEL_DIR = BASE_DIR / 'models' / 'shelf_models' / DATE
@@ -102,25 +102,17 @@ for path in [SHELF_MODEL_DIR, SHELF_PRED_DIR, SHELF_TUNING_LOG_PATH.parent, LIT_
 
 target_name_dict = {0: 'Infl_yoy', 1: 'IP_yoy', 2: 'Unrate_yoy'}
 model_file_dict = {
-    0: f"{COUNTRY}_{HORIZON_IN_QUARTERS}q_iar_x.parquet",
-    1: f"{COUNTRY}_{HORIZON_IN_QUARTERS}q_vg_x.parquet",
-    2: f"{COUNTRY}_{HORIZON_IN_QUARTERS}q_uar_x.parquet"
+    0: f"{COUNTRY}_{HORIZON_IN_QUARTERS}q_iar_x.csv",
+    1: f"{COUNTRY}_{HORIZON_IN_QUARTERS}q_vg_x.csv",
+    2: f"{COUNTRY}_{HORIZON_IN_QUARTERS}q_uar_x.csv"
 }
 model_name_dict = {0: 'IAR', 1: 'VG', 2: 'UAR'}
 
 
-def train_shelf_models():
-    """Train shelf models (Naive, AR1, LR, LASSO, QRF, QGB)."""
-    logging.info(f"Training shelf models for {target_name_dict[TARGET_IDX]} ({YEAR})...")
-    
-    # if RUN_LOCALLY:
-    #     quantiles = [QUANTILES[0]]
-    # else:
-    quantiles = QUANTILES
-
+def _load_shelf_data():
+    """Load and unpack non-RNN data shared by linear and tree model training."""
     target_path = DATA_DIR / TARGET_FILE
     input_paths = [DATA_DIR / file for file in INPUT_FILES]
-    
     non_rnn_data, _, meta_data = prepare_quantile_data(
         target=TARGET_IDX,
         time_steps=1,
@@ -131,44 +123,38 @@ def train_shelf_models():
         n_quantiles=len(QUANTILES),
         val_years=VAL_YEARS
     )
-    
-    (
-        X_train,
-        y_train,
-        X_val,
-        y_val,
-        X_train_full, 
-        y_train_full, 
-        X_test, 
-        all_y_train
-    ) = itemgetter(
-        'X_train',
-        'y_train',
-        'X_val',
-        'y_val',
-        'X_train_full', 
-        'y_train_full', 
-        'X_test', 
-        'all_y_train'
+    arrays = itemgetter(
+        'X_train', 'y_train', 'X_val', 'y_val',
+        'X_train_full', 'y_train_full', 'X_test', 'all_y_train'
     )(non_rnn_data)
-    
+    return arrays, meta_data
+
+
+def train_linear_models():
+    """Train linear shelf models (Naive, AR1, LR, LASSO)."""
+    logging.info(f"Training linear models for {target_name_dict[TARGET_IDX]} ({YEAR})...")
+
+    (
+        X_train, y_train, X_val, y_val,
+        X_train_full, y_train_full, X_test, _
+    ), meta_data = _load_shelf_data()
+
     target_name = target_name_dict[TARGET_IDX]
     all_preds = {}
-    
+
     # Naive models
-    naive_preds = fit_dummy(X_train_full, y_train_full, X_test, quantiles)
+    naive_preds = fit_dummy(X_train_full, y_train_full, X_test, QUANTILES)
     all_preds.update(naive_preds)
-    
+
     # AR(1) models
-    ar1_x_path = DATA_DIR / f"{COUNTRY}_{HORIZON_IN_QUARTERS}q_ar1_x.parquet"
-    X_ar1 = pd.read_parquet(ar1_x_path)
+    ar1_x_path = DATA_DIR / f"{COUNTRY}_{HORIZON_IN_QUARTERS}q_ar1_x.csv"
+    X_ar1 = pd.read_csv(ar1_x_path, index_col=0, parse_dates=True)
     X_train_ar1 = X_ar1.loc['1961-02-01':f'{YEAR}-12-01', f"{target_name}_t-1"]
     X_test_ar1 = X_ar1.loc[f'{YEAR+1}-01-01': f'{YEAR+1}-12-01', f"{target_name}_t-1"]
-    y_train_ar1 = y_train_full.loc['1961-02-01':f'{YEAR}-12-01'] # Get rid of first date because NaN from lag
-
-    ar1_preds = fit_ar1(X_train_ar1, y_train_ar1, X_test_ar1, quantiles, target_name, YEAR, verbose=False)
+    y_train_ar1 = y_train_full.loc['1961-02-01':f'{YEAR}-12-01']
+    ar1_preds = fit_ar1(X_train_ar1, y_train_ar1, X_test_ar1, QUANTILES, target_name, YEAR, verbose=False)
     all_preds.update(ar1_preds)
-    
+
     early_stopping_args = {
         'monitor': 'val_loss',
         'min_delta': 1e-3,
@@ -185,14 +171,8 @@ def train_shelf_models():
     }
 
     linear_preds = fit_linear_models(
-        X_train,
-        y_train,
-        X_train_full,
-        y_train_full,
-        X_test,
-        QUANTILES,
-        target_name,
-        YEAR,
+        X_train, y_train, X_train_full, y_train_full, X_test,
+        QUANTILES, target_name, YEAR,
         val_size=config['val_size'],
         k_folds=K_FOLDS,
         tuning_path=SHELF_TUNING_LOG_PATH,
@@ -200,46 +180,64 @@ def train_shelf_models():
         fit_params=fit_params,
         seed=SEED,
         trials=1 if RUN_LOCALLY else config['trials'],
-        n_estimators= 1 if RUN_LOCALLY else config['n_estimators'],
+        n_estimators=1 if RUN_LOCALLY else config['n_estimators'],
         model_dir_path=SHELF_MODEL_DIR,
         linear_grids=config['tuning']['linear_grids'],
         optuna_storage=OPTUNA_STORAGE,
     )
-
     all_preds.update(linear_preds)
-    
+
+    preds_df = pd.DataFrame(
+        all_preds,
+        index=pd.date_range(start=meta_data['test_start'], end=meta_data['test_end'], freq='MS')
+    )
+    output_path = SHELF_PRED_DIR / f"linear_model_predictions_{COUNTRY}_{HORIZON_IN_QUARTERS}q_{target_name}_{YEAR}.csv"
+    preds_df.to_csv(output_path)
+    logging.info(f"Linear model predictions saved to {output_path}")
+
+
+def train_tree_models():
+    """Train tree-based shelf models (QRF, QGB)."""
+    logging.info(f"Training tree models for {target_name_dict[TARGET_IDX]} ({YEAR})...")
+
+    (
+        _, _, _, _,
+        X_train_full, y_train_full, X_test, _
+    ), meta_data = _load_shelf_data()
+
+    target_name = target_name_dict[TARGET_IDX]
+    all_preds = {}
+
     # QRF
     qrf_grid = deepcopy(config['tuning']['qrf_grid'])
     if RUN_LOCALLY:
         qrf_grid = {'n_estimators': [50], 'max_depth': [3]}
     qrf_preds = fit_qrf(
-        X_train_full, y_train_full, X_test, quantiles,
+        X_train_full, y_train_full, X_test, QUANTILES,
         target_name, YEAR, qrf_grid, K_FOLDS, SHELF_TUNING_LOG_PATH
     )
     all_preds.update(qrf_preds)
-    
+
     # QGB
     qgb_grid = deepcopy(config['tuning']['qgb_grid'])
     if RUN_LOCALLY:
-        qgb_grid['n_estimators'] = [10]  # Reduce for local runs
-        qgb_grid['learning_rate'] = [0.1]  
-        qgb_grid['subsample'] = [1.0]  
+        qgb_grid['n_estimators'] = [10]
+        qgb_grid['learning_rate'] = [0.1]
+        qgb_grid['subsample'] = [1.0]
         qgb_grid['max_depth'] = [1]
-    
     qgb_preds = fit_qgb(
-        X_train_full, y_train_full, X_test, quantiles,
+        X_train_full, y_train_full, X_test, QUANTILES,
         target_name, YEAR, qgb_grid, K_FOLDS, SHELF_TUNING_LOG_PATH
     )
     all_preds.update(qgb_preds)
-    
-    # Save predictions
+
     preds_df = pd.DataFrame(
         all_preds,
         index=pd.date_range(start=meta_data['test_start'], end=meta_data['test_end'], freq='MS')
     )
-    output_path = SHELF_PRED_DIR / f"shelf_model_predictions_{COUNTRY}_{HORIZON_IN_QUARTERS}q_{target_name}_{YEAR}.csv"
+    output_path = SHELF_PRED_DIR / f"tree_model_predictions_{COUNTRY}_{HORIZON_IN_QUARTERS}q_{target_name}_{YEAR}.csv"
     preds_df.to_csv(output_path)
-    logging.info(f"Shelf model predictions saved to {output_path}")
+    logging.info(f"Tree model predictions saved to {output_path}")
 
 
 def train_lit_bench_models():
@@ -516,10 +514,15 @@ def main():
     if FIT_LIT_BENCH:
         train_lit_bench_models()
 
-    if MODEL_TYPE == "shelf" or MODEL_TYPE == "all":
-        train_shelf_models()
-    
-    if MODEL_TYPE == "deep" or MODEL_TYPE == "all":
+    run_all = "all" in MODEL_TYPE
+
+    if run_all or "linear" in MODEL_TYPE:
+        train_linear_models()
+
+    if run_all or "trees" in MODEL_TYPE:
+        train_tree_models()
+
+    if run_all or "deep" in MODEL_TYPE:
         train_deep_models()
     
     logging.info("Training complete.")

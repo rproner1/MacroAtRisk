@@ -304,7 +304,7 @@ def make_dm_tables(
     if date_str is None:
         date_str = str(date.today())
 
-    y_full = pd.read_parquet(targets_path).loc["1961-01-01":"2024-12-01", :]
+    y_full = pd.read_csv(targets_path, index_col=0, parse_dates=True).loc["1961-01-01":"2024-12-01", :]
 
     for target_idx in [0, 1, 2]:
         target_name = TARGET_DICT[target_idx]

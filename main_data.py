@@ -65,7 +65,7 @@ def main():
     h = HORIZON_IN_QUARTERS
     
     # VG benchmark
-    vg_file = processed_data_dir / f"us_{h}q_vg_x.parquet"
+    vg_file = processed_data_dir / f"us_{h}q_vg_x.csv"
     if SKIP_PROCESSED_DATA and get_latest_file(vg_file) is not None:
         logging.info(f"Skipping VG predictors - file already exists")
     else:
@@ -77,11 +77,11 @@ def main():
             last_date_of_sample=LAST_DATE_OF_SAMPLE,
             horizon_in_quarters=HORIZON_IN_QUARTERS
         )
-        vg_x.to_parquet(vg_file)
+        vg_x.to_csv(vg_file)
         logging.info(f"VG predictors saved")
     
     # IAR benchmark
-    iar_file = processed_data_dir / f"us_{h}q_iar_x.parquet"
+    iar_file = processed_data_dir / f"us_{h}q_iar_x.csv"
     if SKIP_PROCESSED_DATA and get_latest_file(iar_file) is not None:
         logging.info(f"Skipping IAR predictors - file already exists")
     else:
@@ -95,11 +95,11 @@ def main():
             last_date_of_sample=LAST_DATE_OF_SAMPLE,
             horizon_in_quarters=HORIZON_IN_QUARTERS
         )
-        iar_x.to_parquet(iar_file)
+        iar_x.to_csv(iar_file)
         logging.info(f"IAR predictors saved")
     
     # UAR benchmark
-    uar_file = processed_data_dir / f"us_{h}q_uar_x.parquet"
+    uar_file = processed_data_dir / f"us_{h}q_uar_x.csv"
     if SKIP_PROCESSED_DATA and get_latest_file(uar_file) is not None:
         logging.info(f"Skipping UAR predictors - file already exists")
     else:
@@ -110,11 +110,11 @@ def main():
             last_date_of_sample=LAST_DATE_OF_SAMPLE,
             horizon_in_quarters=HORIZON_IN_QUARTERS
         )
-        uar_x.to_parquet(uar_file)
+        uar_x.to_csv(uar_file)
         logging.info(f"UAR predictors saved")
 
     # FRED-MD predictors
-    fred_file = processed_data_dir / f"us_{h}q_fred_x.parquet"
+    fred_file = processed_data_dir / f"us_{h}q_fred_x.csv"
     if SKIP_PROCESSED_DATA and get_latest_file(fred_file) is not None:
         logging.info(f"Skipping FRED-MD predictors - file already exists")
     else:
@@ -127,11 +127,11 @@ def main():
             initial_training_last_date=INITIAL_TRAINING_LAST_DATE,
             remove_cols_threshold=REMOVE_COLS_THRESHOLD
         )
-        fred_x.to_parquet(fred_file)
+        fred_x.to_csv(fred_file)
         logging.info(f"FRED-MD predictors saved")
     
     # AR(1) predictors
-    ar1_file = processed_data_dir / f"us_{h}q_ar1_x.parquet"
+    ar1_file = processed_data_dir / f"us_{h}q_ar1_x.csv"
     if SKIP_PROCESSED_DATA and get_latest_file(ar1_file) is not None:
         logging.info(f"Skipping AR(1) predictors - file already exists")
     else:
@@ -142,11 +142,11 @@ def main():
             horizon_in_quarters=HORIZON_IN_QUARTERS, 
             last_date_of_sample=LAST_DATE_OF_SAMPLE
         )
-        ar1_x.to_parquet(ar1_file)
+        ar1_x.to_csv(ar1_file)
         logging.info(f"AR(1) predictors saved")
     
     # Target variables
-    target_file = processed_data_dir / f"us_{h}q_fred_y.parquet"
+    target_file = processed_data_dir / f"us_{h}q_fred_y.csv"
     if SKIP_PROCESSED_DATA and get_latest_file(target_file) is not None:
         logging.info(f"Skipping target variables - file already exists")
     else:
@@ -156,7 +156,7 @@ def main():
             desired_start_date_of_samples=DESIRED_START_DATE_OF_SAMPLES,
             last_date_of_sample=LAST_DATE_OF_SAMPLE
         )
-        fred_y.to_parquet(target_file)
+        fred_y.to_csv(target_file)
         logging.info(f"Target variables saved")
 
     # ----- Firm signals -----
@@ -221,7 +221,7 @@ def main():
         if RUN_LOCALLY:
             output_name = f"{output_name}_TEST"             
 
-        output_file = processed_data_dir / f"us_{h}q_{output_name}.parquet"
+        output_file = processed_data_dir / f"us_{h}q_{output_name}.csv"
         
         if SKIP_PROCESSED_DATA and get_latest_file(output_file) is not None:
             logging.info(f"Skipping {oap_name} - file already exists")
@@ -236,7 +236,7 @@ def main():
                 remove_cols_threshold=REMOVE_COLS_THRESHOLD,
                 initial_training_last_date=INITIAL_TRAINING_LAST_DATE
             )
-            oap_data.to_parquet(output_file)
+            oap_data.to_csv(output_file)
             logging.info(f"{oap_name} saved to {output_file}")
     
     logging.info("Data pipeline complete.")

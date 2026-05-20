@@ -244,8 +244,8 @@ for q in QUANTILES:
     all_model_preds[f'QPCR_Q{Q}'] = preds
 
 # Benchmark AR(1) model
-ar1_x_path = DATA_DIR / f"{COUNTRY}_{HORIZON_IN_QUARTERS}q_ar1_x.parquet"
-X_ar_1 = pd.read_parquet(ar1_x_path)
+ar1_x_path = DATA_DIR / f"{COUNTRY}_{HORIZON_IN_QUARTERS}q_ar1_x.csv"
+X_ar_1 = pd.read_csv(ar1_x_path, index_col=0, parse_dates=True)
 X_ar_1_train = X_ar_1.loc['1961-02-01':f'{YEAR}-12-01', f"{target_name}_t-1"]
 X_ar_1_test = X_ar_1.loc[f'{YEAR+1}-01-01': f'{YEAR+1}-12-01', f"{target_name}_t-1"]
 y_train_full_ar = y_train_full.loc['1961-02-01':f'{YEAR}-12-01'] # Get rid of first date because NaN from lag

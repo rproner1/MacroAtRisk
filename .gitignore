@@ -20,6 +20,7 @@ results/
 results_figures/
 results_tables/
 data/
+shap_values/
 *.db
 *.pdf
 *.png
