@@ -28,7 +28,7 @@ from keras.optimizers import Adam
 from keras.initializers import GlorotUniform
 from typing import Union, List
 
-from src.train.slstm import sLSTM, sLSTMCell
+from src.train.slstm import sLSTMCell
 
 def get_confounding_set(X: np.ndarray, m: int, j: int) -> list:
 
