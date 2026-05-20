@@ -629,25 +629,39 @@ def build_dmq_v0(
         recurrent_layer_type = LSTM
     elif recurrent_layer_type == 'gru':   
         recurrent_layer_type = GRU
-    elif recurrent_layer_type == 'xlstm':
-        recurrent_layer_type = sLSTM 
+    elif recurrent_layer_type == 'slstm':
+        pass
     else:
-        raise ValueError("recurrent_layer_type must be 'lstm' or 'gru'")
+        raise ValueError("recurrent_layer_type must be 'lstm', 'slstm', or 'gru'")
 
     inputs = Input(shape=input_shape)
 
     shared_layers = []
     
     for i in range(1, n_recurrent_layers + 1):
-        shared_layers.append(
-            recurrent_layer_type(
-                n_recurrent_nodes, 
-                return_sequences=(i < n_recurrent_layers), 
-                kernel_regularizer=L1L2(l1,l2), 
-                # recurrent_dropout=rec_drop,
-                kernel_initializer=initializer
+    
+        if recurrent_layer_type == 'slstm':
+            shared_layers.append(
+                RNN(
+                    sLSTMCell(
+                        n_recurrent_nodes,
+                        kernel_regularizer=L1L2(l1,l2),
+                        kernel_initializer=initializer
+                    ), 
+                    return_sequences=(i < n_recurrent_layers)
+                )
             )
-        )
+        else:
+            shared_layers.append(
+                recurrent_layer_type(
+                    n_recurrent_nodes, 
+                    return_sequences=(i < n_recurrent_layers), 
+                    kernel_regularizer=L1L2(l1,l2), 
+                    recurrent_dropout=rec_drop,
+                    kernel_initializer=initializer
+                )
+            )
+        
         if recurrent_norm:
             shared_layers.append(norm_fn())
 
