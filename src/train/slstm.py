@@ -1,5 +1,6 @@
-from tensorflow.keras.layers import Layer, RNN
+from tensorflow.keras.layers import Layer
 import tensorflow as tf
+from tensorflow.keras.ops import log_sigmoid, maximum, sigmoid, minimum, exp, ones_like, tanh, all
 
 class CustomLSTMCell(Layer):
     def __init__(self, units, **kwargs):
@@ -42,7 +43,7 @@ class sLSTMCell(Layer):
     def __init__(self, units, **kwargs):
         super().__init__(**kwargs)
         self.units = units
-        self.state_size = (self.units, self.units, self.units)  # (hidden state, cell state, stabilizer state)
+        self.state_size = (self.units, self.units, self.units, self.units)
 
     def build(self, input_shape):
         input_dim = input_shape[-1]
@@ -59,36 +60,29 @@ class sLSTMCell(Layer):
         self.built = True
     
     def call(self, inputs, states):
-        h_prev, c_prev, m_prev = states 
+        h_prev, c_prev, n_prev, m_prev = states 
 
         z = tf.matmul(inputs, self.kernel) + tf.matmul(h_prev, self.recurrent_kernel) + self.biases
 
         i_candidate, f_candidate, z_candidate, o_candidate = tf.split(z, num_or_size_splits=4, axis=1)
 
-        m = tf.maximum(f_candidate + m_prev, i_candidate)
+        logfplusm = log_sigmoid(f_candidate) + m_prev
+
+        if all(n_prev == 0):
+            m = i_candidate
+        else:
+            m = maximum(logfplusm, i_candidate)
         
         # usual output gate and cell state candidate
-        o = tf.sigmoid(o_candidate)
-        z = tf.tanh(z_candidate)
+        o = sigmoid(o_candidate)
+        z = tanh(z_candidate)
 
         # Stabilized input and foreget gates
-        i = tf.exp(i_candidate - m) 
-        f = tf.sigmoid(f_candidate + m_prev - m)
+        i = minimum(exp(i_candidate - m), ones_like(i_candidate))
+        f = minimum(exp(logfplusm - m), ones_like(i_candidate))
         
         c = f * c_prev + i * z
-        h = o * tf.tanh(c)
+        n = f * n_prev + i
+        h = o * c / n
         
-        return h, [h, c, m]
-    
-class sLSTM(RNN):
-    def __init__(self, units, return_sequences=False, return_state=False, **kwargs):
-        # 1. Instantiate your custom cell
-        cell = sLSTMCell(units)
-        
-        # 2. Call the parent RNN constructor with the custom cell
-        super().__init__(
-            cell, 
-            return_sequences=return_sequences, 
-            return_state=return_state, 
-            **kwargs
-        )
+        return h, [h, c, n, m]
