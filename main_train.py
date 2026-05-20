@@ -93,7 +93,7 @@ SHELF_PRED_DIR = BASE_DIR / 'predictions' / 'shelf_preds' / DATE
 SHELF_TUNING_LOG_PATH = BASE_DIR / 'tuning_logs' / f"shelf_tuning_log_{DATE}.json"
 LIT_BENCH_PRED_DIR = BASE_DIR / 'predictions' / 'lit_bench_preds' / DATE
 DEEP_MODEL_DIR = BASE_DIR / 'models' / 'st_models' / DATE 
-DEEP_PRED_DIR = BASE_DIR / 'st_preds' / DATE
+DEEP_PRED_DIR = BASE_DIR / 'predictions' / 'st_preds' / DATE
 DEEP_TUNING_LOG_PATH =BASE_DIR / 'tuning_logs' / f"st_tuning_log_{DATE}.json"
 DEEP_OPTUNA_JOURNAL_PATH = BASE_DIR / 'tuning_logs' / f"st_optuna_journal_{DATE}.log"
 
