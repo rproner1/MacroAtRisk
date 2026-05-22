@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import warnings
+from dateutil.relativedelta import relativedelta
 
 def get_value_weights(df: pd.DataFrame) -> pd.DataFrame:
 
@@ -9,7 +10,7 @@ def get_value_weights(df: pd.DataFrame) -> pd.DataFrame:
 
     return df[['yyyymm', 'permno', 'weight']]
 
-def get_firm_avg(df: pd.DataFrame, value_weight: bool = False, size: pd.DataFrame = None) -> pd.DataFrame:
+def get_firm_avg(df: pd.DataFrame, value_weight: bool = False, size: pd.DataFrame = None, sample_start_date: str='1961-01-01', sample_end_date: str = '2024-12-01', horizon_in_quarters: int=4) -> pd.DataFrame:
     """
     Computes the firm-level average of financial variables from OAP data.
 
@@ -29,8 +30,8 @@ def get_firm_avg(df: pd.DataFrame, value_weight: bool = False, size: pd.DataFram
     
     # Ensure 'Date' column is in datetime format
     df['yyyymm'] = pd.to_datetime(df['yyyymm'], format='%Y%m')
-
-    
+    start_date = sample_start_date - relativedelta(months=3*horizon_in_quarters + 1)
+    df = df[(df['yyyymm'] >= start_date) & (df['yyyymm'] <= sample_end_date)]
 
     # Group by 'date' and compute the cross-sectional mean for each financial variable
     if value_weight:
@@ -87,7 +88,7 @@ def get_firm_avg(df: pd.DataFrame, value_weight: bool = False, size: pd.DataFram
 
     return firm_avg_df
 
-def get_firm_spread(df: pd.DataFrame, quantiles: int = 10) -> pd.DataFrame:
+def get_firm_spread(df: pd.DataFrame, quantiles: int = 10, value_weight: bool = False, size: pd.DataFrame = None, sample_start_date: str = '1961-01-01', sample_end_date: str = '2024-12-01', horizon_in_quarters: int = 4) -> pd.DataFrame:
     """
     Computes the firm-level spread of financial variables from OAP data.
 
@@ -96,16 +97,30 @@ def get_firm_spread(df: pd.DataFrame, quantiles: int = 10) -> pd.DataFrame:
         DataFrame containing firm-level signals with a 'date' column.
     quantiles (int, optional):
         Number of quantiles to use for spread calculation. Defaults to 10.
+    value_weight (bool, optional):
+        Whether to use value-weighted spreads. Defaults to False.
+    size (pd.DataFrame, optional):
+        DataFrame containing size for each firm at each date. Required if value_weight is True.
 
     Returns:
     pd.DataFrame: DataFrame with spread average of top quantile bin - average of bottom quantile bin of firm-level signals per date.
     """
     df = df.copy()
     df['yyyymm'] = pd.to_datetime(df['yyyymm'], format='%Y%m')
+    df['permno'] = pd.to_numeric(df['permno'], errors='coerce').astype('Int64')
+
     df.replace([-np.inf, np.inf], np.nan, inplace=True)
+    start_date = sample_start_date - relativedelta(months=3*horizon_in_quarters + 1)
+    df = df[(df['yyyymm'] >= start_date) & (df['yyyymm'] <= sample_end_date)]
     
     exclude = ['permno', 'yyyymm']
     signal_cols = [col for col in df.columns if col not in exclude]
+
+    if value_weight:
+        size['yyyymm'] = pd.to_datetime(size['yyyymm'], format='%Y%m')
+        size['permno'] = pd.to_numeric(size['permno'], errors='coerce').astype('Int64')
+        weights = get_value_weights(size)
+        df = pd.merge(df, weights, how='inner', on=['yyyymm', 'permno'])
     
     # Vectorized approach: compute quantile bins for all columns at once per date
     def compute_spread_for_group(group):
@@ -117,11 +132,21 @@ def get_firm_spread(df: pd.DataFrame, quantiles: int = 10) -> pd.DataFrame:
                 continue
             # Cut the column into quanitle bins and compute the mean of the top and bottom bins
             bins = pd.qcut(x, quantiles, labels=False, duplicates='drop')
-            top = x[bins == bins.max()].mean()
-            bottom = x[bins == 0].mean()
+            if value_weight:
+                top_idx = bins[bins == bins.max()].index
+                bot_idx = bins[bins == 0].index
+                top = group.loc[top_idx, [col, 'weight']]
+                bottom = group.loc[bot_idx, [col, 'weight']]
+                top_w = top['weight'].fillna(0)
+                bot_w = bottom['weight'].fillna(0)
+                top_avg = (top[col] * top_w).sum()
+                bottom_avg = (bottom[col] * bot_w).sum() 
+            else:
+                top_avg = x[bins == bins.max()].mean()
+                bottom_avg = x[bins == 0].mean()
 
             # Spread is the average signal value of the top quantile bin minus the average signal value of the bottom quantile bin
-            result[col] = top - bottom
+            result[col] = top_avg - bottom_avg 
         return pd.Series(result)
     
     # Apply the function to each signal column grouping by date
