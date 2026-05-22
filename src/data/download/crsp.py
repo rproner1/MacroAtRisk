@@ -44,12 +44,12 @@ def get_crsp_monthly(
         f"WHERE msf.mthcaldt BETWEEN '{start_date}' AND '{end_date}' "
         "AND ssih.sharetype = 'NS' "
         "AND ssih.securitytype = 'EQTY' "  
-        "AND ssih.securitysubtype = 'COM' " 
+        "AND ssih.securitysubtype = 'COM' " # Common stocks
         "AND ssih.usincflg = 'Y' " 
         "AND ssih.issuertype in ('ACOR', 'CORP') " 
-        "AND ssih.primaryexch in ('N', 'A', 'Q') "
+        "AND ssih.primaryexch in ('N', 'A', 'Q') " # NYSE, AMEX, NASDAQ
         "AND ssih.conditionaltype in ('RW', 'NW') "
-        "AND ssih.tradingstatusflg = 'A'"
+        "AND ssih.tradingstatusflg = 'A'" # Actively trading
     )
 
     df = conn.raw_sql(query)
