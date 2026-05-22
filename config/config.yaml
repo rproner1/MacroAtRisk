@@ -62,15 +62,15 @@ oap_datasets:
 # ========== Model Training ==========
 fit_models: true
 input_files: [
-  "us_4q_fred_x.csv",
-  "us_4q_oap_vw_fd_x.csv"
+  "us_4q_fred_x.csv"
+  # "us_4q_oap_vw_fd_x.csv"
 ]
 target_file: 'us_4q_fred_y.csv'
 
 trials: 50
 time_steps: 12
 quantiles: [0.05, 0.25, 0.50, 0.75, 0.95]
-n_estimators: 1
+n_estimators: 5
 k_folds: 10 # Number of folds for cross-validation
 val_size: 0.1 # Proportion of training data to use for validation in cross-validation
 val_years: 5  # Number of years for early stopping 
@@ -164,18 +164,18 @@ tuning:
 
 builder_params:
   deep_models:
-    # DMQv0:
-    #   n_recurrent_layers: 3
-    #   n_shared_layers: 2
-    #   n_qtask_layers: 2
-    #   n_recurrent_nodes: 32
-    #   n_shared_nodes: 32
-    #   n_task_nodes: 32
-    #   recurrent_layer_type: 'lstm'
-    #   norm_fn: 'layer'
-    #   recurrent_norm: true
-    #   shared_norm: true
-    #   task_norm: false
+    DMQv0:
+      n_recurrent_layers: 3
+      n_shared_layers: 2
+      n_qtask_layers: 2
+      n_recurrent_nodes: 32
+      n_shared_nodes: 32
+      n_task_nodes: 32
+      recurrent_layer_type: 'lstm'
+      norm_fn: 'layer'
+      recurrent_norm: true
+      shared_norm: true
+      task_norm: false
     DMQs:
       n_recurrent_layers: 1
       n_shared_layers: 1
