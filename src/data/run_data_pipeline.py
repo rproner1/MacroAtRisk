@@ -21,6 +21,8 @@ def prepare_us_data(
         initial_training_last_date: pd.Timestamp,
         last_date_of_sample: pd.Timestamp,
         remove_cols_threshold: float,
+        exclude_non_stationary: bool,
+        adf_significance_level: float,
         skip_processed_data: bool,
         raw_data_dir: Path,
         processed_data_dir: Path,
@@ -186,7 +188,8 @@ def prepare_us_data(
         if run_locally:
             output_name = f"{output_name}_TEST"             
 
-        output_file = processed_data_dir / f"us_{h}q_{output_name}.csv"
+        stationary_flag = 'stationary' if exclude_non_stationary else ''
+        output_file = processed_data_dir / f"us_{h}q_{output_name}_{stationary_flag}.csv"
         
         if skip_processed_data and get_latest_file(output_file) is not None:
             print(f"Skipping {oap_name} - file already exists")
@@ -199,6 +202,8 @@ def prepare_us_data(
                 desired_start_date_of_samples=desired_start_date_of_samples,
                 last_date_of_sample=last_date_of_sample,
                 remove_cols_threshold=remove_cols_threshold,
+                exclude_non_stationary=exclude_non_stationary,
+                alpha=adf_significance_level,
                 initial_training_last_date=initial_training_last_date
             )
             oap_data.to_csv(output_file)

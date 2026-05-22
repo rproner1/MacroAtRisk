@@ -36,6 +36,8 @@ DESIRED_START_DATE_OF_SAMPLES = pd.to_datetime(config['desired_start_date_of_sam
 INITIAL_TRAINING_LAST_DATE = pd.to_datetime(config['initial_training_last_date'])
 LAST_DATE_OF_SAMPLE = pd.to_datetime(config['last_date_of_sample'])
 REMOVE_COLS_THRESHOLD = config['remove_cols_threshold']
+EXCLUDE_NON_STATIONARY = config['exclude_non_stationary']
+ADF_SIGNIFICANCE_LEVEL = config['adf_significance_level']
 CONSTRUCT_OAP_SIGNALS = config["construct_oap_signals"]
 SKIP_PROCESSED_DATA = config["skip_processed_data"]
 HORIZON_IN_QUARTERS = config['horizon_in_quarters']
@@ -221,7 +223,8 @@ def main():
         if RUN_LOCALLY:
             output_name = f"{output_name}_TEST"             
 
-        output_file = processed_data_dir / f"us_{h}q_{output_name}.csv"
+        suffix = '_stationary' if EXCLUDE_NON_STATIONARY else ''
+        output_file = processed_data_dir / f"us_{h}q_{output_name}{suffix}.csv"
         
         if SKIP_PROCESSED_DATA and get_latest_file(output_file) is not None:
             logging.info(f"Skipping {oap_name} - file already exists")
@@ -234,6 +237,8 @@ def main():
                 desired_start_date_of_samples=DESIRED_START_DATE_OF_SAMPLES,
                 last_date_of_sample=LAST_DATE_OF_SAMPLE,
                 remove_cols_threshold=REMOVE_COLS_THRESHOLD,
+                exclude_non_stationary=EXCLUDE_NON_STATIONARY,
+                alpha=ADF_SIGNIFICANCE_LEVEL,
                 initial_training_last_date=INITIAL_TRAINING_LAST_DATE
             )
             oap_data.to_csv(output_file)
