@@ -180,14 +180,44 @@ def main():
             # Construct signal based on type
             if signal_type == "avg":
                 logging.info(f"Constructing {output_name}...")
-                oap_signal = get_firm_avg(oap_panel)
+                oap_signal = get_firm_avg(
+                    oap_panel,
+                    sample_start_date=DESIRED_START_DATE_OF_SAMPLES, 
+                    sample_end_date=LAST_DATE_OF_SAMPLE, 
+                    horizon_in_quarters=HORIZON_IN_QUARTERS
+                )
             elif signal_type == "vw_avg":
                 logging.info(f"Constructing {output_name} with value weighting...")
-                oap_signal = get_firm_avg(oap_panel, value_weight=True, size=size)
+                oap_signal = get_firm_avg(
+                    oap_panel, 
+                    value_weight=True, 
+                    size=size, 
+                    sample_start_date=DESIRED_START_DATE_OF_SAMPLES, 
+                    sample_end_date=LAST_DATE_OF_SAMPLE, 
+                    horizon_in_quarters=HORIZON_IN_QUARTERS
+                )
             elif signal_type == "spread":
                 quantiles = signal_config.get("quantiles", 10)
                 logging.info(f"Constructing {output_name} with {quantiles} quantiles...")
-                oap_signal = get_firm_spread(oap_panel, quantiles=quantiles)
+                oap_signal = get_firm_spread(
+                    oap_panel, 
+                    quantiles=quantiles, 
+                    sample_start_date=DESIRED_START_DATE_OF_SAMPLES,
+                    sample_end_date=LAST_DATE_OF_SAMPLE,
+                    horizon_in_quarters=HORIZON_IN_QUARTERS
+                )
+            elif signal_type == 'vw_spread':
+                quantiles = signal_config.get("quantiles", 10)
+                logging.info(f"Constructing {output_name} with {quantiles} quantiles...")
+                oap_signal = get_firm_spread(
+                    oap_panel, 
+                    quantiles=quantiles, 
+                    value_weight=True, 
+                    size=size, 
+                    sample_start_date=DESIRED_START_DATE_OF_SAMPLES,
+                    sample_end_date=LAST_DATE_OF_SAMPLE,
+                    horizon_in_quarters=HORIZON_IN_QUARTERS
+                )
             else:
                 logging.info(f"Unknown signal type: {signal_type}")
                 continue
