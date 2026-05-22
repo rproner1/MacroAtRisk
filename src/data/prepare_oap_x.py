@@ -13,10 +13,6 @@ So the filter is as follows: 1) If non-stationary first difference. If first-dif
 The third part is a bit tricky. There are eight variables excluded according to this criteria: (i) Analyst Coverage; (ii) Forecast Dispersion Change; (iii) Idiosyncratic Risk, Distant; (iv) Number of Analysts, Change; (v) Book to Assets, Change; (vi) Misvalued Innovation; (vii) Sales Growth; and (vii) Agnostic Value  The OAP variables  
 
 """
-# exclude = [
-#     'ChNAnalyst', 
-
-# ]
 
 def stationarity_filter(df: pd.DataFrame, alpha=0.05) -> pd.DataFrame:
     """
