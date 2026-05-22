@@ -28,3 +28,4 @@ shap_values/
 latex/*
 !latex/*.tex
 !latex/*.bib
+*.ipynb
