@@ -12,7 +12,7 @@ matplotlib:
 oap_release: 202510
 construct_oap_signals: false
 skip_processed_data: false
-exclude_non_stationary: false
+exclude_non_stationary: true
 adf_significance_level: 0.05
 desired_start_date_of_samples: "1961-01-01"
 desired_end_date_of_samples: "2024-12-01"
@@ -29,6 +29,9 @@ oap_signals:
   - signal: "spread"
     quantiles: 10
     output_name: "oap_spread"
+  - signal: 'vw_spread'
+    quantiles: 10
+    output_name: "oap_vw_spread"
 
 # OAP data configurations
 oap_datasets:
@@ -57,6 +60,10 @@ oap_datasets:
     file: "oap_spread.csv"
     first_difference: true
     output_name: "oap_spread_fd_x"
+  - name: "oap_vw_spread"
+    file: "oap_vw_spread.csv"
+    first_difference: true
+    output_name: "oap_vw_spread_x"
 
 
 # ========== Model Training ==========
