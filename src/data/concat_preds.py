@@ -55,13 +55,16 @@ def concat_predictions(
             end = f'{yr+1}-12-01'
             st_preds = pd.read_csv(st_pred_dir / f"st_model_predictions_{country}_{horizon_in_quarters}q_{target_name_dict[TARGET_IDX]}_{yr}.csv", index_col=0, parse_dates=True).loc[start:end]
             lit_bench_preds = pd.read_csv(lit_bench_pred_dir / f"lit_bench_predictions_{country}_{horizon_in_quarters}q_{target_name_dict[TARGET_IDX]}_{yr}.csv", index_col=0, parse_dates=True).loc[start:end]
-            tree_preds = pd.read_csv(shelf_pred_dir / f"tree_model_predictions_{country}_{horizon_in_quarters}q_{target_name_dict[TARGET_IDX]}_{yr}.csv", index_col=0, parse_dates=True).loc[start:end]
-            # shelf_preds = pd.read_csv(shelf_pred_dir / f"shelf_model_predictions_{country}_{horizon_in_quarters}q_{target_name_dict[TARGET_IDX]}_{yr}.csv", index_col=0, parse_dates=True).loc[start:end]
+            try: 
+                tree_preds = pd.read_csv(shelf_pred_dir / f"tree_model_predictions_{country}_{horizon_in_quarters}q_{target_name_dict[TARGET_IDX]}_{yr}.csv", index_col=0, parse_dates=True).loc[start:end]
+                linear_preds = pd.read_csv(shelf_pred_dir / f"linear_model_predictions_{country}_{horizon_in_quarters}q_{target_name_dict[TARGET_IDX]}_{yr}.csv", index_col=0, parse_dates=True).loc[start:end]
+                shelf_preds = pd.concat([tree_preds, linear_preds], axis=1)
+            except:
+                shelf_preds = pd.read_csv(shelf_pred_dir / f"shelf_model_predictions_{country}_{horizon_in_quarters}q_{target_name_dict[TARGET_IDX]}_{yr}.csv", index_col=0, parse_dates=True).loc[start:end]
 
             data_list = [
                 lit_bench_preds,
-                tree_preds,
-                # shelf_preds,
+                shelf_preds,
                 st_preds
             ]
 
