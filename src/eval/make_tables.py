@@ -243,14 +243,16 @@ def make_r1_multitarget_table_body(
     quantiles: list[float] = [0.05, 0.25, 0.50, 0.75, 0.95],
     test_start: str = '1998-01-01',
     test_end: str = '2024-12-01',
-    date_str: str = None
+    date_str: str = None,
+    target_order: list[int] = None
 ):
     """Generate one combined multi-target R1 LaTeX table with tabular wrapper."""
 
     if date_str is None:
         date_str = str(date.today())
 
-    target_order = [0, 1, 2]
+    if target_order is None:
+        target_order = [0, 1, 2]
     target_labels = {
         0: 'INFL',
         1: 'IP',
@@ -409,13 +411,15 @@ def make_r2_multitarget_table(
     test_start: str = '1998-01-01',
     test_end: str = '2024-12-01',
     date_str: str = None,
+    target_order: list[int] = None,
 ):
     """Generate one combined multi-target R2 LaTeX table (targets as rows, models as columns)."""
 
     if date_str is None:
         date_str = str(date.today())
 
-    target_order = [0, 1, 2]
+    if target_order is None:
+        target_order = [0, 1, 2]
     target_labels = {
         0: 'INFL',
         1: 'IP',
@@ -453,7 +457,8 @@ def make_r2_multitarget_table(
 
         combined_rows.append(row_dict)
 
-    combined_df = pd.DataFrame(combined_rows).set_index('Target').loc[['INFL', 'IP', 'UNRATE'], ordered_models]
+    selected_labels = [target_labels[i] for i in target_order]
+    combined_df = pd.DataFrame(combined_rows).set_index('Target').loc[selected_labels, ordered_models]
     combined_df.index.name = None
 
     out_path = tables_dir / f"r2_combined_{country}_{horizon_in_quarters}q_{test_start}-{test_end}.tex"

@@ -290,6 +290,7 @@ def make_dm_tables(
     test_end: str = "2024-12-01",
     alpha: float = 0.05,
     date_str: str = None,
+    target_order: list[int] = None,
 ) -> None:
     """
     Generate pairwise DM tables for all targets.
@@ -306,7 +307,10 @@ def make_dm_tables(
 
     y_full = pd.read_csv(targets_path, index_col=0, parse_dates=True).loc["1961-01-01":"2024-12-01", :]
 
-    for target_idx in [0, 1, 2]:
+    if target_order is None:
+        target_order = [0, 1, 2]
+
+    for target_idx in target_order:
         target_name = TARGET_DICT[target_idx]
         benchmark_model = BENCHMARK_MODEL_BY_TARGET[target_idx]
 

@@ -22,7 +22,7 @@ with open("./config/config.yaml", "r") as f:
     config = yaml.safe_load(f)
 
 parser = argparse.ArgumentParser(description="Generate results and tables")
-parser.add_argument('--target', type=int, default=0, help="Target variable index (0: Infl_yoy, 1: IP_yoy, 2: Unrate_yoy)")
+parser.add_argument('--target', type=str, default='all', help="Target(s) to evaluate: 'all' (default), 'Infl', 'IP', or 'Unrate'")
 parser.add_argument("--date", type=str, default=None, 
                     help="Date identifier for results (default: from config)")
 parser.add_argument("--shelf-date", type=str, default=None,
@@ -51,7 +51,15 @@ parser.add_argument("--ensemble-models", type=str, nargs="*", default=None, help
 args = parser.parse_args()
 
 # Use config values as defaults, allow CLI overrides
-TARGET_IDX = args.target
+TARGET_NAME_TO_IDX = {'infl': 0, 'ip': 1, 'unrate': 2}
+_target_arg = args.target.lower()
+if _target_arg == 'all':
+    TARGET_ORDER = [0, 1, 2]
+elif _target_arg in TARGET_NAME_TO_IDX:
+    TARGET_ORDER = [TARGET_NAME_TO_IDX[_target_arg]]
+else:
+    raise ValueError(f"Invalid --target '{args.target}'. Choose from: all, Infl, IP, Unrate")
+TARGET_IDX = TARGET_ORDER[0]
 DATE = args.date if args.date is not None else config.get('date', str(date.today()))
 SHELF_DATE = args.shelf_date if args.shelf_date is not None else args.date
 ST_DATE = args.st_date if args.st_date is not None else args.date
@@ -104,10 +112,13 @@ def main():
         pred_dir=PRED_DIR,
         start_year=START_YEAR,
         end_year=END_YEAR,
-        ensemble_models=args.ensemble_models
+        ensemble_models=args.ensemble_models,
+        target_order=TARGET_ORDER
     )
-    
-    print("\nStep 2: Generating combined R1 table body across INFL/IP/UNRATE...")
+
+    target_labels = {0: 'INFL', 1: 'IP', 2: 'UNRATE'}
+    selected_label = '/'.join(target_labels[i] for i in TARGET_ORDER)
+    print(f"\nStep 2: Generating combined R1 table body across {selected_label}...")
     make_r1_multitarget_table_body(
         targets_path=DATA_DIR / config['target_file'],
         pred_dir=PRED_DIR,
@@ -119,10 +130,11 @@ def main():
         quantiles=QUANTILES,
         test_start=TEST_START,
         test_end=TEST_END,
-        date_str=DATE
+        date_str=DATE,
+        target_order=TARGET_ORDER
     )
-    
-    print("\nStep 3: Generating combined R2 table across INFL/IP/UNRATE...")
+
+    print(f"\nStep 3: Generating combined R2 table across {selected_label}...")
     make_r2_multitarget_table(
         targets_path=DATA_DIR / config['target_file'],
         pred_dir=PRED_DIR,
@@ -134,7 +146,8 @@ def main():
         quantiles=QUANTILES,
         test_start=TEST_START,
         test_end=TEST_END,
-        date_str=DATE
+        date_str=DATE,
+        target_order=TARGET_ORDER
     )
 
     print("\nStep 4: Generating pairwise Diebold-Mariano tables...")
@@ -152,6 +165,7 @@ def main():
             test_end=TEST_END,
             alpha=0.05,
             date_str=DATE,
+            target_order=TARGET_ORDER
         )
     
     if PLOT_QUANTILES:
