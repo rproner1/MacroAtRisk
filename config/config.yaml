@@ -69,8 +69,8 @@ oap_datasets:
 # ========== Model Training ==========
 fit_models: true
 input_files: [
-  "us_4q_fred_x.csv"
-  # "us_4q_oap_vw_fd_x.csv"
+  "us_4q_fred_x.csv",
+  "us_4q_oap_vw_spread_stationary_x.csv"
 ]
 target_file: 'us_4q_fred_y.csv'
 
@@ -171,25 +171,13 @@ tuning:
 
 builder_params:
   deep_models:
-    DMQv0:
-      n_recurrent_layers: 3
-      n_shared_layers: 2
-      n_qtask_layers: 2
-      n_recurrent_nodes: 32
-      n_shared_nodes: 32
-      n_task_nodes: 32
-      recurrent_layer_type: 'lstm'
-      norm_fn: 'layer'
-      recurrent_norm: true
-      shared_norm: true
-      task_norm: false
     DMQs:
       n_recurrent_layers: 1
       n_shared_layers: 1
       n_qtask_layers: 1
-      n_recurrent_nodes: 32
-      n_shared_nodes: 32
-      n_task_nodes: 32
+      n_recurrent_nodes: 64
+      n_shared_nodes: 64
+      n_task_nodes: 64
       recurrent_layer_type: 'lstm'
       norm_fn: 'layer'
       recurrent_norm: true
@@ -199,9 +187,9 @@ builder_params:
       n_recurrent_layers: 2
       n_shared_layers: 2
       n_qtask_layers: 2
-      n_recurrent_nodes: 32
-      n_shared_nodes: 32
-      n_task_nodes: 32
+      n_recurrent_nodes: 64
+      n_shared_nodes: 64
+      n_task_nodes: 64
       recurrent_layer_type: 'lstm'
       norm_fn: 'layer'
       recurrent_norm: true
@@ -211,9 +199,9 @@ builder_params:
       n_recurrent_layers: 3
       n_shared_layers: 3
       n_qtask_layers: 3
-      n_recurrent_nodes: 32
-      n_shared_nodes: 32
-      n_task_nodes: 32
+      n_recurrent_nodes: 64
+      n_shared_nodes: 64
+      n_task_nodes: 64
       recurrent_layer_type: 'lstm'
       norm_fn: 'layer'
       recurrent_norm: true
