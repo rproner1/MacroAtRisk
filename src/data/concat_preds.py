@@ -16,7 +16,8 @@ def concat_predictions(
     date: str = date.today(),
     start_year: int = 1997,
     end_year: int = 2023,
-    ensemble_models: list = None
+    ensemble_models: list = None,
+    target_order: list = None
 ):
     """
     Concatenate predictions from different model types.
@@ -48,7 +49,10 @@ def concat_predictions(
         2: 'Unrate_yoy'
     }
     
-    for TARGET_IDX in target_name_dict.keys():
+    if target_order is None:
+        target_order = list(target_name_dict.keys())
+
+    for TARGET_IDX in target_order:
         preds = []
         for yr in range(start_year, end_year + 1):
             start = f'{yr+1}-01-01'
