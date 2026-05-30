@@ -17,7 +17,8 @@ def concat_predictions(
     start_year: int = 1997,
     end_year: int = 2023,
     ensemble_models: list = None,
-    target_order: list = None
+    target_order: list = None,
+    model_types: list[str] = ['st', 'trees', 'linear', 'shelf', 'lit']
 ):
     """
     Concatenate predictions from different model types.
@@ -41,6 +42,8 @@ def concat_predictions(
         First year to process. Years are training cutoff years.
     end_year: int
         Last year to process (inclusive). Years are training cutoff years.
+    model_types: list
+        The model types whose predictions we should concatenate. 'shelf' = all off-the-shelf models, 'lit'= benchmarks from literature, 'trees' = tree-based models, 'st' = single-task (single target multi quantile) neural nets
     """
 
     target_name_dict = {
@@ -57,27 +60,39 @@ def concat_predictions(
         for yr in range(start_year, end_year + 1):
             start = f'{yr+1}-01-01'
             end = f'{yr+1}-12-01'
-            st_preds = pd.read_csv(st_pred_dir / f"st_model_predictions_{country}_{horizon_in_quarters}q_{target_name_dict[TARGET_IDX]}_{yr}.csv", index_col=0, parse_dates=True).loc[start:end]
-            lit_bench_preds = pd.read_csv(lit_bench_pred_dir / f"lit_bench_predictions_{country}_{horizon_in_quarters}q_{target_name_dict[TARGET_IDX]}_{yr}.csv", index_col=0, parse_dates=True).loc[start:end]
-            try: 
+
+            preds_y = []
+            if 'st' in model_types:
+                st_preds = pd.read_csv(st_pred_dir / f"st_model_predictions_{country}_{horizon_in_quarters}q_{target_name_dict[TARGET_IDX]}_{yr}.csv", index_col=0, parse_dates=True).loc[start:end]
+                
+                preds_y.append(st_preds)
+
+            if 'lit' in model_types:
+                lit_bench_preds = pd.read_csv(lit_bench_pred_dir / f"lit_bench_predictions_{country}_{horizon_in_quarters}q_{target_name_dict[TARGET_IDX]}_{yr}.csv", index_col=0, parse_dates=True).loc[start:end]
+                
+                preds_y.append(lit_bench_preds)
+            
+            if 'trees' in model_types:
                 tree_preds = pd.read_csv(shelf_pred_dir / f"tree_model_predictions_{country}_{horizon_in_quarters}q_{target_name_dict[TARGET_IDX]}_{yr}.csv", index_col=0, parse_dates=True).loc[start:end]
+
+                preds_y.append(tree_preds)
+
+            if 'linear' in model_types:
                 linear_preds = pd.read_csv(shelf_pred_dir / f"linear_model_predictions_{country}_{horizon_in_quarters}q_{target_name_dict[TARGET_IDX]}_{yr}.csv", index_col=0, parse_dates=True).loc[start:end]
-                shelf_preds = pd.concat([tree_preds, linear_preds], axis=1)
-            except:
+
+                preds_y.append(linear_preds)
+            
+            if 'shelf' in model_types:
                 shelf_preds = pd.read_csv(shelf_pred_dir / f"shelf_model_predictions_{country}_{horizon_in_quarters}q_{target_name_dict[TARGET_IDX]}_{yr}.csv", index_col=0, parse_dates=True).loc[start:end]
 
-            data_list = [
-                lit_bench_preds,
-                shelf_preds,
-                st_preds
-            ]
+                preds_y.append(shelf_preds)
 
-            preds_y = pd.concat(data_list, axis=1)   
+            preds_y = pd.concat(preds_y, axis=1)
+
             preds.append(preds_y)
 
         preds = pd.concat(preds)
 
-        # Ense
         
         if ensemble_models is not None:
             ensemble_preds = []

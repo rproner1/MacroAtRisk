@@ -48,6 +48,7 @@ parser.add_argument("--plot-means", action="store_true", help="Whether to genera
 parser.add_argument("--dm-test", action="store_true", help="Whether to perform Diebold-Mariano tests for pairwise model comparisons")
 parser.add_argument("--run-locally", action="store_true", help="Whether to run locally (adjusts file paths accordingly)")
 parser.add_argument("--ensemble-models", type=str, nargs="*", default=None, help="List of models to include in the ensemble")
+parser.add_argument('--model-types', type=str, nargs='*', help='List of model types whose predictions to concatenate')
 args = parser.parse_args()
 
 # Use config values as defaults, allow CLI overrides
@@ -113,7 +114,8 @@ def main():
         start_year=START_YEAR,
         end_year=END_YEAR,
         ensemble_models=args.ensemble_models,
-        target_order=TARGET_ORDER
+        target_order=TARGET_ORDER,
+        model_types=args.model_types
     )
 
     target_labels = {0: 'INFL', 1: 'IP', 2: 'UNRATE'}

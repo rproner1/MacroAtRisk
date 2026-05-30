@@ -219,14 +219,14 @@ horizon_in_quarters: 4
 make_results: true
 make_r1_tables: true
 base_models_subset: [
-  'Naive',
-  'QR',
-  'EN',
+  # 'Naive',
+  # 'QR',
+  # 'EN',
   # 'QPCR',
   'QRF',
   'QGB',
   # 'sDMQ',
-  'DMQv0',
+  # 'DMQv0',
   # 'DMQv1',
   'DMQs',
   'DMQm',
