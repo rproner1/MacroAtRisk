@@ -29,6 +29,7 @@ from keras.initializers import GlorotUniform
 from typing import Union, List
 
 from src.train.slstm import sLSTMCell
+from xlstm.blocks import sLSTMBlock
 
 def get_confounding_set(X: np.ndarray, m: int, j: int) -> list:
 
@@ -584,6 +585,7 @@ def build_dmq_v1(
 def build_dmq_v0(
         input_shape: tuple, 
         n_recurrent_layers: int=1, 
+        num_heads: int=1,
         n_shared_layers: int=1, 
         n_qtask_layers: int=1, 
         n_recurrent_nodes: int=32,
@@ -629,7 +631,7 @@ def build_dmq_v0(
         recurrent_layer_type = LSTM
     elif recurrent_layer_type == 'gru':   
         recurrent_layer_type = GRU
-    elif recurrent_layer_type == 'slstm':
+    elif recurrent_layer_type in ['slstm', 'slstm_block']:
         pass
     else:
         raise ValueError("recurrent_layer_type must be 'lstm', 'slstm', or 'gru'")
@@ -649,6 +651,15 @@ def build_dmq_v0(
                         kernel_initializer=initializer
                     ), 
                     return_sequences=(i < n_recurrent_layers)
+                )
+            )
+        elif recurrent_layer_type == 'slstm_block':
+            shared_layers.append(
+                sLSTMBlock(
+                    n_recurrent_nodes,
+                    num_heads=num_heads,
+                    return_sequences=(i < n_recurrent_layers),
+                    kernel_regularizer=L1L2(l1,l2)
                 )
             )
         else:
