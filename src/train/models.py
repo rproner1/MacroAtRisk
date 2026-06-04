@@ -676,17 +676,18 @@ def build_dmq_v0(
         if recurrent_norm:
             shared_layers.append(norm_fn())
 
-    for i in range(1, n_shared_layers + 1):
-        shared_layers.append(
-            Dense(
-                n_shared_nodes, 
-                activation='relu', 
-                kernel_regularizer=L1L2(l1,l2),
-                kernel_initializer=initializer
+    if not recurrent_layer_type == 'slstm_block':
+        for i in range(1, n_shared_layers + 1):
+            shared_layers.append(
+                Dense(
+                    n_shared_nodes, 
+                    activation='relu', 
+                    kernel_regularizer=L1L2(l1,l2),
+                    kernel_initializer=initializer
+                )
             )
-        )
-        if shared_norm:
-            shared_layers.append(norm_fn())
+            if shared_norm:
+                shared_layers.append(norm_fn())
 
     shared_net = Sequential(shared_layers, name='shared')(inputs)
 

@@ -70,7 +70,7 @@ oap_datasets:
 fit_models: true
 input_files: [
   "us_4q_fred_x.csv",
-  "us_4q_oap_vw_spread_stationary_x.csv"
+  "us_4q_oap_vw_spread_x_stationary.csv"
 ]
 target_file: 'us_4q_fred_y.csv'
 
@@ -171,38 +171,64 @@ tuning:
 
 builder_params:
   deep_models:
-    DMQs:
-      n_recurrent_layers: 1
-      n_shared_layers: 1
+    # DMQs:
+    #   n_recurrent_layers: 1
+    #   n_shared_layers: 1
+    #   n_qtask_layers: 1
+    #   n_recurrent_nodes: 64
+    #   n_shared_nodes: 64
+    #   n_task_nodes: 64
+    #   recurrent_layer_type: 'lstm'
+    #   norm_fn: 'layer'
+    #   recurrent_norm: true
+    #   shared_norm: true
+    #   task_norm: true
+    # DMQm:
+    #   n_recurrent_layers: 2
+    #   n_shared_layers: 2
+    #   n_qtask_layers: 2
+    #   n_recurrent_nodes: 64
+    #   n_shared_nodes: 64
+    #   n_task_nodes: 64
+    #   recurrent_layer_type: 'lstm'
+    #   norm_fn: 'layer'
+    #   recurrent_norm: true
+    #   shared_norm: true
+    #   task_norm: true
+    # DMQl:
+    #   n_recurrent_layers: 3
+    #   n_shared_layers: 3
+    #   n_qtask_layers: 3
+    #   n_recurrent_nodes: 64
+    #   n_shared_nodes: 64
+    #   n_task_nodes: 64
+    #   recurrent_layer_type: 'lstm'
+    #   norm_fn: 'layer'
+    #   recurrent_norm: true
+    #   shared_norm: true
+    #   task_norm: true
+    xDMQs:
+      n_recurrent_layers: 1 # Number of stacked slstm blocks
+      num_heads: 8
+      n_shared_layers: 1 # No effect with slstm block
       n_qtask_layers: 1
       n_recurrent_nodes: 64
       n_shared_nodes: 64
       n_task_nodes: 64
-      recurrent_layer_type: 'lstm'
+      recurrent_layer_type: 'slstm_block'
       norm_fn: 'layer'
       recurrent_norm: true
       shared_norm: true
       task_norm: true
-    DMQm:
-      n_recurrent_layers: 2
-      n_shared_layers: 2
+    xDMQm:
+      n_recurrent_layers: 2 # Number of stacked slstm blocks
+      num_heads: 8
+      n_shared_layers: 2 # No effect with slstm block
       n_qtask_layers: 2
       n_recurrent_nodes: 64
       n_shared_nodes: 64
       n_task_nodes: 64
-      recurrent_layer_type: 'lstm'
-      norm_fn: 'layer'
-      recurrent_norm: true
-      shared_norm: true
-      task_norm: true
-    DMQl:
-      n_recurrent_layers: 3
-      n_shared_layers: 3
-      n_qtask_layers: 3
-      n_recurrent_nodes: 64
-      n_shared_nodes: 64
-      n_task_nodes: 64
-      recurrent_layer_type: 'lstm'
+      recurrent_layer_type: 'slstm_block'
       norm_fn: 'layer'
       recurrent_norm: true
       shared_norm: true
