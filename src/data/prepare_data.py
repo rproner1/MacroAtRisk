@@ -254,10 +254,12 @@ def prepare_rnn_data(
     )
 
     train_data = pd.concat([X_train, targets_train], axis=1)
+
     val_data = pd.concat([X_val, targets_val], axis=1)
-    val_data = pd.concat([train_data.iloc[:-(n_timesteps-1)], val_data])
+    val_data = pd.concat([train_data.iloc[-(n_timesteps-1):], val_data])
+
     test_data = pd.concat([X_test, targets_test], axis=1)
-    test_data = pd.concat([val_data.iloc[:-(n_timesteps-1)], test_data])
+    test_data = pd.concat([val_data.iloc[-(n_timesteps-1):], test_data])
 
     # Make sequences for recurrent neural nets
     X_train_rnn, targets_train_rnn = split_sequences(
@@ -278,7 +280,7 @@ def prepare_rnn_data(
         n_targets=targets_train.shape[1]
     )
 
-    return (X_test_rnn, X_val_rnn, X_test_rnn, 
+    return (X_train_rnn, X_val_rnn, X_test_rnn, 
             targets_train_rnn, targets_val_rnn, targets_test_rnn)
     
 
