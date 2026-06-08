@@ -70,12 +70,12 @@ oap_datasets:
 fit_models: true
 input_files: [
   "us_4q_fred_x.csv",
-  "us_4q_oap_vw_spread_x_stationary.csv"
+  "us_4q_oap_vw_x_stationary.csv"
 ]
 target_file: 'us_4q_fred_y.csv'
 
 trials: 50
-time_steps: 12
+time_steps: 60
 quantiles: [0.05, 0.25, 0.50, 0.75, 0.95]
 n_estimators: 5
 k_folds: 10 # Number of folds for cross-validation
@@ -183,18 +183,18 @@ builder_params:
     #   recurrent_norm: true
     #   shared_norm: true
     #   task_norm: true
-    # DMQm:
-    #   n_recurrent_layers: 2
-    #   n_shared_layers: 2
-    #   n_qtask_layers: 2
-    #   n_recurrent_nodes: 64
-    #   n_shared_nodes: 64
-    #   n_task_nodes: 64
-    #   recurrent_layer_type: 'lstm'
-    #   norm_fn: 'layer'
-    #   recurrent_norm: true
-    #   shared_norm: true
-    #   task_norm: true
+    DMQm:
+      n_recurrent_layers: 2
+      n_shared_layers: 2
+      n_qtask_layers: 2
+      n_recurrent_nodes: 128
+      n_shared_nodes: 128
+      n_task_nodes: 128
+      recurrent_layer_type: 'lstm'
+      norm_fn: 'layer'
+      recurrent_norm: true
+      shared_norm: true
+      task_norm: true
     # DMQl:
     #   n_recurrent_layers: 3
     #   n_shared_layers: 3
@@ -207,32 +207,45 @@ builder_params:
     #   recurrent_norm: true
     #   shared_norm: true
     #   task_norm: true
-    xDMQs:
-      n_recurrent_layers: 1 # Number of stacked slstm blocks
-      num_heads: 8
-      n_shared_layers: 1 # No effect with slstm block
-      n_qtask_layers: 1
-      n_recurrent_nodes: 64
-      n_shared_nodes: 64
-      n_task_nodes: 64
-      recurrent_layer_type: 'slstm_block'
-      norm_fn: 'layer'
-      recurrent_norm: true
-      shared_norm: true
-      task_norm: true
+    # xDMQs:
+    #   n_recurrent_layers: 1 # Number of stacked slstm blocks
+    #   num_heads: 8
+    #   n_shared_layers: 1 # No effect with slstm block
+    #   n_qtask_layers: 1
+    #   n_recurrent_nodes: 64
+    #   n_shared_nodes: 64
+    #   n_task_nodes: 64
+    #   recurrent_layer_type: 'slstm_block'
+    #   norm_fn: 'layer'
+    #   recurrent_norm: true
+    #   shared_norm: true
+    #   task_norm: true
     xDMQm:
       n_recurrent_layers: 2 # Number of stacked slstm blocks
       num_heads: 8
       n_shared_layers: 2 # No effect with slstm block
       n_qtask_layers: 2
-      n_recurrent_nodes: 64
-      n_shared_nodes: 64
-      n_task_nodes: 64
+      n_recurrent_nodes: 128
+      n_shared_nodes: 128
+      n_task_nodes: 128
       recurrent_layer_type: 'slstm_block'
       norm_fn: 'layer'
       recurrent_norm: true
       shared_norm: true
       task_norm: true
+    # xDMQl:
+    #   n_recurrent_layers: 3 # Number of stacked slstm blocks
+    #   num_heads: 8
+    #   n_shared_layers: 3 # No effect with slstm block
+    #   n_qtask_layers: 3
+    #   n_recurrent_nodes: 64
+    #   n_shared_nodes: 64
+    #   n_task_nodes: 64
+    #   recurrent_layer_type: 'slstm_block'
+    #   norm_fn: 'layer'
+    #   recurrent_norm: true
+    #   shared_norm: true
+    #   task_norm: true
     
 
 # ========== Shared Settings ==========
@@ -249,16 +262,16 @@ base_models_subset: [
   # 'QR',
   # 'EN',
   # 'QPCR',
-  # 'QRF',
-  # 'QGB',
+  'QRF',
+  'QGB',
   # 'sDMQ',
   # 'DMQv0',
   # 'DMQv1',
-  # 'DMQs',
+  'DMQs',
   'DMQm',
-  'sDMQm',
-  # 'DMQl',
-  # 'DMQe'
+  'DMQl',
+  # 'DMQe',
+  # 'sDMQm',
   # 'DMQv2c'
 ]
 test_start: "1998-01-01"
