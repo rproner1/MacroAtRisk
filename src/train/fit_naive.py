@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 import sys
-from src.preprocessing.prepare_quantile_data import prepare_quantile_data
+from src.data.prepare_data import prepare_quantile_data
 from operator import itemgetter
 
 
