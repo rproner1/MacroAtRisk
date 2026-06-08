@@ -120,7 +120,11 @@ def transxf(x: np.ndarray, tcode: int) -> np.ndarray:
 
     return y
 
-def split_sequences(data: Union[np.ndarray, pd.DataFrame], n_timesteps: int, n_targets: int):
+def split_sequences(
+        data: Union[np.ndarray, pd.DataFrame], 
+        n_timesteps: int, 
+        n_targets: int
+    ):
     if not isinstance(data, np.ndarray):
         data = np.asarray(data)
 
