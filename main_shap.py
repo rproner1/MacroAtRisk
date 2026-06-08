@@ -22,7 +22,7 @@ from src.figures.feat_imp_plots import (
     make_top_feature_contrib_timeseries_plot,
     make_pair_value_vs_attribution_cubic_spline_3d_plot,
 )
-from src.preprocessing.prepare_quantile_data import prepare_quantile_data
+from src.data.prepare_data import prepare_quantile_data
 from src.train.losses import make_tilted_loss, make_total_tilted_loss
 from src.utils.files import concat_shap_values
 

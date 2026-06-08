@@ -19,7 +19,7 @@ import statsmodels.formula.api as smf
 import warnings
 import tensorflow as tf
 
-from src.preprocessing.prepare_quantile_data import prepare_quantile_data
+from src.data.prepare_data import prepare_quantile_data
 from src.train.shelf_models import *
 from src.train.losses import make_tilted_loss, make_total_tilted_loss
 from src.train.models import build_dmq_v0, build_dmq_v1
