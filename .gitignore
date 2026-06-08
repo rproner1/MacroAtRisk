@@ -13,13 +13,14 @@ build/
 .cache/
 renv*
 .Rprofile
-models/
+*.keras
 predictions/ 
 tuning_logs/
 results/
 results_figures/
 results_tables/
-data/
+*.csv
+*.parquet
 shap_values/
 *.db
 *.pdf
@@ -29,3 +30,9 @@ latex/*
 !latex/*.tex
 !latex/*.bib
 *.ipynb
+
+# config files
+*.yaml
+
+# Temp results
+results.tex
