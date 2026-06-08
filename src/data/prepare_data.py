@@ -166,17 +166,15 @@ def _scale_features(
 
 
 def prepare_non_rnn_data(
-        target,
         targets_path,
         input_paths,
         start_date,
         train_cutoff_year,
-        n_quantiles,
         val_months,
         test_months,
         imputer=SimpleImputer,
         scaler=StandardScaler
-):
+    ):
     
     # Read and merge data
     X, targets = _read_and_merge_data(
@@ -207,7 +205,7 @@ def prepare_non_rnn_data(
         targets,
         train_start=train_start,
         train_end=train_end,
-        val_start=val_end,
+        val_start=val_start,
         val_end=val_end,
         test_start=test_start,
         test_end=test_end
@@ -224,6 +222,65 @@ def prepare_non_rnn_data(
     )
 
     return X_train, X_val, X_test, targets_train, targets_val, targets_test
+
+
+def prepare_rnn_data(
+        targets_path,
+        input_paths,
+        start_date,
+        train_cutoff_year,
+        val_months,
+        test_months,
+        imputer=SimpleImputer,
+        scaler=StandardScaler,
+        n_timesteps=12  
+    ):
+
+    if n_timesteps <= 1:
+        raise Warning('The number of time steps must be greater than 1.')
+
+    (
+        X_train, X_val, X_test, 
+        targets_train, targets_val, targets_test
+    ) = prepare_non_rnn_data(
+        targets_path,
+        input_paths,
+        start_date,
+        train_cutoff_year,
+        val_months,
+        test_months,
+        imputer=imputer,
+        scaler=scaler 
+    )
+
+    train_data = pd.concat([X_train, targets_train], axis=1)
+    val_data = pd.concat([X_val, targets_val], axis=1)
+    val_data = pd.concat([train_data.iloc[:-(n_timesteps-1)], val_data])
+    test_data = pd.concat([X_test, targets_test], axis=1)
+    test_data = pd.concat([val_data.iloc[:-(n_timesteps-1)], test_data])
+
+    # Make sequences for recurrent neural nets
+    X_train_rnn, targets_train_rnn = split_sequences(
+        train_data,
+        n_timesteps=n_timesteps,
+        n_targets=targets_train.shape[1]
+    ) 
+
+    X_val_rnn, targets_val_rnn = split_sequences(
+        val_data,
+        n_timesteps=n_timesteps,
+        n_targets=targets_train.shape[1]
+    )
+
+    X_test_rnn, targets_test_rnn = split_sequences(
+        test_data,
+        n_timesteps=n_timesteps,
+        n_targets=targets_train.shape[1]
+    )
+
+    return (X_test_rnn, X_val_rnn, X_test_rnn, 
+            targets_train_rnn, targets_val_rnn, targets_test_rnn)
+    
 
 def prepare_quantile_data(target: int, time_steps: int, 
                           targets_path: Path, input_paths: List[Path],
