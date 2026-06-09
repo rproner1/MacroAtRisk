@@ -424,7 +424,8 @@ def build_dmq_v1(
         input_shape: tuple, 
         n_recurrent_layers: int=2, 
         n_shared_layers: int=1, 
-        n_qtask_layers: int=2, 
+        n_qtask_layers: int=2,
+        num_heads: int=4, 
         n_recurrent_nodes: int=32,
         n_shared_nodes: int=32,
         n_task_nodes: int=32,
@@ -465,43 +466,74 @@ def build_dmq_v1(
     
     recurrent_layer_type = recurrent_layer_type.lower()
     if recurrent_layer_type == 'lstm':
-        recurrent_layer_type = LSTM
+        recurrent_layer = LSTM
     elif recurrent_layer_type == 'gru':   
-        recurrent_layer_type = GRU
+        recurrent_layer = GRU
+    elif recurrent_layer_type in ['slstm', 'slstm_block']:
+        pass
     else:
-        raise ValueError("recurrent_layer_type must be 'lstm' or 'gru'")
+        raise ValueError("recurrent_layer_type must be 'lstm', 'slstm', or 'gru'")
 
     inputs = Input(shape=input_shape)
 
     shared_layers = []
     
     for i in range(1, n_recurrent_layers + 1):
-        shared_layers.append(
-            recurrent_layer_type(
-                n_recurrent_nodes, 
-                return_sequences=(i < n_recurrent_layers), 
-                kernel_regularizer=L1L2(l1,l2), 
-                recurrent_dropout=rec_drop,
-                kernel_initializer=initializer
+    
+        if recurrent_layer_type == 'slstm':
+            shared_layers.append(
+                RNN(
+                    sLSTMCell(
+                        n_recurrent_nodes,
+                        kernel_regularizer=L1L2(l1,l2),
+                        kernel_initializer=initializer
+                    ), 
+                    return_sequences=(i < n_recurrent_layers),
+                    name=f'{recurrent_layer_type}_layer_{i}'
+                )
             )
-        )
+        elif recurrent_layer_type == 'slstm_block':
+            shared_layers.append(
+                sLSTMBlock(
+                    n_recurrent_nodes,
+                    num_heads=num_heads,
+                    return_sequences=(i < n_recurrent_layers),
+                    kernel_regularizer=L1L2(l1,l2),
+                    recurrent_regularizer=L1L2(l1,l2),
+                    name=f'{recurrent_layer_type}_layer_{i}'
+                )
+            )
+        else:
+            shared_layers.append(
+                recurrent_layer(
+                    n_recurrent_nodes, 
+                    return_sequences=(i < n_recurrent_layers), 
+                    kernel_regularizer=L1L2(l1,l2), 
+                    recurrent_regularizer=L1L2(l1,l2),
+                    recurrent_dropout=rec_drop,
+                    kernel_initializer=initializer,
+                    name=f'{recurrent_layer_type}_layer_{i}'
+                )
+            )
+        
         if recurrent_norm:
             shared_layers.append(norm_fn())
 
-    
-    for i in range(1, n_shared_layers + 1):
-        shared_layers.append(
-            Dense(
-                n_shared_nodes, 
-                activation='relu', 
-                kernel_regularizer=L1L2(l1,l2),
-                kernel_initializer=initializer
+    if not recurrent_layer_type == 'slstm_block':
+        for i in range(1, n_shared_layers + 1):
+            shared_layers.append(
+                Dense(
+                    n_shared_nodes, 
+                    activation='relu', 
+                    kernel_regularizer=L1L2(l1,l2),
+                    kernel_initializer=initializer,
+                    name=f'shared_dense_layer_{i}'
+                )
             )
-        )
-        if shared_norm:
-            shared_layers.append(norm_fn())
+            if shared_norm:
+                shared_layers.append(norm_fn())
 
-    shared_net = Sequential(shared_layers, name='shared')(inputs)
+    shared_net = Sequential(shared_layers, name='shared_layers')(inputs)
 
     # Median head
     median_head = Sequential(name='Q50')
@@ -511,7 +543,8 @@ def build_dmq_v1(
                 n_task_nodes, 
                 activation='relu',
                 kernel_regularizer=L1L2(l1, l2),
-                kernel_initializer=initializer
+                kernel_initializer=initializer,
+                name=f'q0.50_dense_layer_{i}'
             )
         )
         if task_norm and i < n_qtask_layers:
@@ -521,7 +554,12 @@ def build_dmq_v1(
             median_head.add(Dropout(dropout))
 
     median_head.add(
-        Dense(1, activation='linear', kernel_regularizer=L1L2(l1, l2))
+        Dense(
+            1, 
+            activation='linear', 
+            kernel_regularizer=L1L2(l1, l2),
+            name=f'q0.50_output'
+            )
     )
 
     median_output = median_head(shared_net)
@@ -537,7 +575,8 @@ def build_dmq_v1(
                     n_task_nodes,
                     activation='relu',
                     kernel_regularizer=L1L2(l1, l2),
-                    kernel_initializer=initializer
+                    kernel_initializer=initializer,
+                    name=f'q{q}_dense_layer_{i}'
                 )
             )
             if task_norm and i < n_qtask_layers:
@@ -564,7 +603,8 @@ def build_dmq_v1(
                     n_task_nodes,
                     activation='relu',
                     kernel_regularizer=L1L2(l1, l2),
-                    kernel_initializer=initializer
+                    kernel_initializer=initializer,
+                    name=f'q{q}_dense_layer_{i}'
                 )
             )
             if task_norm and i < n_qtask_layers:
@@ -641,9 +681,9 @@ def build_dmq_v0(
     
     recurrent_layer_type = recurrent_layer_type.lower()
     if recurrent_layer_type == 'lstm':
-        recurrent_layer_type = LSTM
+        recurrent_layer = LSTM
     elif recurrent_layer_type == 'gru':   
-        recurrent_layer_type = GRU
+        recurrent_layer = GRU
     elif recurrent_layer_type in ['slstm', 'slstm_block']:
         pass
     else:
@@ -663,7 +703,8 @@ def build_dmq_v0(
                         kernel_regularizer=L1L2(l1,l2),
                         kernel_initializer=initializer
                     ), 
-                    return_sequences=(i < n_recurrent_layers)
+                    return_sequences=(i < n_recurrent_layers),
+                    name=f'{recurrent_layer_type}_layer_{i}'
                 )
             )
         elif recurrent_layer_type == 'slstm_block':
@@ -674,17 +715,19 @@ def build_dmq_v0(
                     return_sequences=(i < n_recurrent_layers),
                     kernel_regularizer=L1L2(l1,l2),
                     recurrent_regularizer=L1L2(l1,l2),
+                    name=f'{recurrent_layer_type}_layer_{i}'
                 )
             )
         else:
             shared_layers.append(
-                recurrent_layer_type(
+                recurrent_layer(
                     n_recurrent_nodes, 
                     return_sequences=(i < n_recurrent_layers), 
                     kernel_regularizer=L1L2(l1,l2), 
                     recurrent_regularizer=L1L2(l1,l2),
                     recurrent_dropout=rec_drop,
-                    kernel_initializer=initializer
+                    kernel_initializer=initializer,
+                    name=f'{recurrent_layer_type}_layer_{i}'
                 )
             )
         
@@ -698,13 +741,14 @@ def build_dmq_v0(
                     n_shared_nodes, 
                     activation='relu', 
                     kernel_regularizer=L1L2(l1,l2),
-                    kernel_initializer=initializer
+                    kernel_initializer=initializer,
+                    name=f'shared_dense_layer_{i}'
                 )
             )
             if shared_norm:
                 shared_layers.append(norm_fn())
 
-    shared_net = Sequential(shared_layers, name='shared')(inputs)
+    shared_net = Sequential(shared_layers, name='shared_layers')(inputs)
 
     outputs = []
     for q in quantiles:
@@ -716,6 +760,7 @@ def build_dmq_v0(
                     activation='relu',
                     kernel_regularizer=L1L2(l1, l2),
                     kernel_initializer=initializer,
+                    name=f'q{q}_task_dense_layer_{i}'
                 )
             )
             if task_norm and i < n_qtask_layers:
@@ -729,7 +774,8 @@ def build_dmq_v0(
                 activation='linear', 
                 kernel_regularizer=L1L2(l1, l2), 
                 kernel_initializer=initializer,
-                bias_initializer=bias_initializer
+                bias_initializer=bias_initializer,
+                name=f'q{q}_task_out_layer_{i}'
             )
         )
 

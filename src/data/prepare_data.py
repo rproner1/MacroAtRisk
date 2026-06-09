@@ -55,59 +55,112 @@ def _read_and_merge_data(
 
     return X, all_y
 
+def _fractional_train_val_split(
+    X,
+    y,
+    val_size=0.1,
+    val_style='random',
+    val_buffer=60
+):
+    
+    n = X.shape[0]
+    n_val = int(val_size * n)
+
+    if isinstance(X, pd.DataFrame) and isinstance(y, pd.DataFrame):
+    
+        if val_style == 'last':
+            X_train = X.iloc[:-n_val]
+            X_val = X.iloc[-n_val:]
+
+            y_train = y.iloc[:-n_val]
+            y_val = y.iloc[-n_val:]
+
+        elif val_style == 'first':
+            X_train = X.iloc[n_val:]
+            X_val = X.iloc[:n_val]
+
+            y_train = y.iloc[n_val:]
+            y_val = y.iloc[:n_val]
+
+        elif val_style == 'random':
+            val_idx = np.random.choice(n-val_buffer, size=n_val)
+            mask = ~np.isin(np.arange(n), val_idx)   
+            
+            X_train = X.iloc[mask]
+            X_val = X.iloc[val_idx]
+
+            y_train = y.iloc[mask]
+            y_val = y.iloc[val_idx]
+        
+        else:
+            raise TypeError(f'Unrecognized argument {val_style}'
+                            'Please provide one of {"last", "first", "random"}')
+        
+    elif isinstance(X, np.ndarray) and isinstance(y, np.ndarray):
+
+        if val_style == 'last':
+            X_train = X[:-n_val]
+            X_val = X[-n_val:]
+
+            y_train = y[:-n_val]
+            y_val = y[-n_val:]
+
+        elif val_style == 'first':
+            X_train = X[n_val:]
+            X_val = X[:n_val]
+
+            y_train = y[n_val:]
+            y_val = y[:n_val]
+
+        elif val_style == 'random':
+            val_idx = np.random.choice(n-val_buffer, size=n_val)
+            mask = ~np.isin(np.arange(n), val_idx)   
+            
+            X_train = X[mask]
+            X_val = X[val_idx]
+
+            y_train = y[mask]
+            y_val = y[val_idx]
+        
+        else:
+            raise TypeError(f'Unrecognized argument {val_style}'
+                            'Please provide one of {"last", "first", "random"}')
+
+    return X_train, X_val, y_train, y_val
+
 def _train_test_split(
         X, 
         y,
-        test_size: float|None = 0.25,
-        val_size: float|None = 0.1,
-        train_start: str|datetime|None = None,
-        train_end: str|datetime|None = None,
-        val_start: str|datetime|None = None,
-        val_end: str|datetime|None = None,
-        test_start: str|datetime|None = None,
-        test_end: str|datetime|None = None
+        train_start: str|datetime,
+        train_end: str|datetime,
+        val_start: str|datetime,
+        val_end: str|datetime,
+        test_start: str|datetime,
+        test_end: str|datetime
     ):
 
+    """
+    Parameters:
+    *_start: start date of subsample
+    *_end: end date of subsample
+
+    Returns:
+    X_*: train, val, test features
+    y_*: train, val, test targets
+    """
+
     if X.shape[0] != y.shape[0]:
-        raise ValueError('X and y have a different number of rows!')
+        raise Warning('X and y have a different number of rows!')
 
-    dates_provided = all(d is not None for d in [
-        train_start, train_end, val_start, val_end, test_start, test_end
-    ])
+    # Split features
+    X_train = X.loc[train_start:train_end]
+    X_val = X.loc[val_start:val_end]
+    X_test = X.loc[test_start:test_end]
 
-    if dates_provided:
-
-        # Split features
-        X_train = X.loc[train_start:train_end]
-        X_val = X.loc[val_start:val_end]
-        X_test = X.loc[test_start:test_end]
-
-        # Split targets
-        y_train = y.loc[train_start:train_end]
-        y_val = y.loc[val_start:val_end]
-        y_test = y.loc[test_start:test_end]
-
-    else:
-        n = X.shape[0]
-        n_test = int(test_size * n)
-
-        # Train/test split
-        X_train = X.iloc[:-n_test]
-        X_test = X.iloc[-n_test:]
-
-        # train/val split
-        n_train = X_train.shape[0]
-        n_val = int(val_size * n_train)
-
-        X_train = X_train.iloc[:-n_val]
-        X_val = X_train.iloc[-n_val:]
-
-        # Split targets
-        y_train = y.iloc[:-n_test]
-        y_test = y.iloc[-n_test:]
-
-        y_train = y.iloc[:-n_val] 
-        y_val = y.iloc[-n_val:]
+    # Split targets
+    y_train = y.loc[train_start:train_end]
+    y_val = y.loc[val_start:val_end]
+    y_test = y.loc[test_start:test_end]
 
     return X_train, X_val, X_test, y_train, y_val, y_test 
 
@@ -166,17 +219,23 @@ def _scale_features(
 
 
 def prepare_non_rnn_data(
-        target,
         targets_path,
         input_paths,
         start_date,
         train_cutoff_year,
-        n_quantiles,
         val_months,
         test_months,
+        val_split_style='fractional',
+        val_style='random',
+        val_buffer=60,
+        val_size=0.1,
         imputer=SimpleImputer,
         scaler=StandardScaler
-):
+    ):
+
+    if val_split_style not in ['fractional', 'date']:
+        raise TypeError(f'Unrecognized argument {val_split_style}'
+                        'Please provide one of {"fractional", "date"}')
     
     # Read and merge data
     X, targets = _read_and_merge_data(
@@ -207,11 +266,26 @@ def prepare_non_rnn_data(
         targets,
         train_start=train_start,
         train_end=train_end,
-        val_start=val_end,
+        val_start=val_start,
         val_end=val_end,
         test_start=test_start,
         test_end=test_end
     )
+
+    if val_split_style=='fractional':
+        X_train_full = pd.concat([X_train,X_val])
+        targets_train_full = pd.concat([targets_train, targets_val])
+
+        (
+            X_train, X_val, 
+            targets_train, targets_val
+        ) = _fractional_train_val_split(
+            X=X_train_full,
+            y=targets_train_full,
+            val_size=val_size,
+            val_style=val_style,
+            val_buffer=val_buffer
+        )
 
     # impute data
     X_train, X_val, X_test = _impute_missing_features(
@@ -224,6 +298,94 @@ def prepare_non_rnn_data(
     )
 
     return X_train, X_val, X_test, targets_train, targets_val, targets_test
+
+
+def prepare_rnn_data(
+        targets_path,
+        input_paths,
+        start_date,
+        train_cutoff_year,
+        val_months,
+        test_months,
+        val_split_style='fractional',
+        val_style='random',
+        val_buffer=60,
+        val_size=0.1,
+        n_timesteps=12,
+        imputer=SimpleImputer,
+        scaler=StandardScaler
+    ):
+
+    if val_split_style not in ['fractional', 'date']:
+        raise TypeError(f'Unrecognized argument {val_split_style}'
+                        'Please provide one of {"fractional", "date"}')
+
+    if n_timesteps <= 1:
+        raise Warning('The number of time steps must be greater than 1.')
+
+    (
+        X_train, X_val, X_test, 
+        targets_train, targets_val, targets_test
+    ) = prepare_non_rnn_data(
+        targets_path,
+        input_paths,
+        start_date,
+        train_cutoff_year,
+        val_months,
+        test_months,
+        val_split_style='date',
+        imputer=imputer,
+        scaler=scaler 
+    )
+
+    train_data = pd.concat([X_train, targets_train], axis=1)
+
+    val_data = pd.concat([X_val, targets_val], axis=1)
+    val_data = pd.concat([train_data.iloc[-(n_timesteps-1):], val_data])
+
+    test_data = pd.concat([X_test, targets_test], axis=1)
+    test_data = pd.concat([val_data.iloc[-(n_timesteps-1):], test_data])
+
+    # Make sequences for recurrent neural nets
+    X_train_rnn, targets_train_rnn = split_sequences(
+        train_data,
+        n_timesteps=n_timesteps,
+        n_targets=targets_train.shape[1]
+    ) 
+
+    X_val_rnn, targets_val_rnn = split_sequences(
+        val_data,
+        n_timesteps=n_timesteps,
+        n_targets=targets_train.shape[1]
+    )
+
+    X_test_rnn, targets_test_rnn = split_sequences(
+        test_data,
+        n_timesteps=n_timesteps,
+        n_targets=targets_train.shape[1]
+    )
+
+    if val_split_style == 'fractional':
+        X_train_rnn_full = np.concatenate([X_train_rnn, X_val_rnn], axis=0)
+        targets_train_rnn_full =  np.concatenate(
+            [targets_train_rnn, targets_val_rnn],
+            axis=0
+        )
+        (
+            X_train_rnn, X_val_rnn, 
+            targets_train_rnn, targets_val_rnn
+        ) = _fractional_train_val_split(
+            X_train_rnn_full,
+            targets_train_rnn_full,
+            val_size=val_size,
+            val_style=val_style,
+            val_buffer=val_buffer
+        )
+
+
+    return (X_train_rnn, X_val_rnn, X_test_rnn, 
+            targets_train_rnn, targets_val_rnn, targets_test_rnn)
+    
 
 def prepare_quantile_data(target: int, time_steps: int, 
                           targets_path: Path, input_paths: List[Path],

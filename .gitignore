@@ -36,3 +36,5 @@ latex/*
 
 # Temp results
 results.tex
+
+local_tuning_logs/*
