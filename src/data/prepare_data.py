@@ -333,7 +333,7 @@ def prepare_rnn_data(
         train_cutoff_year,
         val_months,
         test_months,
-        split_style='date',
+        val_split_style='date',
         imputer=imputer,
         scaler=scaler 
     )
