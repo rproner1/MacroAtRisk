@@ -55,91 +55,113 @@ def _read_and_merge_data(
 
     return X, all_y
 
+def _fractional_train_val_split(
+    X,
+    y,
+    val_size=0.1,
+    val_style='random',
+    val_buffer=60
+):
+    
+    n = X.shape[0]
+    n_val = int(val_size * n)
+
+    if isinstance(X, pd.DataFrame) and isinstance(y, pd.DataFrame):
+    
+        if val_style == 'last':
+            X_train = X.iloc[:-n_val]
+            X_val = X.iloc[-n_val:]
+
+            y_train = y.iloc[:-n_val]
+            y_val = y.iloc[-n_val:]
+
+        elif val_style == 'first':
+            X_train = X.iloc[n_val:]
+            X_val = X.iloc[:n_val]
+
+            y_train = y.iloc[n_val:]
+            y_val = y.iloc[:n_val]
+
+        elif val_style == 'random':
+            val_idx = np.random.choice(n-val_buffer, size=n_val)
+            mask = ~np.isin(np.arange(n), val_idx)   
+            
+            X_train = X.iloc[mask]
+            X_val = X.iloc[val_idx]
+
+            y_train = y.iloc[mask]
+            y_val = y.iloc[val_idx]
+        
+        else:
+            raise TypeError(f'Unrecognized argument {val_style}'
+                            'Please provide one of {"last", "first", "random"}')
+        
+    elif isinstance(X, np.ndarray) and isinstance(y, np.ndarray):
+
+        if val_style == 'last':
+            X_train = X[:-n_val]
+            X_val = X[-n_val:]
+
+            y_train = y[:-n_val]
+            y_val = y[-n_val:]
+
+        elif val_style == 'first':
+            X_train = X[n_val:]
+            X_val = X[:n_val]
+
+            y_train = y[n_val:]
+            y_val = y[:n_val]
+
+        elif val_style == 'random':
+            val_idx = np.random.choice(n-val_buffer, size=n_val)
+            mask = ~np.isin(np.arange(n), val_idx)   
+            
+            X_train = X[mask]
+            X_val = X[val_idx]
+
+            y_train = y[mask]
+            y_val = y[val_idx]
+        
+        else:
+            raise TypeError(f'Unrecognized argument {val_style}'
+                            'Please provide one of {"last", "first", "random"}')
+
+    return X_train, X_val, y_train, y_val
+
 def _train_test_split(
         X, 
         y,
-        train_start: str|datetime|None = None,
-        train_end: str|datetime|None = None,
-        val_start: str|datetime|None = None,
-        val_end: str|datetime|None = None,
-        val_size: float|None = None,
-        test_start: str|datetime|None = None,
-        test_end: str|datetime|None = None,
-        val_style: str = 'last',
-        val_buffer: int = 60
+        train_start: str|datetime,
+        train_end: str|datetime,
+        val_start: str|datetime,
+        val_end: str|datetime,
+        test_start: str|datetime,
+        test_end: str|datetime
     ):
 
     """
     Parameters:
-    test_size: fraction of total data to reserve for testing.
-    val_size: fraction of training data to reserve for validation.
     *_start: start date of subsample
     *_end: end date of subsample
-    val_style: How to take the validation sample ('last', 'first', 'random').
-        Requires val_size.
-        If 'last', it is taken from the end of the training sample.
-        If 'first', it is taken from the start of the training sample.
-        If 'random', it is taken as a random subset of the training sample.
-    val_buffer: The number of months to reserve as part of the training
-        set from the end of the training set. Ensures we train using some of the most recent data. Only used if val_style=='random'. By default set
-        to 60 months. Set to 0 to allow most recent training examples to be 
-        used for validation.
+
+    Returns:
+    X_*: train, val, test features
+    y_*: train, val, test targets
     """
 
     if X.shape[0] != y.shape[0]:
         raise Warning('X and y have a different number of rows!')
 
-    dates_provided = val_start and val_end
-
-    if (dates_provided and val_size):
-        raise TypeError(
-            ('Cannot split on both dates and a fraction'
-             'Please provide either val_start and val_end or val_size')
-        )
-
     # Split features
     X_train = X.loc[train_start:train_end]
+    X_val = X.loc[val_start:val_end]
     X_test = X.loc[test_start:test_end]
 
     # Split targets
     y_train = y.loc[train_start:train_end]
+    y_val = y.loc[val_start:val_end]
     y_test = y.loc[test_start:test_end]
 
-    if (val_start and val_end):
-        X_val = X.loc[val_start:val_end]
-        y_val = y.loc[val_start:val_end]
-
-    elif val_size:
-        n_train = X_train.shape[0]
-        n_val = int(val_size * n_train)
-        
-        if val_style == 'last':
-            X_train = X_train.iloc[:-n_val]
-            X_val = X_train.iloc[-n_val:]
-            y_train = y_train.iloc[:-n_val]
-            y_val = y_val.iloc[-n_val:]
-
-        if val_style == 'first':
-            X_train = X_train.iloc[n_val:]
-            X_val = X_val.iloc[:n_val]
-            y_train = y_train.iloc[n_val:]
-            y_val = y_val.iloc[:n_val]
-
-        if val_style == 'random':
-            val_idx = np.random.choice(n_train-val_buffer, size=n_val)
-            mask = ~np.isin(np.arange(n_train), val_idx)   
-            
-            X_train = X_train.iloc[mask]
-            X_val = X_val.iloc[val_idx]
-
-            y_train = y_train.iloc[mask]
-            y_val = y_val.iloc[val_idx]
-
-    else:
-        raise TypeError(
-            'Must provide either val_start and val_end or val_size'
-        )
-            
     return X_train, X_val, X_test, y_train, y_val, y_test 
 
 
@@ -199,18 +221,21 @@ def _scale_features(
 def prepare_non_rnn_data(
         targets_path,
         input_paths,
-        split_style,
         start_date,
         train_cutoff_year,
         val_months,
         test_months,
-        val_style='last',
+        val_split_style='fractional',
+        val_style='random',
         val_buffer=60,
         val_size=0.1,
-        test_size=0.25,
         imputer=SimpleImputer,
         scaler=StandardScaler
     ):
+
+    if val_split_style not in ['fractional', 'date']:
+        raise TypeError(f'Unrecognized argument {val_split_style}'
+                        'Please provide one of {"fractional", "date"}')
     
     # Read and merge data
     X, targets = _read_and_merge_data(
@@ -218,43 +243,45 @@ def prepare_non_rnn_data(
         targets_path=targets_path
     )
 
-    if split_style == 'dates':
-        (
-            train_start,
-            train_end,
-            val_start,
-            val_end,
-            test_start,
-            test_end
-        ) = _split_dates(
-            start_date=start_date,
-            train_cutoff_year=train_cutoff_year,
-            val_months=val_months,
-            test_months=test_months
-        )
+    (
+        train_start,
+        train_end,
+        val_start,
+        val_end,
+        test_start,
+        test_end
+    ) = _split_dates(
+        start_date=start_date,
+        train_cutoff_year=train_cutoff_year,
+        val_months=val_months,
+        test_months=test_months
+    )
 
-        # Split data 
+    # Split data 
+    (
+        X_train, X_val, X_test, 
+        targets_train, targets_val, targets_test
+    ) = _train_test_split(
+        X, 
+        targets,
+        train_start=train_start,
+        train_end=train_end,
+        val_start=val_start,
+        val_end=val_end,
+        test_start=test_start,
+        test_end=test_end
+    )
+
+    if val_split_style=='fractional':
+        X_train_full = pd.concat([X_train,X_val])
+        targets_train_full = pd.concat([targets_train, targets_val])
+
         (
-            X_train, X_val, X_test, 
-            targets_train, targets_val, targets_test
-        ) = _train_test_split(
-            X, 
-            targets,
-            train_start=train_start,
-            train_end=train_end,
-            val_start=val_start,
-            val_end=val_end,
-            test_start=test_start,
-            test_end=test_end
-        )
-    else:
-        (
-            X_train, X_val, X_test, 
-            targets_train, targets_val, targets_test
-        ) = _train_test_split(
-            X, 
-            targets,
-            test_size=test_size,
+            X_train, X_val, 
+            targets_train, targets_val
+        ) = _fractional_train_val_split(
+            X=X_train_full,
+            y=targets_train_full,
             val_size=val_size,
             val_style=val_style,
             val_buffer=val_buffer
@@ -280,10 +307,18 @@ def prepare_rnn_data(
         train_cutoff_year,
         val_months,
         test_months,
+        val_split_style='fractional',
+        val_style='random',
+        val_buffer=60,
+        val_size=0.1,
+        n_timesteps=12,
         imputer=SimpleImputer,
-        scaler=StandardScaler,
-        n_timesteps=12  
+        scaler=StandardScaler
     ):
+
+    if val_split_style not in ['fractional', 'date']:
+        raise TypeError(f'Unrecognized argument {val_split_style}'
+                        'Please provide one of {"fractional", "date"}')
 
     if n_timesteps <= 1:
         raise Warning('The number of time steps must be greater than 1.')
@@ -298,6 +333,7 @@ def prepare_rnn_data(
         train_cutoff_year,
         val_months,
         test_months,
+        split_style='date',
         imputer=imputer,
         scaler=scaler 
     )
@@ -328,6 +364,24 @@ def prepare_rnn_data(
         n_timesteps=n_timesteps,
         n_targets=targets_train.shape[1]
     )
+
+    if val_split_style == 'fractional':
+        X_train_rnn_full = np.concatenate([X_train_rnn, X_val_rnn], axis=0)
+        targets_train_rnn_full =  np.concatenate(
+            [targets_train_rnn, targets_val_rnn],
+            axis=0
+        )
+        (
+            X_train_rnn, X_val_rnn, 
+            targets_train_rnn, targets_val_rnn
+        ) = _fractional_train_val_split(
+            X_train_rnn_full,
+            targets_train_rnn_full,
+            val_size=val_size,
+            val_style=val_style,
+            val_buffer=val_buffer
+        )
+
 
     return (X_train_rnn, X_val_rnn, X_test_rnn, 
             targets_train_rnn, targets_val_rnn, targets_test_rnn)
