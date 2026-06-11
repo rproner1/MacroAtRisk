@@ -103,15 +103,16 @@ class LayerNormLSTMCell(keras.layers.Layer):
         config = super().get_config()
         config.update(
             {
+                "units": self.units,
                 "kernel_initializer": keras.initializers.serialize(
                     self.kernel_initializer
                 ),
                 "kernel_regularizer": keras.regularizers.serialize(
                     self.kernel_regularizer
                 ),
-                'recurrent_regularizer': keras.regularizers.serialize(
+                "recurrent_regularizer": keras.regularizers.serialize(
                     self.recurrent_regularizer
-                )
+                ),
             }
         )
         return config
