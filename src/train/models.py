@@ -23,10 +23,12 @@ from keras.layers import (
     Add,
     Subtract
 )
+import keras
 from keras.regularizers import L1L2
 from keras.optimizers import Adam
 from keras.initializers import GlorotUniform
 from typing import Union, List
+import tensorflow as tf
 
 from src.train.slstm import sLSTMCell
 from src.xlstm.blocks import sLSTMBlock
@@ -416,6 +418,288 @@ def build_mq(
     model.compile(
         loss=loss, 
         optimizer=Adam(learning_rate=lr) 
+    )
+
+    return model
+
+def _get_recurrent_layer(
+        size=32,
+        type='lstm',
+        num_heads=None,
+        kernel_regularizer=None,
+        recurrent_regularizer=None,
+        return_sequences=False,
+        name='rnn_layer'
+):
+    """
+    Returns a keras recurrent layer.
+
+    Parameters:
+    -----------
+    size: int
+        The number of hidden units in the layer
+    type: str
+        One of {'lstm', 'gru', 'slstm', 'slstm_block'}
+    
+    
+    """
+    
+    if type == 'lstm':
+        return keras.layers.LSTM(
+            units=size,
+            kernel_regularizer=kernel_regularizer,
+            recurrent_regularizer=recurrent_regularizer,
+            return_sequences=return_sequences,
+            name=name
+        )
+    
+    elif type == 'gru':
+        return keras.layers.GRU(
+            units=size,
+            kernel_regularizer=kernel_regularizer,
+            recurrent_regularizer=recurrent_regularizer,
+            return_sequences=return_sequences,
+            name=name
+        )
+
+    elif type == 'slstm':
+        return keras.layers.RNN(
+            sLSTMCell(
+                units=size,
+                kernel_regularizer=kernel_regularizer,
+                recurrent_regularizer=recurrent_regularizer,
+            ),
+            return_sequences=return_sequences,
+            name=name
+        )
+    
+    elif type == 'slstm_block':
+        if not num_heads:
+            raise TypeError(
+                'num_heads must be provides for layer type slstm_block.'
+                )
+        
+        return sLSTMBlock(
+            units=size,
+            num_heads=num_heads,
+            return_sequences=return_sequences,
+            kernel_regularizer=kernel_regularizer,
+            recurrent_regularizer=recurrent_regularizer,
+            name=name
+        )
+
+def _build_rnn_layers(
+        hidden_sizes,
+        num_heads=None,
+        layer_type='lstm',
+        kernel_regularizer=None,
+        recurrent_regularizer=None,
+        return_sequences=True
+):
+
+    rnn_layers = []
+    for i, size in enumerate(hidden_sizes):
+        is_not_last = (i < len(hidden_sizes)-1)
+        if not return_sequences:
+            ret_seq = is_not_last
+        else:
+            ret_seq = return_sequences
+
+        rnn_layers.append(
+            _get_recurrent_layer(
+                size=size,
+                type=layer_type,
+                num_heads=num_heads,
+                kernel_regularizer=kernel_regularizer,
+                recurrent_regularizer=recurrent_regularizer,
+                return_sequences=ret_seq,
+                name=f'rnn_layer_{i+1}'
+            )
+        )  
+
+    return rnn_layers
+
+def _build_dense_layers(
+        hidden_sizes,
+        activation_layer=None,
+        normalization_layer=None,
+        kernel_regularizer=None
+):
+    layers = []
+    for i, size in enumerate(hidden_sizes):
+        layers.append(
+            Dense(
+                units=size,
+                kernel_regularizer=kernel_regularizer,
+                name=f'dense_layer_{i+1}'
+            )
+        ) 
+
+        if normalization_layer:
+            layers.append(
+                normalization_layer()
+            )
+
+        if activation_layer:
+            layers.append(
+                activation_layer()
+            )
+    
+    return layers
+
+def build_dmq(
+        input_shape,
+        shared_sizes = [32],
+        task_sizes = [16],
+        l2=0.0,
+        lr=3e-4,
+        lower_quantiles = [0.05,0.25], 
+        upper_quantiles = [0.75,0.95],
+        bias_initializers = {
+            0.05: 'zeros',
+            0.25: 'zeros',
+            0.50: 'zeros',
+            0.75: 'zeros',
+            0.95: 'zeros'
+            },
+        loss_weights = [1/5]*5
+):
+    
+    inputs = Input(shape=input_shape)
+
+    quantiles = lower_quantiles + [0.5] + upper_quantiles
+
+    shared_layers = _build_rnn_layers(
+        hidden_sizes=shared_sizes,
+        num_heads=None,
+        layer_type='lstm',
+        kernel_regularizer=keras.regularizers.L2(l2),
+        return_sequences=True
+    )
+
+    # Down projection
+    # shared_layers.append(
+    #     Dense(
+    #         units=int(3/4 * shared_sizes[-1])
+    #     )
+    # )
+    shared_layers = shared_layers + [
+        keras.layers.Dense(units=int(3/4 * shared_sizes[-1])),
+        keras.layers.LayerNormalization(),
+        keras.layers.Activation('relu')
+    ]
+
+
+    shared_net = Sequential(shared_layers, name='shared_net')(inputs)
+
+    outputs = []
+    for q in quantiles:
+        qtask_layers = _build_rnn_layers(
+            hidden_sizes=task_sizes,
+            num_heads=None,
+            layer_type='lstm',
+            kernel_regularizer=keras.regularizers.L2(l2),
+            return_sequences=False
+        )
+
+        # Down projection
+        qtask_layers.append(
+            Dense(
+                units=int(3/4 * task_sizes[-1]),
+                activation='relu'
+            )
+        )
+
+        qtask_layers.append(
+            Dense(
+                1, 
+                activation='linear', 
+                kernel_regularizer=keras.regularizers.L2(l2), 
+                bias_initializer=bias_initializers[q],
+                name=f'q{q}_task_out_layer'
+            )
+        )
+
+        q_out = Sequential(qtask_layers, name=f'Q{int(q*100)}_head')(shared_net)
+        outputs.append(q_out)
+
+    out_concat = Concatenate(name='out_layer')(outputs)
+
+    model = Model(inputs=inputs, outputs=out_concat)
+
+    loss = make_total_tilted_loss(quantiles, q_loss_weights=loss_weights)
+
+    model.compile(
+        loss=loss, 
+        optimizer=Adam(learning_rate=lr),
+    )
+
+    return model
+
+def build_dmq_v2(
+        input_shape,
+        shared_sizes = [32],
+        task_sizes = [16],
+        n_heads_shared = 2,
+        n_heads_task = 2,
+        l2=0.0,
+        lr=3e-4,
+        lower_quantiles = [0.05,0.25], 
+        upper_quantiles = [0.75,0.95],
+        bias_initializers = {
+            0.05: 'zeros',
+            0.25: 'zeros',
+            0.50: 'zeros',
+            0.75: 'zeros',
+            0.95: 'zeros'
+            },
+        loss_weights = [1/5]*5
+):
+    inputs = Input(shape=input_shape)
+
+    quantiles = lower_quantiles + [0.5] + upper_quantiles
+
+    shared_layers = _build_rnn_layers(
+        hidden_sizes=shared_sizes,
+        num_heads=n_heads_shared,
+        layer_type='slstm_block',
+        kernel_regularizer=keras.regularizers.L2(l2),
+        return_sequences=True
+    )
+    shared_net = Sequential(shared_layers, name='shared_net')(inputs)
+
+    outputs = []
+    for q in quantiles:
+        qtask_layers = _build_rnn_layers(
+            hidden_sizes=task_sizes,
+            num_heads=n_heads_task,
+            layer_type='slstm_block',
+            kernel_regularizer=keras.regularizers.L2(l2),
+            return_sequences=False
+        )
+
+        qtask_layers.append(
+            Dense(
+                1, 
+                activation='linear', 
+                kernel_regularizer=keras.regularizers.L2(l2), 
+                bias_initializer=bias_initializers[q],
+                name=f'q{q}_task_out_layer'
+            )
+        )
+
+        q_out = Sequential(qtask_layers, name=f'Q{int(q*100)}_head')(shared_net)
+        outputs.append(q_out)
+
+    out_concat = Concatenate(name='out_layer')(outputs)
+
+    model = Model(inputs=inputs, outputs=out_concat)
+
+    loss = make_total_tilted_loss(quantiles, q_loss_weights=loss_weights)
+
+    model.compile(
+        loss=loss, 
+        optimizer=Adam(learning_rate=lr),
     )
 
     return model
