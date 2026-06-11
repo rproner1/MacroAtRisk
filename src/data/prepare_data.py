@@ -230,7 +230,8 @@ def prepare_non_rnn_data(
         val_buffer=60,
         val_size=0.1,
         imputer=SimpleImputer,
-        scaler=StandardScaler
+        scaler=StandardScaler,
+        target_scale_factor=100
     ):
 
     if val_split_style not in ['fractional', 'date']:
@@ -297,6 +298,11 @@ def prepare_non_rnn_data(
         X_train, X_val, X_test, scaler=scaler
     )
 
+    if target_scale_factor:
+        targets_train *= target_scale_factor
+        targets_val *= target_scale_factor
+        targets_test *= target_scale_factor
+
     return X_train, X_val, X_test, targets_train, targets_val, targets_test
 
 
@@ -313,7 +319,8 @@ def prepare_rnn_data(
         val_size=0.1,
         n_timesteps=12,
         imputer=SimpleImputer,
-        scaler=StandardScaler
+        scaler=StandardScaler,
+        target_scale_factor=100
     ):
 
     if val_split_style not in ['fractional', 'date']:
@@ -335,7 +342,8 @@ def prepare_rnn_data(
         test_months,
         val_split_style='date',
         imputer=imputer,
-        scaler=scaler 
+        scaler=scaler,
+        target_scale_factor=target_scale_factor
     )
 
     train_data = pd.concat([X_train, targets_train], axis=1)
