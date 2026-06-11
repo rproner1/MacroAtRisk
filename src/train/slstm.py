@@ -123,6 +123,7 @@ class sLSTMCell(keras.layers.Layer):
             units, 
             kernel_initializer="glorot_uniform", 
             kernel_regularizer=None,
+            recurrent_regularizer=None,
             **kwargs
         ):
         super().__init__(**kwargs)
@@ -130,8 +131,8 @@ class sLSTMCell(keras.layers.Layer):
         self.state_size = (self.units, self.units, self.units, self.units)
 
         self.kernel_initializer = keras.initializers.get(kernel_initializer)
-
         self.kernel_regularizer = keras.regularizers.get(kernel_regularizer)
+        self.recurrent_regularizer = keras.regularizers.get(recurrent_regularizer)
 
     def build(self, input_shape):
         input_dim = input_shape[-1]
@@ -158,7 +159,7 @@ class sLSTMCell(keras.layers.Layer):
         logfplusm = keras.ops.log_sigmoid(f_candidate) + m_prev
 
         m = keras.ops.cond(
-            keras.ops.reduce_all(keras.ops.equal(n_prev, 0.0)),
+            keras.ops.all(keras.ops.equal(n_prev, 0.0)),
             lambda: i_candidate,
             lambda: keras.ops.maximum(i_candidate, logfplusm),
         )
@@ -187,12 +188,16 @@ class sLSTMCell(keras.layers.Layer):
         config = super().get_config()
         config.update(
             {
+                "units": self.units,
                 "kernel_initializer": keras.initializers.serialize(
                     self.kernel_initializer
                 ),
                 "kernel_regularizer": keras.regularizers.serialize(
                     self.kernel_regularizer
-                )
+                ),
+                "recurrent_regularizer": keras.regularizers.serialize(
+                    self.recurrent_regularizer
+                ),
             }
         )
         return config

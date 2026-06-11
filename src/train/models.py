@@ -509,9 +509,9 @@ def build_dmq(
         )(shared_net)
         outputs.append(q_out)
 
-    out_concat = keras.layers.keras.layers.Concatenate(name='out_layer')(outputs)
+    out_concat = keras.layers.Concatenate(name='out_layer')(outputs)
 
-    model = keras.models.keras.models.Model(inputs=inputs, outputs=out_concat)
+    model = keras.models.Model(inputs=inputs, outputs=out_concat)
 
     loss = make_total_tilted_loss(quantiles, q_loss_weights=loss_weights)
 
@@ -684,7 +684,7 @@ def build_dmq_v1(
             if task_norm and i < n_qtask_layers:
                 qtask_layers.append(norm_fn())
             if dropout > 0.0 and i < n_qtask_layers:
-                qtask_layers.append(keras.layers.keras.layers.Dropout(dropout))
+                qtask_layers.append(keras.layers.Dropout(dropout))
 
         qtask_layers.append(
             keras.layers.Dense(1, activation='linear', kernel_regularizer=keras.regularizers.L1L2(l1,l2), kernel_initializer=initializer)
@@ -723,7 +723,7 @@ def build_dmq_v1(
         prev = q_out
 
     outputs = list(reversed(lower_outputs)) + [median_output] + upper_outputs
-    out_concat = keras.layers.keras.layers.Concatenate(name='out_layer')(outputs)
+    out_concat = keras.layers.Concatenate(name='out_layer')(outputs)
 
     model = keras.model.keras.models.Model(inputs=inputs, outputs=out_concat)
 
