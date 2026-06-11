@@ -30,7 +30,7 @@ from keras.initializers import GlorotUniform
 from typing import Union, List
 import tensorflow as tf
 
-from src.train.slstm import sLSTMCell
+from src.train.slstm import sLSTMCell, LayerNormLSTMCell
 from src.xlstm.blocks import sLSTMBlock
 
 def get_confounding_set(X: np.ndarray, m: int, j: int) -> list:
@@ -453,6 +453,17 @@ def _get_recurrent_layer(
             name=name
         )
     
+    if type == 'ln_lstm':
+        return keras.layers.RNN(
+            LayerNormLSTMCell(
+                units=size,
+                kernel_regularizer=kernel_regularizer,
+                recurrent_regularizer=recurrent_regularizer,
+            ),
+            return_sequences=return_sequences,
+            name=name
+        )
+    
     elif type == 'gru':
         return keras.layers.GRU(
             units=size,
@@ -492,6 +503,7 @@ def _build_rnn_layers(
         hidden_sizes,
         num_heads=None,
         layer_type='lstm',
+        normalization_layer=None,
         kernel_regularizer=None,
         recurrent_regularizer=None,
         return_sequences=True
@@ -515,46 +527,65 @@ def _build_rnn_layers(
                 return_sequences=ret_seq,
                 name=f'rnn_layer_{i+1}'
             )
-        )  
+        )
+
+        if normalization_layer:
+            rnn_layers.append(
+                normalization_layer()
+            )
 
     return rnn_layers
 
 def _build_dense_layers(
         hidden_sizes,
-        activation_layer=None,
+        kernel_initializer='he_normal',
+        activation='relu',
         normalization_layer=None,
-        kernel_regularizer=None
+        kernel_regularizer=None,
+        normalize_last=True
 ):
     layers = []
     for i, size in enumerate(hidden_sizes):
         layers.append(
             Dense(
                 units=size,
+                kernel_initializer=kernel_initializer,
                 kernel_regularizer=kernel_regularizer,
                 name=f'dense_layer_{i+1}'
             )
         ) 
 
-        if normalization_layer:
-            layers.append(
-                normalization_layer()
-            )
+        if not normalize_last and i == len(hidden_sizes)-1:
+            normalize = False
+        
+        
 
-        if activation_layer:
+        if normalization_layer:
+
+            if normalize_last or (i < len(hidden_sizes)-1):
+                layers.append(
+                    normalization_layer()
+                )
+
+        if activation:
             layers.append(
-                activation_layer()
+                keras.layers.Activation(activation)
             )
     
     return layers
 
 def build_dmq(
         input_shape,
-        shared_sizes = [32],
-        task_sizes = [16],
+        shared_recurrent_sizes = [32],
+        shared_dense_sizes = [16],
+        task_sizes = [8],
         l2=0.0,
         lr=3e-4,
         lower_quantiles = [0.05,0.25], 
         upper_quantiles = [0.75,0.95],
+        recurrent_type='lstm',
+        dense_activation='relu',
+        dense_kernel_initializer='he_normal',
         bias_initializers = {
             0.05: 'zeros',
             0.25: 'zeros',
@@ -569,45 +600,37 @@ def build_dmq(
 
     quantiles = lower_quantiles + [0.5] + upper_quantiles
 
-    shared_layers = _build_rnn_layers(
-        hidden_sizes=shared_sizes,
+    recurrent_layers = _build_rnn_layers(
+        hidden_sizes=shared_recurrent_sizes,
         num_heads=None,
-        layer_type='lstm',
+        normalization_layer=keras.layers.LayerNormalization,
+        layer_type=recurrent_type,
         kernel_regularizer=keras.regularizers.L2(l2),
-        return_sequences=True
+        return_sequences=False
     )
 
-    # Down projection
-    # shared_layers.append(
-    #     Dense(
-    #         units=int(3/4 * shared_sizes[-1])
-    #     )
-    # )
-    shared_layers = shared_layers + [
-        keras.layers.Dense(units=int(3/4 * shared_sizes[-1])),
-        keras.layers.LayerNormalization(),
-        keras.layers.Activation('relu')
-    ]
+    dense_layers = _build_dense_layers(
+        hidden_sizes=shared_dense_sizes,
+        activation=dense_activation,
+        normalization_layer=keras.layers.LayerNormalization,
+        kernel_initializer=dense_kernel_initializer,
+        kernel_regularizer=keras.regularizers.L2(l2),
+        normalize_last=True
+    )
 
+    shared_layers = recurrent_layers + dense_layers
 
     shared_net = Sequential(shared_layers, name='shared_net')(inputs)
 
     outputs = []
     for q in quantiles:
-        qtask_layers = _build_rnn_layers(
+        qtask_layers = _build_dense_layers(
             hidden_sizes=task_sizes,
-            num_heads=None,
-            layer_type='lstm',
+            activation=dense_activation,
+            normalization_layer=keras.layers.LayerNormalization,
+            kernel_initializer=dense_kernel_initializer,
             kernel_regularizer=keras.regularizers.L2(l2),
-            return_sequences=False
-        )
-
-        # Down projection
-        qtask_layers.append(
-            Dense(
-                units=int(3/4 * task_sizes[-1]),
-                activation='relu'
-            )
+            normalize_last=False
         )
 
         qtask_layers.append(
