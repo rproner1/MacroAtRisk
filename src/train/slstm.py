@@ -106,7 +106,7 @@ class LayerNormLSTMCell(keras.layers.Layer):
                 "kernel_initializer": keras.initializers.serialize(
                     self.kernel_initializer
                 ),
-                "kernel_regularizer": keras.initializers.serialize(
+                "kernel_regularizer": keras.regularizers.serialize(
                     self.kernel_regularizer
                 ),
                 'recurrent_regularizer': keras.regularizers.serialize(
@@ -189,7 +189,7 @@ class sLSTMCell(keras.layers.Layer):
                 "kernel_initializer": keras.initializers.serialize(
                     self.kernel_initializer
                 ),
-                "kernel_regularizer": keras.initializers.serialize(
+                "kernel_regularizer": keras.regularizers.serialize(
                     self.kernel_regularizer
                 )
             }

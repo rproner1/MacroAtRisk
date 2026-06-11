@@ -147,7 +147,7 @@ def fit_qpcr(X: np.ndarray, y: np.ndarray, q: float, n_updates: int=None, max_pr
 def build_qlr(q: float=0.5, l1: float=0.0, l2: float=0.0, lr: float=0.001):
     model = keras.models.Sequential()
     model.add(keras.layers.Dense(int(1), activation = 'linear', kernel_regularizer=keras.regularizers.L1L2(l1=l1,l2=l2)))
-    opt = keras.optimizers.keras.optimizers.Adam(learning_rate=lr)
+    opt = keras.optimizers.Adam(learning_rate=lr)
     loss = make_tilted_loss(q)
     model.compile(loss = loss, optimizer = opt)
     return model
@@ -207,7 +207,7 @@ def build_nn(q: Union[float, int]=0.5, n_dense_layers: int=1, n_nodes: int=16,
         )
     )
     
-    opt = keras.optimizers.keras.optimizers.Adam(learning_rate=lr)
+    opt = keras.optimizers.Adam(learning_rate=lr)
     loss = make_tilted_loss(q)
     model.compile(loss = loss, optimizer = opt)
     return model
@@ -276,7 +276,7 @@ def build_rnn(q: Union[float, int]=0.5, n_recurrent_layers: int=2, n_dense_layer
         )
     )
     
-    opt = keras.optimizers.keras.optimizers.Adam(learning_rate=lr)
+    opt = keras.optimizers.Adam(learning_rate=lr)
     loss = make_tilted_loss(q)
     model.compile(loss = loss, optimizer = opt)
     return model
@@ -347,7 +347,7 @@ def _get_recurrent_layer(
     elif type == 'slstm_block':
         if not num_heads:
             raise TypeError(
-                'num_heads must be provides for layer type slstm_block.'
+                'num_heads must be provided for layer type slstm_block.'
                 )
         
         return sLSTMBlock(
@@ -415,11 +415,6 @@ def _build_dense_layers(
             )
         ) 
 
-        if not normalize_last and i == len(hidden_sizes)-1:
-            normalize = False
-        
-        
-
         if normalization_layer:
 
             if normalize_last or (i < len(hidden_sizes)-1):
@@ -446,19 +441,21 @@ def build_dmq(
         recurrent_type='lstm',
         dense_activation='relu',
         dense_kernel_initializer='he_normal',
-        bias_initializers = {
-            0.05: 'zeros',
-            0.25: 'zeros',
-            0.50: 'zeros',
-            0.75: 'zeros',
-            0.95: 'zeros'
-            },
-        loss_weights = [1/5]*5
+        bias_initializers = None,
+        loss_weights = None
 ):
     
     inputs = keras.layers.Input(shape=input_shape)
 
     quantiles = lower_quantiles + [0.5] + upper_quantiles
+
+    if not loss_weights:
+        loss_weights = [1/len(quantiles)] * len(quantiles)
+
+    if not bias_initializers:
+        bias_initializers = {
+            q: 'zeros' for q in quantiles
+        }
 
     recurrent_layers = _build_rnn_layers(
         hidden_sizes=shared_recurrent_sizes,
@@ -501,7 +498,7 @@ def build_dmq(
                 1, 
                 activation='linear', 
                 kernel_regularizer=keras.regularizers.L2(l2), 
-                bias_initializer=bias_initializers[q],
+                bias_initializer=bias_initializers.get(q, 'zeros'),
                 name=f'q{q}_task_out_layer'
             )
         )
@@ -520,7 +517,7 @@ def build_dmq(
 
     model.compile(
         loss=loss, 
-        optimizer=keras.optimizers.keras.optimizers.Adam(learning_rate=lr),
+        optimizer=keras.optimizers.Adam(learning_rate=lr),
     )
 
     return model
@@ -734,7 +731,7 @@ def build_dmq_v1(
 
     model.compile(
         loss=loss, 
-        optimizer=keras.optimizers.keras.optimizers.Adam(learning_rate=lr),
+        optimizer=keras.optimizers.Adam(learning_rate=lr),
     )
 
     return model
