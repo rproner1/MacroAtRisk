@@ -1,10 +1,6 @@
-from tensorflow.keras.layers import Layer
-import tensorflow as tf
-from tensorflow.keras.ops import log_sigmoid, maximum, sigmoid, minimum, exp, ones_like, tanh, all
-from tensorflow.keras import initializers
-from tensorflow.keras import regularizers
+import keras
 
-class CustomLSTMCell(Layer):
+class CustomLSTMCell(keras.layers.Layer):
     def __init__(self, units, **kwargs):
         super().__init__(**kwargs)
         self.units = units
@@ -27,21 +23,100 @@ class CustomLSTMCell(Layer):
     def call(self, inputs, states):
         h_prev, c_prev = states 
 
-        z = tf.matmul(inputs, self.kernel) + tf.matmul(h_prev, self.recurrent_kernel) + self.biases
+        z = keras.ops.matmul(inputs, self.kernel) + keras.ops.matmul(h_prev, self.recurrent_kernel) + self.biases
 
-        i, f, c_candidate, o = tf.split(z, num_or_size_splits=4, axis=1)
+        i, f, c_candidate, o = keras.ops.split(z, num_or_size_splits=4, axis=1)
 
-        i = tf.sigmoid(i) 
-        f = tf.sigmoid(f)
-        c_candidate = tf.tanh(c_candidate)
-        o = tf.sigmoid(o)
+        i = keras.ops.sigmoid(i) 
+        f = keras.ops.sigmoid(f)
+        c_candidate = keras.ops.tanh(c_candidate)
+        o = keras.ops.sigmoid(o)
         c = f * c_prev + i * c_candidate
-        h = o * tf.tanh(c)
+        h = o * keras.ops.tanh(c)
         
         return h, [h, c]
 
+class LayerNormLSTMCell(keras.layers.Layer):
+    def __init__(
+            self, 
+            units,
+            kernel_initializer='glorot_uniform',
+            kernel_regularizer=None,
+            recurrent_regularizer=None,
+            **kwargs
+        ):
+        super().__init__(**kwargs)
+        self.units = units
+        self.state_size = (self.units, self.units)  # (hidden state, cell state)
+        self.layer_norm = keras.layers.LayerNormalization()
+        self.kernel_initializer = keras.initializers.get(kernel_initializer)
+        self.kernel_regularizer = keras.regularizers.get(kernel_regularizer)
+        self.recurrent_regularizer = keras.regularizers.get(
+            recurrent_regularizer
+        )
 
-class sLSTMCell(Layer):
+    def build(self, input_shape):
+        input_dim = input_shape[-1]
+        # Weights for input and hidden state
+        self.kernel = self.add_weight(
+            shape=(input_dim, 4 * self.units),
+            initializer=self.kernel_initializer,
+            regularizer=self.kernel_regularizer,
+            name='W'
+        )
+        self.recurrent_kernel = self.add_weight(
+            shape=(self.units, 4 * self.units),
+            initializer='orthogonal',
+            regularizer=self.recurrent_regularizer,
+            name='R'
+        )
+        self.biases = self.add_weight(shape=(4 * self.units,),
+                                 initializer='zeros',
+                                 name='b')
+        
+        self.built = True
+    
+    def call(self, inputs, states):
+        h_prev, c_prev = states 
+
+        z = keras.ops.matmul(inputs, self.kernel) + keras.ops.matmul(h_prev, self.recurrent_kernel) + self.biases
+
+        # Apply layer normalization before activation
+        z = self.layer_norm(z)
+
+        i, f, c_candidate, o = keras.ops.split(
+            z, 
+            indices_or_sections=4, 
+            axis=1
+        )
+
+        i = keras.ops.sigmoid(i) 
+        f = keras.ops.sigmoid(f)
+        c_candidate = keras.ops.tanh(c_candidate)
+        o = keras.ops.sigmoid(o)
+        c = f * c_prev + i * c_candidate
+        h = o * keras.ops.tanh(c)
+        
+        return h, [h, c]
+    
+    def get_config(self):
+        config = super().get_config()
+        config.update(
+            {
+                "kernel_initializer": keras.initializers.serialize(
+                    self.kernel_initializer
+                ),
+                "kernel_regularizer": keras.initializers.serialize(
+                    self.kernel_regularizer
+                ),
+                'recurrent_regularizer': keras.initializers.serialize(
+                    self.recurrent_regularizer
+                )
+            }
+        )
+        return config
+
+class sLSTMCell(keras.layers.Layer):
     def __init__(
             self, 
             units, 
@@ -53,9 +128,9 @@ class sLSTMCell(Layer):
         self.units = units
         self.state_size = (self.units, self.units, self.units, self.units)
 
-        self.kernel_initializer = initializers.get(kernel_initializer)
+        self.kernel_initializer = keras.initializers.get(kernel_initializer)
 
-        self.kernel_regularizer = regularizers.get(kernel_regularizer)
+        self.kernel_regularizer = keras.regularizers.get(kernel_regularizer)
 
     def build(self, input_shape):
         input_dim = input_shape[-1]
@@ -75,25 +150,31 @@ class sLSTMCell(Layer):
     def call(self, inputs, states):
         h_prev, c_prev, n_prev, m_prev = states 
 
-        z = tf.matmul(inputs, self.kernel) + tf.matmul(h_prev, self.recurrent_kernel) + self.biases
+        z = keras.ops.matmul(inputs, self.kernel) + keras.ops.matmul(h_prev, self.recurrent_kernel) + self.biases
 
-        i_candidate, f_candidate, z_candidate, o_candidate = tf.split(z, num_or_size_splits=4, axis=1)
+        i_candidate, f_candidate, z_candidate, o_candidate = keras.ops.split(z, num_or_size_splits=4, axis=1)
 
-        logfplusm = log_sigmoid(f_candidate) + m_prev
+        logfplusm = keras.ops.log_sigmoid(f_candidate) + m_prev
 
-        m = tf.cond(
-            tf.reduce_all(tf.equal(n_prev, 0.0)),
+        m = keras.ops.cond(
+            keras.ops.reduce_all(keras.ops.equal(n_prev, 0.0)),
             lambda: i_candidate,
-            lambda: tf.maximum(i_candidate, logfplusm),
+            lambda: keras.ops.maximum(i_candidate, logfplusm),
         )
         
         # usual output gate and cell state candidate
-        o = sigmoid(o_candidate)
-        z = tanh(z_candidate)
+        o = keras.ops.sigmoid(o_candidate)
+        z = keras.ops.tanh(z_candidate)
 
         # Stabilized input and foreget gates
-        i = minimum(exp(i_candidate - m), ones_like(i_candidate))
-        f = minimum(exp(logfplusm - m), ones_like(i_candidate))
+        i = keras.ops.minimum(
+            keras.ops.exp(i_candidate - m), 
+            keras.ops.ones_like(i_candidate)
+        )
+        f = keras.ops.minimum(
+            keras.ops.exp(logfplusm - m), 
+            keras.ops.ones_like(i_candidate)
+        )
         
         c = f * c_prev + i * z
         n = f * n_prev + i
@@ -105,8 +186,12 @@ class sLSTMCell(Layer):
         config = super().get_config()
         config.update(
             {
-                "kernel_initializer": self.kernel_initializer,
-                "kernel_regularizer": self.kernel_regularizer
+                "kernel_initializer": keras.initializers.serialize(
+                    self.kernel_initializer
+                ),
+                "kernel_regularizer": keras.initializers.serialize(
+                    self.kernel_regularizer
+                )
             }
         )
         return config
