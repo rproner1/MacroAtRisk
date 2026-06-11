@@ -25,7 +25,7 @@ class CustomLSTMCell(keras.layers.Layer):
 
         z = keras.ops.matmul(inputs, self.kernel) + keras.ops.matmul(h_prev, self.recurrent_kernel) + self.biases
 
-        i, f, c_candidate, o = keras.ops.split(z, num_or_size_splits=4, axis=1)
+        i, f, c_candidate, o = keras.ops.split(z, indices_or_sections=4, axis=1)
 
         i = keras.ops.sigmoid(i) 
         f = keras.ops.sigmoid(f)
@@ -109,7 +109,7 @@ class LayerNormLSTMCell(keras.layers.Layer):
                 "kernel_regularizer": keras.initializers.serialize(
                     self.kernel_regularizer
                 ),
-                'recurrent_regularizer': keras.initializers.serialize(
+                'recurrent_regularizer': keras.regularizers.serialize(
                     self.recurrent_regularizer
                 )
             }
@@ -152,7 +152,7 @@ class sLSTMCell(keras.layers.Layer):
 
         z = keras.ops.matmul(inputs, self.kernel) + keras.ops.matmul(h_prev, self.recurrent_kernel) + self.biases
 
-        i_candidate, f_candidate, z_candidate, o_candidate = keras.ops.split(z, num_or_size_splits=4, axis=1)
+        i_candidate, f_candidate, z_candidate, o_candidate = keras.ops.split(z, indices_or_sections=4, axis=1)
 
         logfplusm = keras.ops.log_sigmoid(f_candidate) + m_prev
 
