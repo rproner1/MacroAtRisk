@@ -25,7 +25,7 @@ class CustomLSTMCell(keras.layers.Layer):
 
         z = keras.ops.matmul(inputs, self.kernel) + keras.ops.matmul(h_prev, self.recurrent_kernel) + self.biases
 
-        i, f, c_candidate, o = keras.ops.split(z, num_or_size_splits=4, axis=1)
+        i, f, c_candidate, o = keras.ops.split(z, indices_or_sections=4, axis=1)
 
         i = keras.ops.sigmoid(i) 
         f = keras.ops.sigmoid(f)
