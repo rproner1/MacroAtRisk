@@ -393,11 +393,11 @@ def train_deep_models():
         target_scale_factor=TARGET_SCALE_FACTOR
     )
 
-    X_train_full = pd.concat([X_train, X_val])
+    X_train_full = np.concatenate([X_train, X_val], axis=0)
 
-    y_train = t_train.iloc[:, TARGET_IDX]
-    y_val = t_val.iloc[:, TARGET_IDX]
-    y_train_full = pd.concat([y_train, y_val])
+    y_train = t_train[:, TARGET_IDX]
+    y_val = t_val[:, TARGET_IDX]
+    y_train_full = np.concatenate([y_train, y_val], axis=0)
 
     mq_y_train = np.repeat(
         y_train.reshape(-1,1), 
@@ -424,8 +424,7 @@ def train_deep_models():
         }
     }
     
-    model_builder_params_cfg = config['builder_params']
-    model_names = list(model_builder_params_cfg.keys())
+    model_names = list(BUILDER_PARAMS.keys())
     
     # Optuna storage
     if OPTUNA_STORAGE == "inmemory":
@@ -455,7 +454,7 @@ def train_deep_models():
         logging.info(f"Training {model_type}...")
 
         # Get basic model config
-        builder_params = dict(model_builder_params_cfg[model_type])
+        builder_params = BUILDER_PARAMS[model_type]
         
         # Update builder params with runtime arguments
         builder_params.update(
@@ -492,8 +491,11 @@ def train_deep_models():
                 sampler=optuna.samplers.RandomSampler(seed=SEED),
                 pruner=optuna.pruners.MedianPruner(),
                 save_hps=True if OPTUNA_STORAGE == 'inmemory' else False,
-                log_path=DEEP_TUNING_LOG_PATH
+                log_path=DEEP_TUNING_LOG_PATH,
+                **builder_params
             )
+
+        best_params.update(builder_params)
         
         # Fit models with best hyperparameters
         estimators = fit_models(
