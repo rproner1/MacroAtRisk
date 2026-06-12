@@ -19,7 +19,7 @@ import statsmodels.formula.api as smf
 import warnings
 import tensorflow as tf
 
-from src.data.prepare_data import prepare_quantile_data
+from src.data.prepare_data import prepare_non_rnn_data, prepare_rnn_data
 from src.train.shelf_models import *
 from src.train.losses import make_tilted_loss, make_total_tilted_loss
 from src.train.models import build_dmq_v0, build_dmq_v1
@@ -43,6 +43,9 @@ load_dotenv()
 # ----- Configuration -----
 with open("./config/config.yaml", "r") as f:
     config = yaml.safe_load(f)
+
+with open("./config/data_config.yaml", 'r') as f:
+    data_config = yaml.safe_load(f)
 
 logging.basicConfig(level=config['logging_level'])
 
@@ -108,38 +111,29 @@ model_file_dict = {
 }
 model_name_dict = {0: 'IAR', 1: 'VG', 2: 'UAR'}
 
-
-def _load_shelf_data():
-    """Load and unpack non-RNN data shared by linear and tree model training."""
-    target_path = DATA_DIR / TARGET_FILE
-    input_paths = [DATA_DIR / file for file in INPUT_FILES]
-    non_rnn_data, _, meta_data = prepare_quantile_data(
-        target=TARGET_IDX,
-        time_steps=1,
-        targets_path=target_path,
-        input_paths=input_paths,
-        start_date='1961-01-01',
-        train_cutoff_year=YEAR,
-        n_quantiles=len(QUANTILES),
-        val_years=VAL_YEARS
-    )
-    arrays = itemgetter(
-        'X_train', 'y_train', 'X_val', 'y_val',
-        'X_train_full', 'y_train_full', 'X_test', 'all_y_train'
-    )(non_rnn_data)
-    return arrays, meta_data
-
+target_path = DATA_DIR / TARGET_FILE
+input_paths = [DATA_DIR / file for file in INPUT_FILES]
 
 def train_linear_models():
     """Train linear shelf models (Naive, AR1, LR, LASSO)."""
     logging.info(f"Training linear models for {target_name_dict[TARGET_IDX]} ({YEAR})...")
 
     (
-        X_train, y_train, X_val, y_val,
-        X_train_full, y_train_full, X_test, _
-    ), meta_data = _load_shelf_data()
+        X_train, X_val, X_test,
+        t_train, t_val, t_test
+    ) = prepare_non_rnn_data(
+        targets_path=target_path,
+        input_paths=input_paths,
+        start_date='1961-01-01',
+        train_cutoff_year=YEAR,
+        val_split_style='date',
+        val_months=data_config['val_months'],
+        test_months=data_config['test_months'],
+        target_scale_factor=data_config['target_scale_factor']
+    )
 
     target_name = target_name_dict[TARGET_IDX]
+
     all_preds = {}
 
     # Naive models
