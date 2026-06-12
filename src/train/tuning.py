@@ -4,7 +4,10 @@ from sklearn.model_selection import KFold
 import numpy as np
 from typing import Tuple
 import inspect
+import optuna
+import logging
 
+from src.utils.files import save_hyperparameters
 
 def _take_rows(data, indices):
     if hasattr(data, 'iloc'):
@@ -193,15 +196,6 @@ class CVObjective:
             builder_func: callable, 
             n_jobs: int, 
             grid: dict | None = None,
-            tune_l1: bool=False,
-            tune_l2: bool=True,
-            tune_lr: bool=True,
-            tune_rec_drop: bool=False,
-            tune_dropout: bool=False,
-            tune_n_layers: bool=False,
-            tune_n_nodes: bool=False,
-            tune_norm: bool=False,
-            tune_recurrent_layer_type: bool=False,
             **kwargs
         ):
         self.X_tr = X_tr
@@ -286,6 +280,83 @@ class CVObjective:
         mean_cv_loss = np.mean(list(cv_losses))
         return float(mean_cv_loss)
 
+def perform_hpo(
+        X_train,
+        y_train,
+        val_size,
+        n_splits,
+        builder_func,
+        fit_params,
+        early_stopping_args,
+        grid,
+        study_name,
+        trials=50,
+        n_jobs=-1,
+        storage=optuna.storages.InMemoryStorage(),
+        sampler=optuna.samplers.RandomSampler(),
+        pruner=optuna.pruners.MedianPruner(),
+        save_hps=True,
+        log_path='tuning_log.json',
+        **kwargs
+):
+    
+    objective = CVObjective(
+        X_tr=X_train,
+        y_tr=y_train,
+        val_size=val_size,
+        n_splits=n_splits,
+        builder_func=builder_func,
+        fit_params=fit_params,
+        early_stopping_args=early_stopping_args,
+        n_jobs=n_jobs,
+        grid=grid,
+        **kwargs
+    )
+
+    optuna.logging.set_verbosity(optuna.logging.INFO)
+    study = optuna.create_study(
+        direction="minimize",
+        study_name=study_name,
+        storage=storage,
+        load_if_exists=True,
+        sampler=sampler,
+        pruner=pruner
+    )
+
+    n_completed_trials = len(
+        study.get_trials(
+            deepcopy=False, 
+            states=[optuna.trial.TrialState.COMPLETE]
+        )
+    )
+    remaining_trials = max(0, trials - n_completed_trials)
+
+    if remaining_trials == 0:
+        logging.info(
+            f"Study {study_name} already has {n_completed_trials} completed trials. Skipping..."
+        )
+    else:
+        logging.info(
+            f"Study {study_name} has {n_completed_trials} completed trials. Running {remaining_trials} more..."
+        )
+        study.optimize(
+            objective,
+            n_trials=remaining_trials,
+            n_jobs=n_jobs,
+            gc_after_trial=True,
+            show_progress_bar=True,
+        )
+
+    best_params = study.best_params
+
+    if save_hps:
+        save_hyperparameters(
+            best_params,
+            study_name,
+            log_path=log_path
+        )
+
+    return best_params
 
 class CVObjectiveTest:
 
