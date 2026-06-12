@@ -12,12 +12,11 @@ from copy import deepcopy
 import yaml
 import argparse
 from datetime import date
-from operator import itemgetter
 import optuna
 from optuna.trial import TrialState
 import statsmodels.formula.api as smf
 import warnings
-import tensorflow as tf
+import keras
 
 from src.data.prepare_data import prepare_non_rnn_data, prepare_rnn_data
 from src.train.shelf_models import *
@@ -25,6 +24,7 @@ from src.train.losses import make_tilted_loss, make_total_tilted_loss
 from src.train.models import build_dmq_v0, build_dmq_v1
 from src.train.tuning import CVObjective
 from src.train.train_utils import fit_models
+from src.train.tuning import perform_hpo
 from src.utils.files import (
     check_hps_exist,
     save_hyperparameters,
@@ -36,7 +36,7 @@ warnings.filterwarnings("ignore")
 os.environ["CUDA_VISIBLE_DEVICES"] = ""  # For parallelization
 
 SEED = 1  # Set random seed for reproducibility
-tf.random.set_seed(SEED)  # Set TensorFlow random seed
+keras.utils.set_random_seed(SEED)
 
 load_dotenv()
 
@@ -132,6 +132,12 @@ def train_linear_models():
         target_scale_factor=data_config['target_scale_factor']
     )
 
+    X_train_full = pd.concat([X_train, X_val])
+
+    y_train = t_train.iloc[:, TARGET_IDX]
+    y_val = t_val.iloc[:, TARGET_IDX]
+    y_train_full = pd.concat([y_train, y_val])
+
     target_name = target_name_dict[TARGET_IDX]
 
     all_preds = {}
@@ -183,7 +189,7 @@ def train_linear_models():
 
     preds_df = pd.DataFrame(
         all_preds,
-        index=pd.date_range(start=meta_data['test_start'], end=meta_data['test_end'], freq='MS')
+        index=X_test.index
     )
     output_path = SHELF_PRED_DIR / f"linear_model_predictions_{COUNTRY}_{HORIZON_IN_QUARTERS}q_{target_name}_{YEAR}.csv"
     preds_df.to_csv(output_path)
@@ -195,9 +201,24 @@ def train_tree_models():
     logging.info(f"Training tree models for {target_name_dict[TARGET_IDX]} ({YEAR})...")
 
     (
-        _, _, _, _,
-        X_train_full, y_train_full, X_test, _
-    ), meta_data = _load_shelf_data()
+        X_train, X_val, X_test,
+        t_train, t_val, t_test
+    ) = prepare_non_rnn_data(
+        targets_path=target_path,
+        input_paths=input_paths,
+        start_date='1961-01-01',
+        train_cutoff_year=YEAR,
+        val_split_style='date',
+        val_months=data_config['val_months'],
+        test_months=data_config['test_months'],
+        target_scale_factor=data_config['target_scale_factor']
+    )
+
+    X_train_full = pd.concat([X_train, X_val])
+
+    y_train = t_train.iloc[:, TARGET_IDX]
+    y_val = t_val.iloc[:, TARGET_IDX]
+    y_train_full = pd.concat([y_train, y_val])
 
     target_name = target_name_dict[TARGET_IDX]
     all_preds = {}
@@ -227,7 +248,7 @@ def train_tree_models():
 
     preds_df = pd.DataFrame(
         all_preds,
-        index=pd.date_range(start=meta_data['test_start'], end=meta_data['test_end'], freq='MS')
+        index=X_test.index
     )
     output_path = SHELF_PRED_DIR / f"tree_model_predictions_{COUNTRY}_{HORIZON_IN_QUARTERS}q_{target_name}_{YEAR}.csv"
     preds_df.to_csv(output_path)
@@ -240,79 +261,89 @@ def train_lit_bench_models():
     
     target_path = DATA_DIR / TARGET_FILE
     
-    # Get the model file for the target
+    # Get the specific benchmark's features
     model_file = model_file_dict[TARGET_IDX]
     model_name = model_name_dict[TARGET_IDX]
     target_name = target_name_dict[TARGET_IDX]
-    
-    lit_bench_data, _, _ = prepare_quantile_data(
-        target=target_name,
-        time_steps=1,
+
+    (
+        X_train, X_val, X_test,
+        t_train, t_val, t_test
+    ) = prepare_non_rnn_data(
         targets_path=target_path,
         input_paths=[DATA_DIR / model_file],
         start_date='1974-02-01',
         train_cutoff_year=YEAR,
-        n_quantiles=len(QUANTILES),
-        val_years=5
+        val_split_style='date',
+        val_months=data_config['val_months'],
+        test_months=data_config['test_months'],
+        target_scale_factor=data_config['target_scale_factor']
     )
+
+    X_train_full = pd.concat([X_train, X_val])
+
+    y_train = t_train.iloc[:, TARGET_IDX]
+    y_val = t_val.iloc[:, TARGET_IDX]
+    y_train_full = pd.concat([y_train, y_val])
     
-    (X_train, y_train, X_test) = itemgetter(
-        'X_train_full', 'y_train_full', 'X_test'
-    )(lit_bench_data)
     
     # Fit quantile regression models
     preds = {}
     for q in QUANTILES:
         Q = int(q * 100)
-        model = QuantReg(y_train.values.flatten(), add_constant(X_train.values, has_constant='skip'))
+        model = QuantReg(y_train_full.values.flatten(), add_constant(X_train_full.values, has_constant='skip'))
         res = model.fit(q=q)
         preds[f'{model_name}_Q{Q}'] = res.predict(add_constant(X_test.values, has_constant='skip'))
     
     # Save predictions
     output_path = LIT_BENCH_PRED_DIR / f"lit_bench_predictions_{COUNTRY}_{HORIZON_IN_QUARTERS}q_{target_name}_{YEAR}.csv"
-    pd.DataFrame(preds).to_csv(output_path)
+    pd.DataFrame(preds, index=X_test.index).to_csv(output_path)
     print(f"Literature benchmark predictions saved to {output_path}")
 
 
 def train_deep_models():
     """Train deep learning models"""
     logging.info(f"Training deep models for {target_name_dict[TARGET_IDX]} ({YEAR})...")
-    
-    # Adjust parameters for local runs
-    trials = 1 if RUN_LOCALLY else config['trials']
-    n_estimators = 1 if RUN_LOCALLY else config['n_estimators']
-    cpu_count = os.cpu_count()
 
-    # Avoid nested full-CPU parallelism (Optuna + CV + TensorFlow), which can hang on Windows.
-    deep_cv_jobs = 1 
-    deep_optuna_jobs = cpu_count
-    
-    target_path = DATA_DIR / TARGET_FILE
-    input_paths = [DATA_DIR / file for file in INPUT_FILES]
-    
     # Prepare data (including RNN sequences)
-    non_rnn_data, rnn_data, meta_data = prepare_quantile_data(
-        target=TARGET_IDX,
-        time_steps=TIME_STEPS,
+    (
+        X_train, X_val, X_test,
+        t_train, t_val, t_test
+    ) = prepare_rnn_data(
         targets_path=target_path,
         input_paths=input_paths,
         start_date='1961-01-01',
         train_cutoff_year=YEAR,
-        n_quantiles=len(QUANTILES),
-        val_years=VAL_YEARS
+        val_split_style='date',
+        n_timesteps=config['time_steps'],
+        val_months=data_config['val_months'],
+        test_months=data_config['test_months'],
+        target_scale_factor=data_config['target_scale_factor']
+    )
+
+    X_train_full = pd.concat([X_train, X_val])
+
+    y_train = t_train.iloc[:, TARGET_IDX]
+    y_val = t_val.iloc[:, TARGET_IDX]
+    y_train_full = pd.concat([y_train, y_val])
+
+    mq_y_train = np.repeat(
+        y_train.reshape(-1,1), 
+        repeats=len(QUANTILES),
+        axis=1
+    )
+    mq_y_val = np.repeat(
+        y_val.reshape(-1,1), 
+        repeats=len(QUANTILES),
+        axis=1
+    )
+    mq_y_train_full = np.repeat(
+        y_train_full.reshape(-1,1), 
+        repeats=len(QUANTILES),
+        axis=1
     )
     
-    # Extract RNN data
-    (
-        mq_y_train_rnn, mq_y_val_rnn, mq_y_train_full_rnn,
-        X_train_rnn, X_val_rnn, X_train_full_rnn, X_test_rnn,
-    ) = itemgetter(
-        'mq_y_train_rnn', 'mq_y_val_rnn', 'mq_y_train_full_rnn',
-        'X_train_rnn', 'X_val_rnn', 'X_train_full_rnn', 'X_test_rnn',
-    )(rnn_data)
-    
     # Get target names
-    all_y_train = non_rnn_data['all_y_train']
     target_name = target_name_dict[TARGET_IDX]
     
     # Custom objects for loading models
@@ -322,14 +353,11 @@ def train_deep_models():
         **{f"total_tilted_loss_{'_'.join(map(str, path_quantiles))}": make_total_tilted_loss(QUANTILES)}
     }
     
-    # Loss weights
-    LOSS_WEIGHTS = config['loss_weights']
-    
     # Early stopping configuration
     early_stopping_args = {
         'monitor': 'val_loss',
-        'min_delta': 1e-3,
-        'patience': 5,
+        'min_delta': config['early_stopping']['min_delta'],
+        'patience': config['early_stopping']['patience'],
         'restore_best_weights': True,
         'verbose': 0
     }
@@ -345,94 +373,67 @@ def train_deep_models():
             optuna.storages.JournalFileStorage(str(DEEP_OPTUNA_JOURNAL_PATH))
         )
     all_model_preds = {}
-    grid = config['tuning']['dmq_grid']
+
+    # Set training and validation sets
+    X_tr = X_train_full
+    y_tr = mq_y_train_full
+    validation_data = (X_val, mq_y_val)
+    X_te = X_test
     
     # Train each model variant
     for model_type in model_names:
         study_name = f'{model_type}_{target_name}_{YEAR}'
         logging.info(f"Training {model_type}...")
 
+        # Get basic model config
         builder_params = dict(model_builder_params_cfg[model_type])
+        
+        # Update builder params with runtime arguments
         builder_params.update(
             {
-                'input_shape': X_train_rnn.shape[1:],
-                'loss_weights': LOSS_WEIGHTS,
+                'input_shape': X_train.shape[1:],
+                'loss_weights': config['loss_weights'],
                 'seed': SEED,
             }
         )
-
         builder_params['lower_quantiles'] = [q for q in QUANTILES if q < 0.5]
         builder_params['upper_quantiles'] = [q for q in QUANTILES if q > 0.5]
 
-        X_tr = X_train_full_rnn
-        y_tr = mq_y_train_full_rnn
-        validation_data = (X_val_rnn, mq_y_val_rnn)
-        X_te = X_test_rnn
-        
+        # set fit params
         fit_params = {
-            'epochs': 1 if RUN_LOCALLY else EPOCHS,
-            'batch_size': 32 if RUN_LOCALLY else BATCH_SIZE,
+            'epochs': 1 if RUN_LOCALLY else config['epochs'],
+            'batch_size': 32 if RUN_LOCALLY else config['batch_size'],
             'validation_data': validation_data,
             'verbose': 0,
-            'shuffle': False
+            'shuffle': config['shuffle']
         }
         
         # Check if hyperparameters already exist
         if check_hps_exist(study_name, DEEP_TUNING_LOG_PATH):
             logging.info(f"Hyperparameters for {study_name} already exist. Loading...")
             best_params = load_hyperparameters(study_name, DEEP_TUNING_LOG_PATH)
+        
+        # If not perform hpo. If storage other than inmemory was used
+        # perform_hpo will load best_params from storage if available.
         else:
             logging.info(f"No existing hyperparameters for {study_name}, optimizing...")
-            objective = CVObjective(
-                X_tr=X_tr,
-                y_tr=y_tr,
+            
+            best_params = perform_hpo(
+                X_train=X_tr,
+                y_train=y_tr,
                 val_size=config['val_size'],
-                n_splits=K_FOLDS,
+                n_splits=config['k_folds'],
                 builder_func=build_dmq_v0,
                 fit_params=fit_params,
                 early_stopping_args=early_stopping_args,
-                n_jobs=deep_cv_jobs,
-                grid=grid,
-                **builder_params
-            )
-
-            optuna.logging.set_verbosity(optuna.logging.INFO)
-            study = optuna.create_study(
-                direction="minimize",
+                grid=config['tuning']['dmq_grid'],
                 study_name=study_name,
+                trials=1 if RUN_LOCALLY else config['trials'],
+                n_jobs=os.cpu_count()-1,
                 storage=storage,
-                load_if_exists=True,
-                sampler=optuna.samplers.RandomSampler(SEED),
-                pruner=None
-            )
-            
-            n_completed_trials = len(
-                study.get_trials(deepcopy=False, states=[TrialState.COMPLETE])
-            )
-            remaining_trials = max(0, trials - n_completed_trials)
-
-            if remaining_trials == 0:
-                logging.info(
-                    f"Study {study_name} already has {n_completed_trials} completed trials. Skipping..."
-                )
-            else:
-                logging.info(
-                    f"Study {study_name} has {n_completed_trials} completed trials. Running {remaining_trials} more..."
-                )
-                study.optimize(
-                    objective,
-                    n_trials=remaining_trials,
-                    n_jobs=deep_optuna_jobs,
-                    gc_after_trial=True,
-                    show_progress_bar=(not RUN_LOCALLY),
-                )
-            
-            best_params = study.best_params
-            best_params.update(builder_params)
-            
-            save_hyperparameters(
-                best_params,
-                study_name,
+                sampler=optuna.samplers.RandomSampler(seed=SEED),
+                pruner=optuna.pruners.MedianPruner(),
+                save_hps=True if OPTUNA_STORAGE == 'inmemory' else False,
                 log_path=DEEP_TUNING_LOG_PATH
             )
         
@@ -445,7 +446,7 @@ def train_deep_models():
             hps=best_params,
             fit_params=fit_params,
             early_stopping_args=early_stopping_args,
-            n_estimators=n_estimators,
+            n_estimators=1 if RUN_LOCALLY else config['n_estimators'],
             models_dir_path=DEEP_MODEL_DIR,
             save_models=True,
             custom_objects=custom_objects
@@ -457,7 +458,8 @@ def train_deep_models():
             e_preds = e.predict(X_te, verbose=0).reshape(-1, len(QUANTILES))
             preds.append(e_preds[:, :, np.newaxis])
         
-        preds = np.concatenate(preds, axis=2).mean(axis=2) # Take the mean over estimators
+        # Take the mean over estimators
+        preds = np.concatenate(preds, axis=2).mean(axis=2) 
         
         # Store predictions for each quantile
         for i, q in enumerate(QUANTILES):
@@ -467,25 +469,11 @@ def train_deep_models():
     # Save predictions
     all_model_preds_df = pd.DataFrame(
         all_model_preds,
-        index=pd.date_range(start=meta_data['test_start'], end=meta_data['test_end'], freq='MS')
+        index=pd.date_range(
+            start=f'{YEAR+1}-01-01', 
+            end=f'{YEAR+1}-12-01', 
+            freq='MS')
     )
-    
-    # Create ensemble predictions (average all DMQ models)
-    # all_dmq_preds = []
-    # for model in mq_model_params_dict.keys():
-    #     preds = all_model_preds_df.loc[:, f'{model}_Q5':f'{model}_Q95']
-    #     all_dmq_preds.append(preds.values[:, :, np.newaxis])
-    
-    # all_dmq_preds = np.concatenate(all_dmq_preds, axis=2)
-    # dmqe_preds = np.mean(all_dmq_preds, axis=2) # Take the mean over all DMQ models
-    # dmqe_all_preds_df = pd.DataFrame(
-    #     dmqe_preds,
-    #     columns=[f'DMQe_all_Q{Q}' for Q in path_quantiles],
-    #     index=all_model_preds_df.index
-    # )
-    
-    # Combine individual and ensemble predictions
-    # all_model_preds_df = pd.concat([all_model_preds_df, dmqe_all_preds_df], axis=1)
     
     # Save to file
     output_path = DEEP_PRED_DIR / f"st_model_predictions_{COUNTRY}_{HORIZON_IN_QUARTERS}q_{target_name}_{YEAR}.csv"
