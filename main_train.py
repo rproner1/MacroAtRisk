@@ -37,11 +37,8 @@ keras.utils.set_random_seed(SEED)
 load_dotenv()
 
 # ----- Configuration -----
-with open("./config/config.yaml", "r") as f:
+with open("./config/config_file.yaml", "r") as f:
     config = yaml.safe_load(f)
-
-with open("./config/data_config.yaml", 'r') as f:
-    data_config = yaml.safe_load(f)
 
 logging.basicConfig(level=logging.INFO)
 
