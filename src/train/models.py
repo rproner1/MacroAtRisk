@@ -758,15 +758,15 @@ def build_dmq_v0(
         shared_norm=False,
         task_norm=False, 
         loss_weights=[1/5]*5,
-        bias_initializer='zeros',
-        seed=1
+        bias_initializer='zeros'
     ):
 
     """
     Base DMQ model
     """
 
-    initializer = keras.initializers.GlorotUniform(seed=seed)
+    initializer = 'glorot_uniform'
+    
     lower_quantiles = sorted(lower_quantiles)
     upper_quantiles = sorted(upper_quantiles)
     quantiles = lower_quantiles + [0.5] + upper_quantiles
