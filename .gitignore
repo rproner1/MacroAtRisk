@@ -31,9 +31,6 @@ latex/*
 !latex/*.bib
 *.ipynb
 
-# config files
-*.yaml
-
 # Temp results
 results.tex
 
