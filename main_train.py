@@ -14,6 +14,7 @@ from datetime import date
 import optuna
 import warnings
 import keras
+from copy import deepcopy
 
 from src.data.prepare_data import prepare_non_rnn_data, prepare_rnn_data
 from src.train.shelf_models import *
@@ -221,7 +222,7 @@ def train_linear_models():
     ar1_preds = fit_ar1(X_train_ar1, y_train_ar1, X_test_ar1, QUANTILES, TARGET_NAME, YEAR, verbose=False)
     all_preds.update(ar1_preds)
 
-    fit_params = FIT_PARAMS.copy()
+    fit_params = FIT_PARAMS.deepcopy()
     fit_params['validation_data'] = (X_val, y_val)
 
     linear_preds = fit_linear_models(
@@ -443,7 +444,7 @@ def train_deep_models():
     X_te = X_test
 
     # set fit params
-    fit_params = FIT_PARAMS.copy()
+    fit_params = FIT_PARAMS.deepcopy()
     fit_params.update(
         {'validation_data': validation_data}
     )
