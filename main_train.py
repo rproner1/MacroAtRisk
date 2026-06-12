@@ -43,7 +43,7 @@ with open("./config/config.yaml", "r") as f:
 with open("./config/data_config.yaml", 'r') as f:
     data_config = yaml.safe_load(f)
 
-logging.basicConfig(level=config['logging_level'])
+logging.basicConfig(level=logging.INFO)
 
 # Command line arguments
 parser = argparse.ArgumentParser(description="Train models")
@@ -222,7 +222,7 @@ def train_linear_models():
     ar1_preds = fit_ar1(X_train_ar1, y_train_ar1, X_test_ar1, QUANTILES, TARGET_NAME, YEAR, verbose=False)
     all_preds.update(ar1_preds)
 
-    fit_params = FIT_PARAMS.deepcopy()
+    fit_params = deepcopy(FIT_PARAMS) 
     fit_params['validation_data'] = (X_val, y_val)
 
     linear_preds = fit_linear_models(
@@ -444,7 +444,7 @@ def train_deep_models():
     X_te = X_test
 
     # set fit params
-    fit_params = FIT_PARAMS.deepcopy()
+    fit_params = deepcopy(FIT_PARAMS)
     fit_params.update(
         {'validation_data': validation_data}
     )
