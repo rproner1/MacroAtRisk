@@ -35,3 +35,6 @@ latex/*
 results.tex
 
 local_tuning_logs/*
+
+# Output logs 
+*.out
