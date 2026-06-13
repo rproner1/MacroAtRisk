@@ -5,12 +5,12 @@ data:
   country: "us"
   horizon_in_quarters: 4
   input_files: [
-    "us_4q_fred_x.csv",
-    "us_4q_oap_vw_x_stationary.csv"
+    "us_4q_fred_x.csv"
+    # "us_4q_oap_vw_x_stationary.csv"
   ]
   target_file: 'us_4q_fred_y.csv'
   time_steps: 12
-  val_months: 24  # Number of months for early stopping
+  val_months: 60  # Number of months for early stopping
   test_months: 12 # Size of test set
   target_scale_factor: 100
 
@@ -40,23 +40,22 @@ training:
       n_recurrent_layers: 1
       n_shared_layers: 1
       n_qtask_layers: 1
-      n_recurrent_nodes: 64
-      n_shared_nodes: 64
-      n_task_nodes: 64
+      n_recurrent_nodes: 32
+      n_shared_nodes: 32
+      n_task_nodes: 32
       recurrent_layer_type: 'lstm'
       norm_fn: 'layer'
       recurrent_norm: true
       shared_norm: true
       task_norm: true
       loss_weights: [0.28, 0.17, 0.11, 0.17, 0.28] 
-
     DMQm:
       n_recurrent_layers: 2
       n_shared_layers: 2
       n_qtask_layers: 2
-      n_recurrent_nodes: 64
-      n_shared_nodes: 64
-      n_task_nodes: 64
+      n_recurrent_nodes: 32
+      n_shared_nodes: 32
+      n_task_nodes: 32
       recurrent_layer_type: 'lstm'
       norm_fn: 'layer'
       recurrent_norm: true
@@ -66,9 +65,9 @@ training:
       n_recurrent_layers: 3
       n_shared_layers: 3
       n_qtask_layers: 3
-      n_recurrent_nodes: 64
-      n_shared_nodes: 64
-      n_task_nodes: 64
+      n_recurrent_nodes: 32
+      n_shared_nodes: 32
+      n_task_nodes: 32
       recurrent_layer_type: 'lstm'
       norm_fn: 'layer'
       recurrent_norm: true
