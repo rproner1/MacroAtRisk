@@ -31,10 +31,10 @@ latex/*
 !latex/*.bib
 *.ipynb
 
-# config files
-*.yaml
-
 # Temp results
 results.tex
 
 local_tuning_logs/*
+
+# Output logs 
+*.out

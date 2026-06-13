@@ -4,7 +4,10 @@ from sklearn.model_selection import KFold
 import numpy as np
 from typing import Tuple
 import inspect
+import optuna
+import logging
 
+from src.utils.files import save_hyperparameters
 
 def _take_rows(data, indices):
     if hasattr(data, 'iloc'):
@@ -25,160 +28,6 @@ def _filter_builder_kwargs(builder_func, params):
 def get_early_stopping(**kwargs):
     return EarlyStopping(**kwargs)
 
-def grid_search(param_grid: dict, builder_func: callable, X_tr: np.ndarray, y_tr: np.ndarray, fit_params: dict, early_stopping_args: dict, n_jobs: int, **kwargs):
-
-    from itertools import product
-
-    keys, values = zip(*param_grid.items())
-    candidates = product(*values)
-
-    def evaluate_candidate(hps):
-
-        params = dict(zip(keys, hps))
-        kwargs.update(params)
-
-        model = builder_func(**_filter_builder_kwargs(builder_func, kwargs))
-
-        es = get_early_stopping(**early_stopping_args)
-        local_fit_params = {**fit_params, 'callbacks': [es]}
-
-        model.fit(X_tr, y_tr, **local_fit_params)
-
-        val_score = model.evaluate(*local_fit_params['validation_data'])
-        if isinstance(val_score, list):
-            val_score = val_score[0]  # If multiple metrics, take the total val loss
-
-        return params, val_score
-
-    results = Parallel(n_jobs=n_jobs, prefer='threads')(delayed(evaluate_candidate)(hps) for hps in candidates)
-    params, scores = zip(*results)
-    best_params = params[np.argmin(scores)] 
-
-    return best_params, min(scores) 
-
-
-# Tuning 
-class Objective:
-
-    def __init__(
-            self, 
-            X_tr, 
-            y_tr, 
-            fit_params: dict, 
-            early_stopping_args: dict, 
-            builder_func: callable, 
-            tune_l1: bool=False,
-            tune_l2: bool=True,
-            tune_lr: bool=True,
-            tune_rec_drop: bool=False,
-            tune_dropout: bool=False,
-            tune_n_layers: bool=False,
-            tune_n_nodes: bool=False,
-            tune_norm: bool=False,
-            **kwargs
-        ):
-        self.X_tr = X_tr
-        self.y_tr = y_tr
-        self.fit_params = fit_params
-        self.builder_func = builder_func
-        self.kwargs = kwargs
-        self.early_stopping_args = early_stopping_args
-        self.tune_l1 = tune_l1
-        self.tune_l2 = tune_l2
-        self.tune_lr = tune_lr
-        self.tune_rec_drop = tune_rec_drop
-        self.tune_dropout = tune_dropout
-        self.tune_n_layers = tune_n_layers
-        self.tune_n_nodes = tune_n_nodes
-        self.tune_norm = tune_norm
-
-    def __call__(self, trial):
-
-        l1_choices = list(np.logspace(-7, -5, num=50))
-        l2_choices = list(np.logspace(-5, -4, num=50))
-        rec_drop_choices = [0.0, 0.02, 0.05, 0.1]
-        dropout_choices = [0.0, 0.02, 0.05, 0.1]
-        layer_choices = [1, 2, 3]
-        node_choices = [16, 32, 64]
-        norm_choices = [False, True]
-
-        if self.tune_l1:
-            l1 = trial.suggest_categorical('l1', l1_choices)
-        else:
-            l1 = 0.0
-        if self.tune_l2:
-            l2 = trial.suggest_categorical('l2', l2_choices)
-        else: 
-            l2 = 0.0
-        if self.tune_lr:
-            lr = trial.suggest_float('lr', 5e-4, 2e-3, log=True)
-        else: 
-            lr=5e-4
-        if self.tune_rec_drop:
-            rec_drop = trial.suggest_categorical('rec_drop', rec_drop_choices)
-        else:
-            rec_drop = 0.0
-        if self.tune_dropout:
-            dropout = trial.suggest_categorical('dropout', dropout_choices)
-        else:
-            dropout=0.0
-        if self.tune_n_layers:
-            n_recurrent_layers = trial.suggest_categorical('n_recurrent_layers', layer_choices)
-            n_shared_layers = trial.suggest_categorical('n_shared_layers', layer_choices)
-            n_qtask_layers = trial.suggest_categorical('n_qtask_layers', layer_choices)
-        else:
-            n_recurrent_layers = self.kwargs['n_recurrent_layers']
-            n_shared_layers = self.kwargs['n_shared_layers']
-            n_qtask_layers = self.kwargs['n_qtask_layers']
-        if self.tune_n_nodes:
-            n_recurrent_nodes = trial.suggest_categorical('n_recurrent_nodes', node_choices)
-            n_shared_nodes = trial.suggest_categorical('n_shared_nodes', node_choices)
-            n_task_nodes = trial.suggest_categorical('n_task_nodes', node_choices)
-        else: 
-            n_recurrent_nodes = self.kwargs['n_recurrent_nodes']
-            n_shared_nodes = self.kwargs['n_shared_nodes']
-            n_task_nodes = self.kwargs['n_task_nodes']
-        if self.tune_norm:
-            recurrent_norm = trial.suggest_categorical('recurrent_norm', norm_choices)
-            shared_norm = trial.suggest_categorical('shared_norm', norm_choices)
-            task_norm = trial.suggest_categorical('task_specific_norm', norm_choices)
-        else:
-            recurrent_norm = self.kwargs['recurrent_norm']
-            shared_norm = self.kwargs['shared_norm']
-            task_norm = self.kwargs['task_specific_norm']
-
-        self.kwargs.update(
-            {
-                'l1': l1,
-                'l2': l2,
-                'lr': lr,
-                'rec_drop': rec_drop,
-                'dropout': dropout,
-                'n_recurrent_layers': n_recurrent_layers,
-                'n_shared_layers': n_shared_layers,
-                'n_qtask_layers': n_qtask_layers,
-                'n_recurrent_nodes': n_recurrent_nodes,
-                'n_shared_nodes': n_shared_nodes,
-                'n_task_nodes': n_task_nodes,
-                'recurrent_norm': recurrent_norm,
-                'shared_norm': shared_norm,
-                'task_specific_norm': task_norm
-            }
-        )
-
-        model = self.builder_func(**_filter_builder_kwargs(self.builder_func, self.kwargs))
-
-        es = get_early_stopping(**self.early_stopping_args)
-        fit_params = {**self.fit_params, 'callbacks': [es]}
-
-        model.fit(self.X_tr, self.y_tr, **fit_params)
-
-        val_score = model.evaluate(*fit_params['validation_data'], verbose=0)
-        if isinstance(val_score, list):
-            val_score = val_score[0]  # If multiple metrics, take the total val loss
-
-        return val_score
-
 
 class CVObjective:
 
@@ -193,15 +42,6 @@ class CVObjective:
             builder_func: callable, 
             n_jobs: int, 
             grid: dict | None = None,
-            tune_l1: bool=False,
-            tune_l2: bool=True,
-            tune_lr: bool=True,
-            tune_rec_drop: bool=False,
-            tune_dropout: bool=False,
-            tune_n_layers: bool=False,
-            tune_n_nodes: bool=False,
-            tune_norm: bool=False,
-            tune_recurrent_layer_type: bool=False,
             **kwargs
         ):
         self.X_tr = X_tr
@@ -286,93 +126,87 @@ class CVObjective:
         mean_cv_loss = np.mean(list(cv_losses))
         return float(mean_cv_loss)
 
+def perform_hpo(
+        X_train,
+        y_train,
+        builder_func,
+        fit_params,
+        early_stopping_args,
+        grid,
+        study_name,
+        val_size=0.1,
+        n_splits=10,
+        trials=50,
+        n_jobs=-1,
+        storage=None,
+        sampler=None,
+        pruner=None,
+        save_hps=True,
+        log_path='tuning_log.json',
+        **kwargs
+):
+    
+    if storage is None:
+        storage = optuna.storages.InMemoryStorage()
+    if sampler is None:
+        sampler = optuna.samplers.RandomSampler()
+    if pruner is None:
+        pruner = optuna.pruners.MedianPruner()
+    
+    objective = CVObjective(
+        X_tr=X_train,
+        y_tr=y_train,
+        val_size=val_size,
+        n_splits=n_splits,
+        builder_func=builder_func,
+        fit_params=fit_params,
+        early_stopping_args=early_stopping_args,
+        n_jobs=n_jobs,
+        grid=grid,
+        **kwargs
+    )
 
-class CVObjectiveTest:
+    optuna.logging.set_verbosity(optuna.logging.INFO)
+    study = optuna.create_study(
+        direction="minimize",
+        study_name=study_name,
+        storage=storage,
+        load_if_exists=True,
+        sampler=sampler,
+        pruner=pruner
+    )
 
-    def __init__(
-            self, 
-            X_tr, 
-            y_tr, 
-            val_size: float, 
-            n_splits: float, 
-            fit_params: dict, 
-            early_stopping_args: dict, 
-            builder_func: callable, 
-            n_jobs: int, 
-            **kwargs
-        ):
-        self.X_tr = X_tr
-        self.y_tr = y_tr
-        self.val_size = val_size
-        self.n_splits = n_splits
-        self.fit_params = fit_params
-        self.builder_func = builder_func
-        self.n_jobs = n_jobs
-        self.kwargs = kwargs
-        self.early_stopping_args = early_stopping_args
+    n_completed_trials = len(
+        study.get_trials(
+            deepcopy=False, 
+            states=[optuna.trial.TrialState.COMPLETE]
+        )
+    )
+    remaining_trials = max(0, trials - n_completed_trials)
 
-    def __call__(self, trial):
-
-        l1_choices = [0.0] + list(np.logspace(-7, -5, num=50))
-        l2_choices = [0.0] +  list(np.logspace(-5, -4, num=50))
-        rec_drop_choices = [0.0] + [0.05,0.1,0.15,0.2,0.3,0.5]
-        dropout_choices = [0.0] + list(np.linspace(0.01,0.2,20))
-        n_recurrent_layer_choices = [1,2,3]
-        n_shared_layer_choices = [1,2,3] 
-        n_qtask_layer_choices = [1,2,3]
-
-        l1 = trial.suggest_categorical('l1', l1_choices)
-        l2 = trial.suggest_categorical('l2', l2_choices)
-        lr = trial.suggest_float('lr', 5e-4, 2e-3, log=True)
-        rec_drop = trial.suggest_categorical('rec_drop', rec_drop_choices)
-        dropout = trial.suggest_categorical('dropout', dropout_choices)
-        n_recurrent_layers = trial.suggest_categorical('n_recurrent_layers', n_recurrent_layer_choices)
-        n_shared_layers = trial.suggest_categorical('n_shared_layers', n_shared_layer_choices)
-        n_qtask_layers = trial.suggest_categorical('n_qtask_layers', n_qtask_layer_choices)
-        n_recurrent_nodes = trial.suggest_categorical('n_recurrent_nodes', [16,32,64])
-        n_shared_nodes = trial.suggest_categorical('n_shared_nodes', [16,32,64])
-        n_task_nodes = trial.suggest_categorical('n_task_nodes', [16,32,64])
-
-        self.kwargs.update(
-            {
-                'l1': l1,
-                'l2': l2,
-                'lr': lr,
-                'rec_drop': rec_drop,
-                'dropout': dropout,
-                'n_recurrent_layers': n_recurrent_layers,
-                'n_shared_layers': n_shared_layers,
-                'n_qtask_layers': n_qtask_layers,
-                'n_recurrent_nodes': n_recurrent_nodes,
-                'n_shared_nodes': n_shared_nodes,
-                'n_task_nodes': n_task_nodes
-            }
+    if remaining_trials == 0:
+        logging.info(
+            f"Study {study_name} already has {n_completed_trials} completed trials. Skipping..."
+        )
+    else:
+        logging.info(
+            f"Study {study_name} has {n_completed_trials} completed trials. Running {remaining_trials} more..."
+        )
+        study.optimize(
+            objective,
+            n_trials=remaining_trials,
+            n_jobs=n_jobs,
+            gc_after_trial=True,
+            show_progress_bar=True,
         )
 
-        def fit_and_evaluate_on_split(X_train, y_train, X_test, y_test):
+    best_params = study.best_params
 
-            # reserve val_size fraction of training data for monitoring early stopping
-            split_idx = int(len(X_train) * (1-self.val_size))
-            X_train_split, X_val_split = X_train[:split_idx], X_train[split_idx:]
-            y_train_split, y_val_split = y_train[:split_idx], y_train[split_idx:]
+    if save_hps:
+        save_hyperparameters(
+            best_params,
+            study_name,
+            log_path=log_path
+        )
 
-            model = self.builder_func(**_filter_builder_kwargs(self.builder_func, self.kwargs))
-
-            es = get_early_stopping(**self.early_stopping_args)
-            fit_params = {**self.fit_params, 'callbacks': [es], 'validation_data': (X_test, y_test)}
-
-            model.fit(X_train_split, y_train_split, **fit_params)
-            val_score = model.evaluate(X_val_split, y_val_split)
-            if isinstance(val_score, list):
-                val_score = val_score[0]  # If multiple metrics, take the total val loss
-            return val_score
-        
-        cv_losses = Parallel(n_jobs=self.n_jobs, prefer='threads')(delayed(fit_and_evaluate_on_split)(
-            _take_rows(self.X_tr, train_idx),
-            _take_rows(self.y_tr, train_idx),
-            _take_rows(self.X_tr, test_idx),
-            _take_rows(self.y_tr, test_idx)
-        ) for train_idx, test_idx in KFold(n_splits=self.n_splits).split(self.X_tr))
-
-        mean_cv_loss = np.mean(cv_losses)
-        return mean_cv_loss
+    return best_params

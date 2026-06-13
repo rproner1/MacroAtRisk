@@ -1,0 +1,179 @@
+# Data params
+
+data:
+  start_date: '1961-01-01'
+  country: "us"
+  horizon_in_quarters: 4
+  input_files: [
+    "us_4q_fred_x.csv"
+    # "us_4q_oap_vw_x_stationary.csv"
+  ]
+  target_file: 'us_4q_fred_y.csv'
+  time_steps: 12
+  val_months: 60  # Number of months for early stopping
+  test_months: 12 # Size of test set
+  target_scale_factor: 100
+
+# general 
+quantiles: [0.05, 0.25, 0.50, 0.75, 0.95]
+
+# Fit params
+training:
+  n_estimators: 5
+
+  fit_params:
+    epochs: 500
+    batch_size: 4
+    shuffle: True
+    verbose: 0
+
+  # Early stopping parameters
+  early_stopping:
+    monitor: 'val_loss'
+    min_delta: 0.001
+    patience: 5
+    restore_best_weights: True
+    verbose: 0
+  
+  builder_params:
+    DMQs:
+      n_recurrent_layers: 1
+      n_shared_layers: 1
+      n_qtask_layers: 1
+      n_recurrent_nodes: 32
+      n_shared_nodes: 32
+      n_task_nodes: 32
+      recurrent_layer_type: 'lstm'
+      norm_fn: 'layer'
+      recurrent_norm: true
+      shared_norm: true
+      task_norm: true
+      loss_weights: [0.28, 0.17, 0.11, 0.17, 0.28] 
+    DMQm:
+      n_recurrent_layers: 2
+      n_shared_layers: 2
+      n_qtask_layers: 2
+      n_recurrent_nodes: 32
+      n_shared_nodes: 32
+      n_task_nodes: 32
+      recurrent_layer_type: 'lstm'
+      norm_fn: 'layer'
+      recurrent_norm: true
+      shared_norm: true
+      task_norm: true
+    DMQl:
+      n_recurrent_layers: 3
+      n_shared_layers: 3
+      n_qtask_layers: 3
+      n_recurrent_nodes: 32
+      n_shared_nodes: 32
+      n_task_nodes: 32
+      recurrent_layer_type: 'lstm'
+      norm_fn: 'layer'
+      recurrent_norm: true
+      shared_norm: true
+      task_norm: true
+    # xDMQs:
+    #   n_recurrent_layers: 1 # Number of stacked slstm blocks
+    #   num_heads: 8
+    #   n_shared_layers: 1 # No effect with slstm block
+    #   n_qtask_layers: 1
+    #   n_recurrent_nodes: 64
+    #   n_shared_nodes: 64
+    #   n_task_nodes: 64
+    #   recurrent_layer_type: 'slstm_block'
+    #   norm_fn: 'layer'
+    #   recurrent_norm: true
+    #   shared_norm: true
+    #   task_norm: true
+    # xDMQm:
+    #   n_recurrent_layers: 2 # Number of stacked slstm blocks
+    #   num_heads: 8
+    #   n_shared_layers: 2 # No effect with slstm block
+    #   n_qtask_layers: 2
+    #   n_recurrent_nodes: 64
+    #   n_shared_nodes: 32
+    #   n_task_nodes: 16
+    #   recurrent_layer_type: 'slstm_block'
+    #   norm_fn: 'layer'
+    #   recurrent_norm: true
+    #   shared_norm: true
+    #   task_norm: true
+    # xDMQl:
+    #   n_recurrent_layers: 3 # Number of stacked slstm blocks
+    #   num_heads: 8
+    #   n_shared_layers: 3 # No effect with slstm block
+    #   n_qtask_layers: 3
+    #   n_recurrent_nodes: 64
+    #   n_shared_nodes: 64
+    #   n_task_nodes: 64
+    #   recurrent_layer_type: 'slstm_block'
+    #   norm_fn: 'layer'
+    #   recurrent_norm: true
+    #   shared_norm: true
+    #   task_norm: true
+
+tuning:
+  optuna_storage: 'journal'
+  trials: 50
+  k_folds: 10 # Number of folds for cross-validation
+  val_size: 0.1 # Proportion of training data to use for validation in cross-validation
+
+  linear_grids:
+    QR:
+      lr:
+        type: 'float'
+        values: [0.0005, 0.002]
+        log_scale: true
+    # RID:
+    #   l2:
+    #     type: 'float'
+    #     values: [0.00001, 1.0]
+    #     log_scale: true
+    #   lr:
+    #     type: 'float'
+    #     values: [0.0005, 0.002]
+    #     log_scale: true
+    # LAS:
+    #   l1:
+    #     type: 'float'
+    #     values: [0.00001, 1.0]
+    #     log_scale: true
+    #   lr:
+    #     type: 'float'
+    #     values: [0.0005, 0.002]
+    #     log_scale: true
+    EN:
+      l1:
+        type: 'float'
+        values: [0.00001, 1.0]
+        log_scale: true
+      l2:
+        type: 'float'
+        values: [0.00001, 1.0]
+        log_scale: true
+      lr:
+        type: 'float'
+        values: [0.0005, 0.002]
+        log_scale: true
+
+  dmq_grid:
+    l2:
+      type: 'float'
+      values: [0.00001, 0.0001]
+      log_scale: true
+    lr:
+      type: 'float'
+      values: [0.0005, 0.002]
+      log_scale: true
+
+  qrf_grid:
+    n_estimators: [100, 500, 1000]
+    max_depth: [1,2,3,4,5,6,7,8,9,10,11,12]
+
+  qgb_grid:
+    learning_rate: [0.1, 0.01, 0.001]
+    n_estimators: [50, 100, 200]
+    subsample: [0.25, 0.5, 1.0]
+    max_depth: [1,2,3,4,5,6]
+

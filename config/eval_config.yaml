@@ -1,0 +1,24 @@
+make_results: true
+make_r1_tables: true
+base_models_subset: [
+  # 'Naive',
+  # 'QR',
+  # 'EN',
+  # 'QPCR',
+  # 'QRF',
+  # 'QGB',
+  # 'sDMQ',
+  # 'DMQv0',
+  # 'DMQv1',
+  'DMQs',
+  'DMQm',
+  'DMQl',
+  'DMQe',
+  # 'sDMQm',
+  # 'DMQv2c'
+]
+test_start: "1998-01-01"
+test_end: "2024-12-01"
+start_year: 1997
+end_year: 2023
+concatenate_predictions: true

@@ -82,7 +82,11 @@ def fit_models(
         
         else:
             print('Existing model found, loading...')
-            model = load_model(model_path, custom_objects=custom_objects, safe_mode=False)
+            model = load_model(
+                model_path, 
+                custom_objects=custom_objects, 
+                safe_mode=True
+            )
             
         # Save estimator
         estimators.append(model)
