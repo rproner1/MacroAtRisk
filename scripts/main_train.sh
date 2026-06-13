@@ -20,6 +20,6 @@ python -m pip install --no-index --upgrade pip
 python -m pip install --no-index -r requirements.txt
 #python -m pip install --no-index ~/projects/rrg-camera/rproner/xlstm
 
-TARGET=2
+TARGET=0
 DATE=2026-06-12
 python main_train.py --year $SLURM_ARRAY_TASK_ID --date $DATE --target $TARGET --model-type deep
