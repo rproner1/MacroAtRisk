@@ -281,6 +281,15 @@ def build_rnn(q: Union[float, int]=0.5, n_recurrent_layers: int=2, n_dense_layer
     model.compile(loss = loss, optimizer = opt)
     return model
 
+def _build_input_layer(
+        input_shapes: list[tuple]
+):
+    inputs = []
+    for input_shape in input_shapes:
+        in_layer = keras.layers.Input(input_shape)
+        inputs.append(in_layer)
+
+    return inputs
 
 def _get_recurrent_layer(
         size=32,
@@ -430,7 +439,7 @@ def _build_dense_layers(
     return layers
 
 def build_dmq(
-        input_shape,
+        input_shapes,
         shared_recurrent_sizes = [32],
         shared_dense_sizes = [16],
         task_sizes = [8],
@@ -445,7 +454,7 @@ def build_dmq(
         loss_weights = None
 ):
     
-    inputs = keras.layers.Input(shape=input_shape)
+    inputs = _build_input_layer(input_shapes)
 
     quantiles = lower_quantiles + [0.5] + upper_quantiles
 
