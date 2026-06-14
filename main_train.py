@@ -19,7 +19,7 @@ from copy import deepcopy
 from src.data.prepare_data import prepare_non_rnn_data, prepare_rnn_data
 from src.train.shelf_models import *
 from src.train.losses import make_tilted_loss, make_total_tilted_loss
-from src.train.models import build_dmq_v0
+from src.train.models import build_dmq
 from src.train.train_utils import fit_models
 from src.train.tuning import perform_hpo
 from src.utils.files import (
@@ -456,7 +456,7 @@ def train_deep_models():
         # Update builder params with runtime arguments
         builder_params.update(
             {
-                'input_shape': X_train.shape[1:],
+                'input_shapes': [X_train.shape[1:]],
                 'lower_quantiles': [q for q in QUANTILES if q < 0.5],
                 'upper_quantiles': [q for q in QUANTILES if q > 0.5]
             }
@@ -477,7 +477,7 @@ def train_deep_models():
                 y_train=y_tr,
                 val_size=VAL_SIZE,
                 n_splits=K_FOLDS,
-                builder_func=build_dmq_v0,
+                builder_func=build_dmq,
                 fit_params=fit_params,
                 early_stopping_args=EARLY_STOPPING_ARGS,
                 grid=DMQ_GRID,
@@ -498,7 +498,7 @@ def train_deep_models():
         estimators = fit_models(
             X_tr,
             y_tr,
-            build_dmq_v0,
+            build_dmq,
             model_name=study_name,
             hps=best_params,
             fit_params=fit_params,

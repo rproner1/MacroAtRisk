@@ -37,81 +37,47 @@ training:
   
   builder_params:
     DMQs:
-      n_recurrent_layers: 1
-      n_shared_layers: 1
-      n_qtask_layers: 1
-      n_recurrent_nodes: 32
-      n_shared_nodes: 32
-      n_task_nodes: 32
-      recurrent_layer_type: 'lstm'
-      norm_fn: 'layer'
-      recurrent_norm: true
-      shared_norm: true
-      task_norm: true
+      # input_shapes: updated at runtime
+      shared_recurrent_sizes: [32]
+      shared_dense_sizes: [32]
+      task_sizes: [32]
+      # l2: tuned
+      # lr: tuned
+      # lower_quantiles: updated at runtime 
+      # upper_quantiles: updated at runtime
+      recurrent_type: 'lstm'
+      dense_activation: 'relu'
+      dense_kernel_initializer: 'glorot_uniform'
+      # bias_initializers: use default (None)
       loss_weights: [0.28, 0.17, 0.11, 0.17, 0.28] 
-    DMQm:
-      n_recurrent_layers: 2
-      n_shared_layers: 2
-      n_qtask_layers: 2
-      n_recurrent_nodes: 32
-      n_shared_nodes: 32
-      n_task_nodes: 32
-      recurrent_layer_type: 'lstm'
-      norm_fn: 'layer'
-      recurrent_norm: true
-      shared_norm: true
-      task_norm: true
-    DMQl:
-      n_recurrent_layers: 3
-      n_shared_layers: 3
-      n_qtask_layers: 3
-      n_recurrent_nodes: 32
-      n_shared_nodes: 32
-      n_task_nodes: 32
-      recurrent_layer_type: 'lstm'
-      norm_fn: 'layer'
-      recurrent_norm: true
-      shared_norm: true
-      task_norm: true
-    # xDMQs:
-    #   n_recurrent_layers: 1 # Number of stacked slstm blocks
-    #   num_heads: 8
-    #   n_shared_layers: 1 # No effect with slstm block
-    #   n_qtask_layers: 1
-    #   n_recurrent_nodes: 64
-    #   n_shared_nodes: 64
-    #   n_task_nodes: 64
-    #   recurrent_layer_type: 'slstm_block'
-    #   norm_fn: 'layer'
-    #   recurrent_norm: true
-    #   shared_norm: true
-    #   task_norm: true
-    # xDMQm:
-    #   n_recurrent_layers: 2 # Number of stacked slstm blocks
-    #   num_heads: 8
-    #   n_shared_layers: 2 # No effect with slstm block
-    #   n_qtask_layers: 2
-    #   n_recurrent_nodes: 64
-    #   n_shared_nodes: 32
-    #   n_task_nodes: 16
-    #   recurrent_layer_type: 'slstm_block'
-    #   norm_fn: 'layer'
-    #   recurrent_norm: true
-    #   shared_norm: true
-    #   task_norm: true
-    # xDMQl:
-    #   n_recurrent_layers: 3 # Number of stacked slstm blocks
-    #   num_heads: 8
-    #   n_shared_layers: 3 # No effect with slstm block
-    #   n_qtask_layers: 3
-    #   n_recurrent_nodes: 64
-    #   n_shared_nodes: 64
-    #   n_task_nodes: 64
-    #   recurrent_layer_type: 'slstm_block'
-    #   norm_fn: 'layer'
-    #   recurrent_norm: true
-    #   shared_norm: true
-    #   task_norm: true
+    DMQs:
+      # input_shapes: updated at runtime
+      shared_recurrent_sizes: [32,32]
+      shared_dense_sizes: [32,32]
+      task_sizes: [32,32]
+      # l2: tuned
+      # lr: tuned
+      # lower_quantiles: updated at runtime 
+      # upper_quantiles: updated at runtime
+      recurrent_type: 'lstm'
+      dense_activation: 'relu'
+      dense_kernel_initializer: 'glorot_uniform'
+      # bias_initializers: use default (None)
+      loss_weights: [0.28, 0.17, 0.11, 0.17, 0.28]
+    # DMQl:
+    #   # input_shapes: updated at runtime
+    #   shared_recurrent_sizes: [32,32,32]
+    #   shared_dense_sizes: [32,32,32]
+    #   task_sizes: [32,32,32]
+    #   # l2: tuned
+    #   # lr: tuned
+    #   # lower_quantiles: updated at runtime 
+    #   # upper_quantiles: updated at runtime
+    #   recurrent_type: 'lstm'
+    #   dense_activation: 'relu'
+    #   dense_kernel_initializer: 'glorot_uniform'
+    #   # bias_initializers: use default (None)
+    #   loss_weights: [0.28, 0.17, 0.11, 0.17, 0.28]
 
 tuning:
   optuna_storage: 'journal'
@@ -125,24 +91,6 @@ tuning:
         type: 'float'
         values: [0.0005, 0.002]
         log_scale: true
-    # RID:
-    #   l2:
-    #     type: 'float'
-    #     values: [0.00001, 1.0]
-    #     log_scale: true
-    #   lr:
-    #     type: 'float'
-    #     values: [0.0005, 0.002]
-    #     log_scale: true
-    # LAS:
-    #   l1:
-    #     type: 'float'
-    #     values: [0.00001, 1.0]
-    #     log_scale: true
-    #   lr:
-    #     type: 'float'
-    #     values: [0.0005, 0.002]
-    #     log_scale: true
     EN:
       l1:
         type: 'float'
