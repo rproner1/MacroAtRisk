@@ -486,10 +486,11 @@ def build_dmq(
 
     shared_layers = recurrent_layers + dense_layers
 
+    net_input = inputs[0] if len(inputs) == 1 else keras.layers.Concatenate()(inputs)
     shared_net = keras.models.Sequential(
-        shared_layers, 
+        shared_layers,
         name='shared_net'
-    )(inputs)
+    )(net_input)
 
     outputs = []
     for q in quantiles:
