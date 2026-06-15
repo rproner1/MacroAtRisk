@@ -559,8 +559,6 @@ def prepare_non_rnn_data(
         train_cutoff_year,
         val_months,
         test_months,
-        imputer=None,
-        scaler=None,
         target_scale_factor=100
     ):
 
