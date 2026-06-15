@@ -179,8 +179,6 @@ if LOCAL_TEST:
     OPTUNA_STORAGE = 'inmemory'
 
 
-
-
 def train_linear_models():
     """Train linear shelf models (Naive, AR1, LR, LASSO)."""
     logging.info(f"Training linear models for {TARGET_NAME_DICT[TARGET_IDX]} ({YEAR})...")
