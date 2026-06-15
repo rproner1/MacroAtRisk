@@ -10,7 +10,7 @@ def _get_missing_years(files, start_year: int = 1997, end_year: int = 2023):
     
     years_present = []
     for f in files:
-        year = re.search(r'\d{4}').group()
+        year = re.search(r'\d{4}', f).group()
         years_present.append(year)
     
     years_expected = list(range(start_year, end_year + 1))
@@ -67,7 +67,11 @@ def concat_preds(
                 warnings.warn(f'Predictions missing for years {missing}')
 
             # Concatenate predictions within model families
-            dir_preds_df = pd.concat(dir_preds)
+            # Allow for some model types to be missing
+            if len(dir_preds) > 0:
+                dir_preds_df = pd.concat(dir_preds)
+            else:
+                dir_preds_df = pd.DataFrame()
             
             target_preds.append(dir_preds_df)
 
@@ -125,3 +129,70 @@ def r2_score(
     )
 
     return r2
+
+def _compute_r1_scores(
+        y_true: pd.DataFrame|pd.Series|np.ndarray,
+        y_pred: pd.DataFrame|np.ndarray, 
+        benchmark: pd.DataFrame|np.ndarray,
+        quantiles: list[float]|None = None
+    ):
+
+    '''
+    Given a dataframe of a model's predictions and a list of quantiels, 
+    compute R1 for each quantile and the average R1.
+    Predictions should be arranged from lowest quantile to highest
+    '''
+
+    if isinstance(y_true, pd.DataFrame) or isinstance(y_true, pd.Series):
+        y_true = y_true.values.flatten()
+    if isinstance(y_pred, pd.DataFrame):
+        y_pred = y_pred.values
+    if isinstance(benchmark, pd.DataFrame):
+        benchmark = benchmark.values
+
+    if quantiles is None:
+        quantiles = [.05, .25, .5, .75, .95]
+        
+    int_quantiles = [int(q*100) for q in quantiles]
+
+    scores = {}
+
+    for i, q in enumerate(quantiles):
+        y_pred_q = y_pred[:,i]
+        benchmark_q = benchmark[:, i]
+        r1_q = r1_score(
+            y_true=y_true,
+            y_pred=y_pred_q,
+            benchmark=benchmark_q,
+            q=q
+        )
+        scores[q] = r1_q
+
+    scores['Mean'] = np.mean(list(scores.values()))
+
+    return scores
+
+def get_r1_results_df(
+        y_true: pd.Series,
+        preds_df: pd.DataFrame,
+        benchmark: pd.DataFrame,
+        models: list[str],
+        quantiles: list[float]
+):
+    
+    results = {}
+    for model in models:
+        model_cols = [c for c in preds_df if model in c]
+        model_preds = preds_df.loc[:, model_cols]
+
+        # Compute R1 for each quantile for the model
+        model_r1_scores = _compute_r1_scores(
+            y_true=y_true, 
+            y_pred=model_preds,
+            benchmark=benchmark,
+            quantiles=quantiles
+        )
+        results[model] = model_r1_scores
+
+    return pd.DataFrame(results)
+
