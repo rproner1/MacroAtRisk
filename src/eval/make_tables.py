@@ -3,13 +3,15 @@ Consolidated table generation module for R1 and R2 score evaluation.
 """
 import pandas as pd
 import numpy as np
-from src.train.fit_naive import expanding_stats
-from src.utils.evaluation import compute_oos_r1_score, compute_oos_r2_score, estimate_mean_from_quantiles
-
 import os
 import argparse
 from pathlib import Path
 from datetime import date
+
+from src.train.fit_naive import expanding_stats
+from src.utils.evaluation import compute_oos_r1_score, compute_oos_r2_score, estimate_mean_from_quantiles
+from src.eval.eval_utils import r1_score, r2_score
+
 
 
 TARGET_DICT = {
@@ -24,60 +26,114 @@ BENCHMARK_MODEL_BY_TARGET = {
     2: 'UAR'
 }
 
+def _compute_r1_scores(
+        y_true: pd.DataFrame|pd.Series|np.ndarray,
+        y_pred: pd.DataFrame|np.ndarray, 
+        benchmark: pd.DataFrame|np.ndarray,
+        quantiles: list[float]|None = None
+    ):
+
+    '''
+    Given a dataframe of a model's predictions and a list of quantiels, 
+    compute R1 for each quantile and the average R1.
+    Predictions should be arranged from lowest quantile to highest
+    '''
+
+    if isinstance(y_true, pd.DataFrame) or isinstance(y_true, pd.Series):
+        y_true = y_true.values.flatten()
+    if isinstance(y_pred, pd.DataFrame):
+        y_pred = y_pred.values
+    if isinstance(benchmark, pd.DataFrame):
+        benchmark = benchmark.values
+
+    if quantiles is None:
+        quantiles = [.05, .25, .5, .75, .95]
+        
+    int_quantiles = [int(q*100) for q in quantiles]
+
+    scores = {}
+
+    for i, q in enumerate(quantiles):
+        y_pred_q = y_pred[:,i]
+        benchmark_q = benchmark[:, i]
+        r1_q = r1_score(
+            y_true=y_true,
+            y_pred=y_pred_q,
+            benchmark=benchmark_q,
+            q=q
+        )
+        scores[q] = r1_q
+
+    scores['Mean'] = np.mean(scores.values())
+
+    return scores
+
+def _compute_r2_scores(
+        y_true: pd.DataFrame|pd.Series|np.ndarray,
+        y_pred: pd.DataFrame|np.ndarray, 
+        benchmark: pd.DataFrame|np.ndarray
+):
+    
+    pass
 
 def _compute_r1_results_df(
-    target_idx: int,
-    targets_path: Path,
-    pred_path: Path,
-    horizon_in_quarters: int,
-    quantiles: list[float],
-    test_start: str,
-    test_end: str
-) -> pd.DataFrame:
-    """Compute R1 results by model for a single target."""
+        
+):
+    pass
 
-    if target_idx not in TARGET_DICT:
-        raise ValueError(f"Invalid target_idx: {target_idx}. Must be 0, 1, or 2.")
+# def _compute_r1_results_df(
+#     target_idx: int,
+#     targets_path: Path,
+#     pred_path: Path,
+#     horizon_in_quarters: int,
+#     quantiles: list[float],
+#     test_start: str,
+#     test_end: str
+# ) -> pd.DataFrame:
+#     """Compute R1 results by model for a single target."""
 
-    target_name = TARGET_DICT[target_idx]
+#     if target_idx not in TARGET_DICT:
+#         raise ValueError(f"Invalid target_idx: {target_idx}. Must be 0, 1, or 2.")
 
-    y_full = pd.read_csv(targets_path, index_col=0, parse_dates=True).loc['1961-01-01':'2024-12-01', :]
-    naive_preds = expanding_stats(
-        y_full,
-        col=target_name,
-        quantiles=[int(q * 100) for q in quantiles],
-        lag=(3 * horizon_in_quarters + 1)
-    ).loc[test_start:test_end]
+#     target_name = TARGET_DICT[target_idx]
 
-    preds = pd.read_csv(pred_path, index_col=0, parse_dates=True).loc[test_start:test_end]
-    models_list = sorted(set([c.split('_')[0] for c in preds.columns if '_' in c]))
-    actuals = y_full.loc[test_start:test_end, target_name]
+#     y_full = pd.read_csv(targets_path, index_col=0, parse_dates=True).loc['1961-01-01':'2024-12-01', :]
+#     naive_preds = expanding_stats(
+#         y_full,
+#         col=target_name,
+#         quantiles=[int(q * 100) for q in quantiles],
+#         lag=(3 * horizon_in_quarters + 1)
+#     ).loc[test_start:test_end]
 
-    results = []
-    for model in models_list:
-        for q in quantiles:
-            q_int = int(q * 100)
-            model_q_preds = preds.loc[:, f"{model}_Q{q_int}"]
+#     preds = pd.read_csv(pred_path, index_col=0, parse_dates=True).loc[test_start:test_end]
+#     models_list = sorted(set([c.split('_')[0] for c in preds.columns if '_' in c]))
+#     actuals = y_full.loc[test_start:test_end, target_name]
 
-            r1 = compute_oos_r1_score(
-                y_true=actuals.values.flatten(),
-                y_pred=model_q_preds.values.flatten(),
-                benchmark_pred=naive_preds.loc[test_start:test_end, f"Expanding_Q{q_int}"].values.flatten(),
-                q=q
-            )
+#     results = []
+#     for model in models_list:
+#         for q in quantiles:
+#             q_int = int(q * 100)
+#             model_q_preds = preds.loc[:, f"{model}_Q{q_int}"]
 
-            results.append({
-                'Model': model,
-                'Quantile': q,
-                'R1': r1
-            })
+#             r1 = compute_oos_r1_score(
+#                 y_true=actuals.values.flatten(),
+#                 y_pred=model_q_preds.values.flatten(),
+#                 benchmark_pred=naive_preds.loc[test_start:test_end, f"Expanding_Q{q_int}"].values.flatten(),
+#                 q=q
+#             )
 
-    r1_results_df = pd.DataFrame(results).pivot(index='Model', columns='Quantile', values='R1').reset_index().apply(
-        lambda x: round(x, 1) if x.name != 'Model' else x
-    )
-    r1_results_df['Mean'] = r1_results_df.loc[:, quantiles].mean(axis=1)
-    r1_results_df = r1_results_df.sort_values('Mean', ascending=False)
-    return r1_results_df
+#             results.append({
+#                 'Model': model,
+#                 'Quantile': q,
+#                 'R1': r1
+#             })
+
+#     r1_results_df = pd.DataFrame(results).pivot(index='Model', columns='Quantile', values='R1').reset_index().apply(
+#         lambda x: round(x, 1) if x.name != 'Model' else x
+#     )
+#     r1_results_df['Mean'] = r1_results_df.loc[:, quantiles].mean(axis=1)
+#     r1_results_df = r1_results_df.sort_values('Mean', ascending=False)
+#     return r1_results_df
 
 
 def _format_latex_cell(value: float) -> str:

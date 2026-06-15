@@ -1,21 +1,30 @@
 import pandas as pd 
 import numpy as np
 import os
-import sys
-from src.data.prepare_data import prepare_quantile_data
-from operator import itemgetter
+from pathlib import Path
+import yaml
+from sklearn.
+
+from src.data.prepare_data import prepare_non_rnn_data
 
 
-DATA_DIR = "/home/rproner/Documents/Data/MacroAtRisk/"
-PRED_DIR = f"/home/rproner/Documents/Projects/MacroAtRisk/naive_predictions/"
+DATA_DIR = Path('data/processed/')
+PRED_DIR = Path('naive_predictions/')
 
 os.makedirs(PRED_DIR, exist_ok=True)
 
-# sys.argv: [1] job_array year ; [2] run locally bool
-QUANTILES = [10, 25, 50, 75, 90]
-target_dict = {0: 'Infl_yoy', 1: 'IP_yoy', 2: 'Unrate_yoy'}
-COUNTRY = 'us'
-HORIZON_IN_QUARTERS = 4 # In quarters, 1 or 4
+with open("./config/config_file.yaml", "r") as f:
+    config = yaml.safe_load(f)
+
+# data
+data_cfg = config['data']
+COUNTRY = data_cfg['country']
+HORIZON_IN_QUARTERS = data_cfg['horizon_in_quarters'] # In quarters, 1 or 4
+
+# Other
+QUANTILES = config['quantiles']
+TARGET_DICT = {0: 'Infl_yoy', 1: 'IP_yoy', 2: 'Unrate_yoy'}
+
 
 # Expanding mean and quantiles (lagged by 12 months)
 LAG = 3*HORIZON_IN_QUARTERS + 1  # months extra for announcement delay
