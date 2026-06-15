@@ -18,8 +18,11 @@ from src.figures.make_figures import make_quantile_plots, make_mean_plots
 load_dotenv()
 
 # ----- Configuration -----
-with open("./config/config.yaml", "r") as f:
+with open("./config/config_file.yaml", "r") as f:
     config = yaml.safe_load(f)
+
+with open("./config/eval_config.yaml", "r") as f:
+    eval_config = yaml.safe_load(f)
 
 parser = argparse.ArgumentParser(description="Generate results and tables")
 parser.add_argument('--target', type=str, default='all', help="Target(s) to evaluate: 'all' (default), 'Infl', 'IP', or 'Unrate'")
@@ -39,9 +42,9 @@ parser.add_argument("--test-start", type=str, default='1998-01-01',
                     help="Test set start date. Options (with year-long buffer): {Tech bubble '2000-03-01', GFC '2006-12-01', Covid '2019-02-01'} ")
 parser.add_argument("--test-end", type=str, default='2024-12-01',
                     help="Test set end date Options with year-long buffer, except COVID which we extend to the end of the sample (Tech bubble '2002-11-01', GFC '2010-06-01', Covid '2024-12-01')")
-parser.add_argument("--start-year", type=int, default=None,
-                    help="First prediction year (default: from config)")
-parser.add_argument("--end-year", type=int, default=None,
+parser.add_argument("--start-year", type=int, default=1997,
+                    help="First prediction year (default: 1997)")
+parser.add_argument("--end-year", type=int, default=2023,
                     help="Last prediction year (default: from config)")
 parser.add_argument("--plot-quantiles", action="store_true", help="Whether to generate quantile plots")
 parser.add_argument("--plot-means", action="store_true", help="Whether to generate mean plots")
@@ -61,22 +64,31 @@ elif _target_arg in TARGET_NAME_TO_IDX:
 else:
     raise ValueError(f"Invalid --target '{args.target}'. Choose from: all, Infl, IP, Unrate")
 TARGET_IDX = TARGET_ORDER[0]
-DATE = args.date if args.date is not None else config.get('date', str(date.today()))
-SHELF_DATE = args.shelf_date if args.shelf_date is not None else args.date
-ST_DATE = args.st_date if args.st_date is not None else args.date
-COUNTRY = args.country if args.country is not None else config['country']
-HORIZON = args.horizon if args.horizon is not None else config['horizon_in_quarters']
-QUANTILES = args.quantiles if args.quantiles is not None else config['quantiles']
-TEST_START = args.test_start if args.test_start is not None else config['test_start']
-TEST_END = args.test_end if args.test_end is not None else config['test_end']
-START_YEAR = args.start_year if args.start_year is not None else config['start_year']
-END_YEAR = args.end_year if args.end_year is not None else config['end_year']
-TARGET_FILE = config['target_file']
+
+# Command line arguments
+DATE = args.date 
+SHELF_DATE = args.shelf_date if args.shelf_date is not None else DATE
+ST_DATE = args.st_date if args.st_date is not None else DATE
+TEST_START = args.test_start
+TEST_END = args.test_end 
+START_YEAR = args.start_year
+END_YEAR = args.end_year
 PLOT_QUANTILES = args.plot_quantiles
 PLOT_MEANS = args.plot_means
 RUN_LOCALLY = args.run_locally
-BASE_DIR = Path(os.getenv('REMOTE_BASE_DIR')) if not RUN_LOCALLY else Path(os.getenv('LOCAL_BASE_DIR'))
 
+# Data
+data_config = config['data']
+COUNTRY = data_config['country']
+HORIZON = data_config['horizon_in_quarters']
+TARGET_FILE = data_config['target_file']
+
+# General
+QUANTILES = config['quantiles']
+MODELS_SUBSET = eval_config['base_models_subset']
+
+# Paths
+BASE_DIR = Path('.')
 DATA_DIR = BASE_DIR / 'data' / 'processed'
 SHELF_PRED_DIR = BASE_DIR / 'predictions' / 'shelf_preds' / SHELF_DATE
 LIT_BENCH_PRED_DIR = BASE_DIR  / 'lit_benchmark_predictions' 
@@ -88,7 +100,7 @@ RESULTS_DIR = BASE_DIR / "results" / DATE
 TABLES_DIR = BASE_DIR / "results_tables" / DATE
 FIGURES_DIR = BASE_DIR / "results_figures" / DATE
 
-target_path = DATA_DIR / TARGET_FILE
+TARGET_PATH = DATA_DIR / TARGET_FILE
 
 target_name_dict = {0: 'Infl_yoy', 1: 'IP_yoy', 2: 'Unrate_yoy'}
 target_name = target_name_dict[TARGET_IDX]
@@ -122,11 +134,11 @@ def main():
     selected_label = '/'.join(target_labels[i] for i in TARGET_ORDER)
     print(f"\nStep 2: Generating combined R1 table body across {selected_label}...")
     make_r1_multitarget_table_body(
-        targets_path=DATA_DIR / config['target_file'],
+        targets_path=TARGET_PATH,
         pred_dir=PRED_DIR,
         results_dir=RESULTS_DIR,
         tables_dir=TABLES_DIR,
-        base_models_subset=config['base_models_subset'],
+        base_models_subset=MODELS_SUBSET,
         country=COUNTRY,
         horizon_in_quarters=HORIZON,
         quantiles=QUANTILES,
@@ -138,11 +150,11 @@ def main():
 
     print(f"\nStep 3: Generating combined R2 table across {selected_label}...")
     make_r2_multitarget_table(
-        targets_path=DATA_DIR / config['target_file'],
+        targets_path=TARGET_PATH,
         pred_dir=PRED_DIR,
         results_dir=RESULTS_DIR,
         tables_dir=TABLES_DIR,
-        base_models_subset=config['base_models_subset'],
+        base_models_subset=MODELS_SUBSET,
         country=COUNTRY,
         horizon_in_quarters=HORIZON,
         quantiles=QUANTILES,
@@ -155,11 +167,11 @@ def main():
     print("\nStep 4: Generating pairwise Diebold-Mariano tables...")
     if args.dm_test:
         make_dm_tables(
-            targets_path=DATA_DIR / config['target_file'],
+            targets_path=TARGET_PATH,
             pred_dir=PRED_DIR,
             results_dir=RESULTS_DIR,
             tables_dir=TABLES_DIR,
-            base_models_subset=config['base_models_subset'],
+            base_models_subset=MODELS_SUBSET,
             country=COUNTRY,
             horizon_in_quarters=HORIZON,
             quantiles=QUANTILES,
@@ -174,7 +186,7 @@ def main():
         print("\nStep 5: Generating quantile plots...")
         make_quantile_plots(
             target_idx=TARGET_IDX,
-            targets_path=DATA_DIR / config['target_file'],
+            targets_path=TARGET_PATH,
             pred_path=PRED_DIR / f'all_models_predictions_{COUNTRY}_{HORIZON}q_{target_name}.csv',
             fig_dir=FIGURES_DIR,
             country=COUNTRY,
@@ -189,7 +201,7 @@ def main():
         print("\nStep 6: Generating mean plots...")
         make_mean_plots(
             target_idx=TARGET_IDX,
-            targets_path=DATA_DIR / config['target_file'],
+            targets_path=TARGET_PATH,
             pred_path=PRED_DIR / f'all_models_predictions_{COUNTRY}_{HORIZON}q_{target_name}.csv',
             fig_dir=FIGURES_DIR,
             country=COUNTRY,
