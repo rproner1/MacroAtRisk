@@ -10,7 +10,7 @@ from pathlib import Path
 import logging
 
 
-fred_dict = {
+FRED_DICT = {
     "1": [
         "RPI",
         "W875RX1",
@@ -155,7 +155,7 @@ fred_dict = {
     ]
 }
 
-jkp_dict = {
+JKP_DICT = {
     "Accruals": [
         "cowc_gr1a",
         "oaccruals_at",
@@ -336,6 +336,10 @@ jkp_dict = {
         "sale_me"
     ]
 }
+
+MACRO_VARS = sum(FRED_DICT.values(), [])
+FIN_VARS = sum(JKP_DICT.values(), [])
+
 
 
 def _split_dates(
@@ -550,18 +554,31 @@ def _scale_features(
 
     return X_train_scaled, X_val_scaled, X_test_scaled
 
-
+def _get_feature_indicies(
+        X: pd.DataFrame,
+        groups: list[list[str]]
+):
+    idx = []
+    for g in groups:
+        g_idx = []
+        for c in g:
+            if c in X.columns:
+                g_idx.append(X.columns.get_loc(c))
+            else:
+                continue
+        idx.append(g_idx)
+        
+    return idx
 
 def prepare_non_rnn_data(
-        targets_path,
-        input_paths,
-        start_date,
-        train_cutoff_year,
-        val_months,
-        test_months,
-        imputer=None,
-        scaler=None,
-        target_scale_factor=100
+        targets_path: list[str|Path],
+        input_paths: list[str|Path],
+        start_date: str,
+        train_cutoff_year: int,
+        val_months: int = 24,
+        test_months: int = 12,
+        target_scale_factor: int|float = 100,
+        split_groups: list[list[str]] = None
     ):
 
     # Read and merge data
@@ -609,6 +626,13 @@ def prepare_non_rnn_data(
         X_train, X_val, X_test
     )
 
+    # Split inputs into lists of groups
+    if split_groups is not None:
+        feat_idx = _get_feature_indicies(X_train, split_groups)
+        X_train = _split_inputs_into_categories(X_train, feat_idx)
+        X_val = _split_inputs_into_categories(X_val, feat_idx)
+        X_test = _split_inputs_into_categories(X_test, feat_idx)
+
     if target_scale_factor:
         targets_train *= target_scale_factor
         targets_val *= target_scale_factor
@@ -616,21 +640,34 @@ def prepare_non_rnn_data(
 
     return X_train, X_val, X_test, targets_train, targets_val, targets_test
 
-def _split_inputs_into_categories(X_train, X_val, X_test):
+def _split_inputs_into_categories(
+        X: pd.DataFrame|np.ndarray, 
+        groups: list[list[int]],
+        axis: int|None = None
+):  
+    
+    if isinstance(X, pd.DataFrame):
+        return [X.iloc[:,g] for g in groups]
+    elif isinstance(X, np.ndarray):
+        
+        if axis is None:
+            result = [np.take(X, g, axis=0) for g in groups]
+        else:
+            result = [np.take(X, g, axis=axis) for g in groups]
+        
+        return result
 
-    pass
-
-    # return X_train_list, X_val_list, X_test_list
 
 def prepare_rnn_data(
-        targets_path,
-        input_paths,
-        start_date,
-        train_cutoff_year,
-        val_months,
-        test_months,
-        n_timesteps=12,
-        target_scale_factor=100
+        targets_path: list[str|Path],
+        input_paths: list[str|Path],
+        start_date: str,
+        train_cutoff_year: int,
+        val_months: int = 24,
+        test_months: int = 12,
+        n_timesteps: int = 12,
+        target_scale_factor: int|float = 100,
+        split_groups: list[list[str]] = None
     ):
 
 
@@ -649,6 +686,7 @@ def prepare_rnn_data(
         test_months,
         target_scale_factor=target_scale_factor
     )
+
 
     train_data = pd.concat([X_train, targets_train], axis=1)
 
@@ -677,5 +715,46 @@ def prepare_rnn_data(
         n_targets=targets_train.shape[1]
     )
 
+    if split_groups is not None:
+        feat_idx = _get_feature_indicies(X_train, split_groups)
+        X_train_rnn = _split_inputs_into_categories(
+            X_train_rnn, 
+            feat_idx,
+            axis=2
+        )
+        X_val_rnn = _split_inputs_into_categories(
+            X_val_rnn, 
+            feat_idx,
+            axis=2
+        )
+        X_test_rnn = _split_inputs_into_categories(
+            X_test_rnn, 
+            feat_idx,
+            axis=2
+        )
+
+
     return (X_train_rnn, X_val_rnn, X_test_rnn, 
             targets_train_rnn, targets_val_rnn, targets_test_rnn)
+
+def concatenate_multi_input_data(
+        X1: list[pd.DataFrame|np.ndarray],
+        X2: list[pd.DataFrame|np.ndarray],
+        axis: int = 0
+):
+    
+    zipped = zip(X1, X2)
+
+    is_pandas = all(isinstance(x1, pd.DataFrame) for x1 in X1)
+    is_numpy = all(isinstance(x1, np.ndarray) for x1 in X1)
+    if is_pandas:
+        X_c = [pd.concat([x1,x2], axis=axis) for x1,x2 in zipped]
+    elif is_numpy:
+        X_c = [np.concatenate([x1,x2], axis=axis) for x1,x2 in zipped]
+    else:
+        raise ValueError(
+            'List elements must be either pd.DataFrame '
+            f'or np.ndarray. Received {type(X1[0])}'
+        )
+    
+    return X_c 
