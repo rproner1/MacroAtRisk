@@ -375,6 +375,7 @@ def _build_rnn_layers(
         normalization_layer=None,
         kernel_regularizer=None,
         recurrent_regularizer=None,
+        dropout=0.0,
         return_sequences=True
 ):
 
@@ -398,7 +399,7 @@ def _build_rnn_layers(
             )
         )
 
-        if normalization_layer:
+        if normalization_layer and (layer_type != 'ln_lstm'):
             rnn_layers.append(
                 normalization_layer()
             )
@@ -440,13 +441,13 @@ def _build_dense_layers(
 
 def build_dmq(
         input_shapes,
-        shared_recurrent_sizes = [32],
-        shared_dense_sizes = [16],
-        task_sizes = [8],
+        shared_recurrent_sizes = None,
+        shared_dense_sizes = None,
+        task_sizes = None,
         l2=0.0,
         lr=3e-4,
-        lower_quantiles = [0.05,0.25], 
-        upper_quantiles = [0.75,0.95],
+        lower_quantiles = None, 
+        upper_quantiles = None,
         recurrent_type='lstm',
         dense_activation='relu',
         dense_kernel_initializer='he_normal',
@@ -454,14 +455,26 @@ def build_dmq(
         loss_weights = None
 ):
     
+    if shared_recurrent_sizes is None:
+        shared_recurrent_sizes = [32]
+    if shared_dense_sizes is None: 
+        shared_dense_sizes = [32]
+    if task_sizes is None:
+        task_sizes = [32]
+    if lower_quantiles is None:
+        lower_quantiles = [0.05, 0.25]
+    if upper_quantiles is None:
+        upper_quantiles = [0.75, 0.95]
+    
+    
     inputs = _build_input_layer(input_shapes)
 
     quantiles = lower_quantiles + [0.5] + upper_quantiles
 
-    if not loss_weights:
+    if loss_weights is None:
         loss_weights = [1/len(quantiles)] * len(quantiles)
 
-    if not bias_initializers:
+    if bias_initializers is None:
         bias_initializers = {
             q: 'zeros' for q in quantiles
         }
@@ -471,7 +484,6 @@ def build_dmq(
         num_heads=None,
         normalization_layer=keras.layers.LayerNormalization,
         layer_type=recurrent_type,
-        kernel_regularizer=keras.regularizers.L2(l2),
         return_sequences=False
     )
 
@@ -480,7 +492,6 @@ def build_dmq(
         activation=dense_activation,
         normalization_layer=keras.layers.LayerNormalization,
         kernel_initializer=dense_kernel_initializer,
-        kernel_regularizer=keras.regularizers.L2(l2),
         normalize_last=True
     )
 
@@ -499,7 +510,6 @@ def build_dmq(
             activation=dense_activation,
             normalization_layer=keras.layers.LayerNormalization,
             kernel_initializer=dense_kernel_initializer,
-            kernel_regularizer=keras.regularizers.L2(l2),
             normalize_last=False
         )
 
@@ -507,7 +517,6 @@ def build_dmq(
             keras.layers.Dense(
                 1, 
                 activation='linear', 
-                kernel_regularizer=keras.regularizers.L2(l2), 
                 bias_initializer=bias_initializers.get(q, 'zeros'),
                 name=f'q{q}_task_out_layer'
             )
@@ -527,7 +536,10 @@ def build_dmq(
 
     model.compile(
         loss=loss, 
-        optimizer=keras.optimizers.Adam(learning_rate=lr),
+        optimizer=keras.optimizers.AdamW(
+            learning_rate=lr,
+            weight_decay=l2
+        ),
     )
 
     return model
@@ -747,7 +759,7 @@ def build_dmq_v1(
     return model
 
 def build_dmq_v0(
-        input_shape, 
+        input_shapes, 
         n_recurrent_layers=1, 
         num_heads=1,
         n_shared_layers=1, 
@@ -801,7 +813,7 @@ def build_dmq_v0(
     else:
         raise ValueError("recurrent_layer_type must be 'lstm', 'slstm', or 'gru'")
 
-    inputs = keras.layers.Input(shape=input_shape)
+    inputs = _build_input_layer(input_shapes)
 
     shared_layers = []
     
