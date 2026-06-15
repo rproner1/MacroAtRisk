@@ -26,48 +26,6 @@ BENCHMARK_MODEL_BY_TARGET = {
     2: 'UAR'
 }
 
-def _compute_r1_scores(
-        y_true: pd.DataFrame|pd.Series|np.ndarray,
-        y_pred: pd.DataFrame|np.ndarray, 
-        benchmark: pd.DataFrame|np.ndarray,
-        quantiles: list[float]|None = None
-    ):
-
-    '''
-    Given a dataframe of a model's predictions and a list of quantiels, 
-    compute R1 for each quantile and the average R1.
-    Predictions should be arranged from lowest quantile to highest
-    '''
-
-    if isinstance(y_true, pd.DataFrame) or isinstance(y_true, pd.Series):
-        y_true = y_true.values.flatten()
-    if isinstance(y_pred, pd.DataFrame):
-        y_pred = y_pred.values
-    if isinstance(benchmark, pd.DataFrame):
-        benchmark = benchmark.values
-
-    if quantiles is None:
-        quantiles = [.05, .25, .5, .75, .95]
-        
-    int_quantiles = [int(q*100) for q in quantiles]
-
-    scores = {}
-
-    for i, q in enumerate(quantiles):
-        y_pred_q = y_pred[:,i]
-        benchmark_q = benchmark[:, i]
-        r1_q = r1_score(
-            y_true=y_true,
-            y_pred=y_pred_q,
-            benchmark=benchmark_q,
-            q=q
-        )
-        scores[q] = r1_q
-
-    scores['Mean'] = np.mean(scores.values())
-
-    return scores
-
 def _compute_r2_scores(
         y_true: pd.DataFrame|pd.Series|np.ndarray,
         y_pred: pd.DataFrame|np.ndarray, 

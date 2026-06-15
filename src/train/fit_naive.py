@@ -3,7 +3,6 @@ import numpy as np
 import os
 from pathlib import Path
 import yaml
-from sklearn.
 
 from src.data.prepare_data import prepare_non_rnn_data
 
