@@ -19,7 +19,7 @@ from copy import deepcopy
 from src.data.prepare_data import prepare_non_rnn_data, prepare_rnn_data
 from src.train.shelf_models import *
 from src.train.losses import make_tilted_loss, make_total_tilted_loss
-from src.train.models import build_dmq_v0
+from src.train.models import build_dmq
 from src.train.train_utils import fit_models
 from src.train.tuning import perform_hpo
 from src.utils.files import (
@@ -65,7 +65,7 @@ parser.add_argument(
     type=str, 
     nargs='+', 
     default=["all"],
-    choices=["linear", "trees", "deep", "all"],
+    choices=['naive', 'lit', "linear", "trees", "deep", "all"],
     help="Type(s) of models to train (e.g. --model-type trees deep)"
 )
 parser.add_argument(
@@ -82,11 +82,6 @@ parser.add_argument(
         "(reduces hyperparameter tuning for quick testing)"
     )
 )
-parser.add_argument(
-    "--fit-lit-bench", 
-    action="store_true", 
-    help="Fit models from the literature. Only needs to be run once."
-)
 
 args = parser.parse_args()
 
@@ -96,7 +91,6 @@ YEAR = args.year
 TARGET_IDX = args.target
 MODEL_TYPE = args.model_type
 LOCAL_TEST = args.local_test
-FIT_LIT_BENCH = args.fit_lit_bench
 
 # Paths
 BASE_DIR = Path('./')
@@ -104,13 +98,23 @@ DATA_DIR = BASE_DIR / 'data' / 'processed'
 SHELF_MODEL_DIR = BASE_DIR / 'models' / 'shelf_models' / DATE
 SHELF_PRED_DIR = BASE_DIR / 'predictions' / 'shelf_preds' / DATE
 SHELF_TUNING_LOG_PATH = BASE_DIR / 'tuning_logs' / f"shelf_tuning_log_{DATE}.json"
-LIT_BENCH_PRED_DIR = BASE_DIR / 'predictions' / 'lit_bench_preds' / DATE
+NAIVE_PRED_DIR = BASE_DIR / 'predictions' / 'naive_preds' 
+LIT_BENCH_PRED_DIR = BASE_DIR / 'predictions' / 'lit_bench_preds'
 DEEP_MODEL_DIR = BASE_DIR / 'models' / 'st_models' / DATE 
 DEEP_PRED_DIR = BASE_DIR / 'predictions' / 'st_preds' / DATE
 DEEP_TUNING_LOG_PATH = BASE_DIR / 'tuning_logs' / f"st_tuning_log_{DATE}.json"
 DEEP_OPTUNA_JOURNAL_PATH = BASE_DIR / 'tuning_logs' / f"st_optuna_journal_{DATE}.log"
 
-for path in [SHELF_MODEL_DIR, SHELF_PRED_DIR, SHELF_TUNING_LOG_PATH.parent, LIT_BENCH_PRED_DIR, DEEP_MODEL_DIR, DEEP_PRED_DIR, DEEP_TUNING_LOG_PATH.parent]:
+for path in [
+    NAIVE_PRED_DIR,
+    LIT_BENCH_PRED_DIR,
+    SHELF_MODEL_DIR,
+    SHELF_PRED_DIR, 
+    SHELF_TUNING_LOG_PATH.parent, 
+    DEEP_MODEL_DIR, 
+    DEEP_PRED_DIR, 
+    DEEP_TUNING_LOG_PATH.parent
+]:
     os.makedirs(path, exist_ok=True)
 
 # Other
@@ -179,44 +183,127 @@ if LOCAL_TEST:
     OPTUNA_STORAGE = 'inmemory'
 
 
-
-
-def train_linear_models():
-    """Train linear shelf models (Naive, AR1, LR, LASSO)."""
-    logging.info(f"Training linear models for {TARGET_NAME_DICT[TARGET_IDX]} ({YEAR})...")
-
-    (
-        X_train, X_val, X_test,
-        t_train, t_val, t_test
-    ) = prepare_non_rnn_data(
+def _load_shelf_data(
         targets_path=TARGET_PATH,
         input_paths=INPUT_PATHS,
         start_date=START_DATE,
         train_cutoff_year=YEAR,
         val_months=VAL_MONTHS,
         test_months=TEST_MONTHS,
-        target_scale_factor=TARGET_SCALE_FACTOR
+        target_scale_factor=TARGET_SCALE_FACTOR,
+        target_idx=TARGET_IDX
+):
+
+    (
+        X_train, X_val, X_test,
+        t_train, t_val, t_test
+    ) = prepare_non_rnn_data(
+        targets_path=targets_path,
+        input_paths=input_paths,
+        start_date=start_date,
+        train_cutoff_year=train_cutoff_year,
+        val_months=val_months,
+        test_months=test_months,
+        target_scale_factor=target_scale_factor
     )
 
     X_train_full = pd.concat([X_train, X_val])
 
-    y_train = t_train.iloc[:, TARGET_IDX]
-    y_val = t_val.iloc[:, TARGET_IDX]
+    y_train = t_train.iloc[:, target_idx]
+    y_val = t_val.iloc[:, target_idx]
     y_train_full = pd.concat([y_train, y_val])
 
-    all_preds = {}
+    return (
+        X_train, 
+        X_val, 
+        X_train_full,
+        X_test,
+        y_train,
+        y_val,
+        y_train_full
+    )
+
+def train_naive_models():
+
+    (
+        X_train, 
+        X_val, 
+        X_train_full,
+        X_test,
+        y_train,
+        y_val,
+        y_train_full
+    ) = _load_shelf_data()
 
     # Naive models
     naive_preds = fit_dummy(X_train_full, y_train_full, X_test, QUANTILES)
-    all_preds.update(naive_preds)
+    
+    # Save predictions
+    output_path = (
+        NAIVE_PRED_DIR 
+        / (
+            f"naive_predictions_{COUNTRY}_{HORIZON_IN_QUARTERS}q_"
+            f"{TARGET_NAME}_{YEAR}.csv"
+        )
+    )
+    pd.DataFrame(naive_preds, index=TEST_IDX).to_csv(output_path)
+
+    print(f"Naive benchmark predictions saved to {output_path}")
+
+def train_ar1_model():
+
+    (
+        X_train, 
+        X_val, 
+        X_train_full,
+        X_test,
+        y_train,
+        y_val,
+        y_train_full
+    ) = _load_shelf_data(
+        input_paths = [DATA_DIR / f"{COUNTRY}_{HORIZON_IN_QUARTERS}q_ar1_x.csv"]
+    )
+
+    # grab lag of forecast target
+    X_train_full = X_train_full.iloc[:,TARGET_IDX]
+    X_test = X_test.iloc[:, TARGET_IDX]
+
+    ar1_preds = fit_ar1(
+        X_train=X_train_full,
+        y_train=y_train_full,
+        X_test=X_test,
+        quantiles=QUANTILES,
+        target_name=TARGET_NAME,
+        year=YEAR
+    )
+
+    return ar1_preds
+
+def train_linear_models():
+    """Train linear shelf models (Naive, AR1, LR, LASSO)."""
+    logging.info(f"Training linear models for {TARGET_NAME_DICT[TARGET_IDX]} ({YEAR})...")
+
+    (
+        X_train, 
+        X_val, 
+        X_train_full,
+        X_test,
+        y_train,
+        y_val,
+        y_train_full
+    ) = _load_shelf_data()
+
+    all_preds = {}
 
     # AR(1) models
-    ar1_x_path = DATA_DIR / f"{COUNTRY}_{HORIZON_IN_QUARTERS}q_ar1_x.csv"
-    X_ar1 = pd.read_csv(ar1_x_path, index_col=0, parse_dates=True)
-    X_train_ar1 = X_ar1.loc['1961-02-01':f'{YEAR}-12-01', f"{TARGET_NAME}_t-1"]
-    X_test_ar1 = X_ar1.loc[f'{YEAR+1}-01-01': f'{YEAR+1}-12-01', f"{TARGET_NAME}_t-1"]
-    y_train_ar1 = y_train_full.loc['1961-02-01':f'{YEAR}-12-01']
-    ar1_preds = fit_ar1(X_train_ar1, y_train_ar1, X_test_ar1, QUANTILES, TARGET_NAME, YEAR, verbose=False)
+    # ar1_x_path = DATA_DIR / f"{COUNTRY}_{HORIZON_IN_QUARTERS}q_ar1_x.csv"
+    # X_ar1 = pd.read_csv(ar1_x_path, index_col=0, parse_dates=True)
+    # X_train_ar1 = X_ar1.loc['1961-02-01':f'{YEAR}-12-01', f"{TARGET_NAME}_t-1"]
+    # X_test_ar1 = X_ar1.loc[f'{YEAR+1}-01-01': f'{YEAR+1}-12-01', f"{TARGET_NAME}_t-1"]
+    # y_train_ar1 = y_train_full.loc['1961-02-01':f'{YEAR}-12-01']
+    # ar1_preds = fit_ar1(X_train_ar1, y_train_ar1, X_test_ar1, QUANTILES, TARGET_NAME, YEAR, verbose=False)
+
+    ar1_preds = train_ar1_model()
     all_preds.update(ar1_preds)
 
     fit_params = deepcopy(FIT_PARAMS) 
@@ -253,30 +340,20 @@ def train_linear_models():
     preds_df.to_csv(output_path)
     logging.info(f"Linear model predictions saved to {output_path}")
 
-
 def train_tree_models():
     """Train tree-based shelf models (QRF, QGB)."""
     logging.info(f"Training tree models for {TARGET_NAME_DICT[TARGET_IDX]} ({YEAR})...")
 
     # Prepare data
     (
-        X_train, X_val, X_test,
-        t_train, t_val, t_test
-    ) = prepare_non_rnn_data(
-        targets_path=TARGET_PATH,
-        input_paths=INPUT_PATHS,
-        start_date=START_DATE,
-        train_cutoff_year=YEAR,
-        val_months=VAL_MONTHS,
-        test_months=TEST_MONTHS,
-        target_scale_factor=TARGET_SCALE_FACTOR
-    )
-
-    X_train_full = pd.concat([X_train, X_val])
-
-    y_train = t_train.iloc[:, TARGET_IDX]
-    y_val = t_val.iloc[:, TARGET_IDX]
-    y_train_full = pd.concat([y_train, y_val])
+        X_train, 
+        X_val, 
+        X_train_full,
+        X_test,
+        y_train,
+        y_val,
+        y_train_full
+    ) = _load_shelf_data()
 
     all_preds = {}
 
@@ -324,30 +401,22 @@ def train_tree_models():
 
     logging.info(f"Tree model predictions saved to {output_path}")
 
-
 def train_lit_bench_models():
     """Train literature benchmark models (VG, IAR, UAR)."""
     logging.info(f"Training literature benchmark models for {TARGET_NAME} ({YEAR})...")
     
     # Prepare data
     (
-        X_train, X_val, X_test,
-        t_train, t_val, t_test
-    ) = prepare_non_rnn_data(
-        targets_path=TARGET_PATH,
-        input_paths=BENCHMARK_INPUT_PATHS,
-        start_date=START_DATE,
-        train_cutoff_year=YEAR,
-        val_months=VAL_MONTHS,
-        test_months=TEST_MONTHS,
-        target_scale_factor=TARGET_SCALE_FACTOR
+        X_train, 
+        X_val, 
+        X_train_full,
+        X_test,
+        y_train,
+        y_val,
+        y_train_full
+    ) = _load_shelf_data(
+        input_paths=BENCHMARK_INPUT_PATHS
     )
-
-    X_train_full = pd.concat([X_train, X_val])
-
-    y_train = t_train.iloc[:, TARGET_IDX]
-    y_val = t_val.iloc[:, TARGET_IDX]
-    y_train_full = pd.concat([y_train, y_val])
     
     
     # Fit quantile regression models
@@ -375,7 +444,7 @@ def train_deep_models():
     """Train deep learning models"""
     logging.info(f"Training deep models for {TARGET_NAME} ({YEAR})...")
 
-    # Prepare data (including RNN sequences)
+    # Prepare data
     (
         X_train, X_val, X_test,
         t_train, t_val, t_test
@@ -456,7 +525,7 @@ def train_deep_models():
         # Update builder params with runtime arguments
         builder_params.update(
             {
-                'input_shape': X_train.shape[1:],
+                'input_shapes': [X_train.shape[1:]],
                 'lower_quantiles': [q for q in QUANTILES if q < 0.5],
                 'upper_quantiles': [q for q in QUANTILES if q > 0.5]
             }
@@ -477,7 +546,7 @@ def train_deep_models():
                 y_train=y_tr,
                 val_size=VAL_SIZE,
                 n_splits=K_FOLDS,
-                builder_func=build_dmq_v0,
+                builder_func=build_dmq,
                 fit_params=fit_params,
                 early_stopping_args=EARLY_STOPPING_ARGS,
                 grid=DMQ_GRID,
@@ -498,7 +567,7 @@ def train_deep_models():
         estimators = fit_models(
             X_tr,
             y_tr,
-            build_dmq_v0,
+            build_dmq,
             model_name=study_name,
             hps=best_params,
             fit_params=fit_params,
@@ -558,11 +627,13 @@ def main():
                 tuning_log_path,
             )
 
+    run_all = "all" in MODEL_TYPE
 
-    if FIT_LIT_BENCH:
+    if run_all or 'lit' in MODEL_TYPE:
         train_lit_bench_models()
 
-    run_all = "all" in MODEL_TYPE
+    if run_all or 'naive' in MODEL_TYPE:
+        train_naive_models()
 
     if run_all or "linear" in MODEL_TYPE:
         train_linear_models()
