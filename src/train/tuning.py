@@ -134,9 +134,22 @@ class CVObjective:
     def __call__(self, trial):
         trial_kwargs = self._sample_trial_kwargs(trial)
 
-        cv_losses = Parallel(n_jobs=self.n_jobs, return_as='generator', prefer='threads')(
-            delayed(self._fit_and_evaluate_on_split)(trial_kwargs.copy(), train_idx, test_idx)
-            for train_idx, test_idx in KFold(n_splits=self.n_splits).split(self.X_tr)
+        
+        if isinstance(self.X_tr, list):
+            X_tr = self.X_tr[0]
+        else:
+            X_tr = self.X_tr
+
+        cv_losses = Parallel(
+            n_jobs=self.n_jobs, 
+            return_as='generator', 
+            prefer='threads'
+        )(
+            delayed(self._fit_and_evaluate_on_split)(
+                trial_kwargs.copy(), 
+                train_idx, test_idx
+            )
+            for train_idx, test_idx in KFold(n_splits=self.n_splits).split(X_tr)
         )
 
         mean_cv_loss = np.mean(list(cv_losses))
