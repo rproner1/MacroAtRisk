@@ -74,10 +74,12 @@ class LayerNormLSTMCell(keras.layers.Layer):
                                  initializer='zeros',
                                  name='b')
         
+        self.layer_norm.build((None, 4 * self.units))
+
         self.built = True
-    
+
     def call(self, inputs, states):
-        h_prev, c_prev = states 
+        h_prev, c_prev = states
 
         z = keras.ops.matmul(inputs, self.kernel) + keras.ops.matmul(h_prev, self.recurrent_kernel) + self.biases
 
@@ -116,6 +118,7 @@ class LayerNormLSTMCell(keras.layers.Layer):
             }
         )
         return config
+    
 
 class sLSTMCell(keras.layers.Layer):
     def __init__(
