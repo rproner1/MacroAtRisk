@@ -4,9 +4,9 @@
 # ---------------------------------------------------------------------
 #SBATCH --account=rrg-camera
 #SBATCH --cpus-per-task=4
-#SBATCH --time=0-20:00
-#SBATCH --mem=32G
-#SBATCH --array=1997
+#SBATCH --time=03-00:00
+#SBATCH --mem=240G
+#SBATCH --array=1997-2023
 #SBATCH --output=output/slurm-%A_%a.out
 #SBATCH --mail-user=robert.proner@mail.utoronto.ca
 #SBATCH --mail-type=ALL
