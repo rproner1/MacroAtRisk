@@ -562,7 +562,6 @@ def train_deep_models():
         else:
             logging.info(f"No existing hyperparameters for {study_name}, optimizing...")
             
-            print([x.shape[1:] for x in X_tr.shape])
             best_params = perform_hpo(
                 X_train=X_tr,
                 y_train=y_tr,
