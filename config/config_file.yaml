@@ -10,7 +10,7 @@ data:
   ]
   target_file: 'us_4q_fred_y.csv'
   time_steps: 12
-  val_months: 60  # Number of months for early stopping
+  val_months: 24  # Number of months for early stopping
   test_months: 12 # Size of test set
   target_scale_factor: 100
 
@@ -38,46 +38,46 @@ training:
   builder_params:
     DMQs:
       # input_shapes: updated at runtime
-      shared_recurrent_sizes: [32]
+      shared_recurrent_sizes: [4]
       shared_dense_sizes: [32]
       task_sizes: [32]
       # l2: tuned
       # lr: tuned
       # lower_quantiles: updated at runtime 
       # upper_quantiles: updated at runtime
-      recurrent_type: 'lstm'
+      recurrent_type: 'ln_lstm'
       dense_activation: 'relu'
-      dense_kernel_initializer: 'glorot_uniform'
+      dense_kernel_initializer: 'he_normal'
       # bias_initializers: use default (None)
       loss_weights: [0.28, 0.17, 0.11, 0.17, 0.28] 
-    DMQs:
+    DMQm:
       # input_shapes: updated at runtime
-      shared_recurrent_sizes: [32,32]
+      shared_recurrent_sizes: [4,4]
       shared_dense_sizes: [32,32]
       task_sizes: [32,32]
       # l2: tuned
       # lr: tuned
       # lower_quantiles: updated at runtime 
       # upper_quantiles: updated at runtime
-      recurrent_type: 'lstm'
+      recurrent_type: 'ln_lstm'
       dense_activation: 'relu'
-      dense_kernel_initializer: 'glorot_uniform'
+      dense_kernel_initializer: 'he_normal'
       # bias_initializers: use default (None)
       loss_weights: [0.28, 0.17, 0.11, 0.17, 0.28]
-    # DMQl:
-    #   # input_shapes: updated at runtime
-    #   shared_recurrent_sizes: [32,32,32]
-    #   shared_dense_sizes: [32,32,32]
-    #   task_sizes: [32,32,32]
-    #   # l2: tuned
-    #   # lr: tuned
-    #   # lower_quantiles: updated at runtime 
-    #   # upper_quantiles: updated at runtime
-    #   recurrent_type: 'lstm'
-    #   dense_activation: 'relu'
-    #   dense_kernel_initializer: 'glorot_uniform'
-    #   # bias_initializers: use default (None)
-    #   loss_weights: [0.28, 0.17, 0.11, 0.17, 0.28]
+    DMQl:
+      # input_shapes: updated at runtime
+      shared_recurrent_sizes: [4,4,4]
+      shared_dense_sizes: [32,32]
+      task_sizes: [32,32]
+      # l2: tuned
+      # lr: tuned
+      # lower_quantiles: updated at runtime 
+      # upper_quantiles: updated at runtime
+      recurrent_type: 'ln_lstm'
+      dense_activation: 'relu'
+      dense_kernel_initializer: 'he_normal'
+      # bias_initializers: use default (None)
+      loss_weights: [0.28, 0.17, 0.11, 0.17, 0.28]
 
 tuning:
   optuna_storage: 'journal'
@@ -108,8 +108,12 @@ tuning:
   dmq_grid:
     l2:
       type: 'float'
-      values: [0.00001, 0.0001]
-      log_scale: true
+      values: [0.0, 1.0]
+      log_scale: false
+    dropout:
+      type: 'float'
+      values: [0.0, 0.5]
+      log_scale: false
     lr:
       type: 'float'
       values: [0.0005, 0.002]
