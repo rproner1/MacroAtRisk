@@ -6,6 +6,7 @@ import warnings
 import re
 from sklearn.metrics import mean_pinball_loss, mean_squared_error
 
+
 def _get_missing_years(files, start_year: int = 1997, end_year: int = 2023):
     
     years_present = []
@@ -18,6 +19,37 @@ def _get_missing_years(files, start_year: int = 1997, end_year: int = 2023):
     missing = list(set(years_expected) - set(years_present))
 
     return missing
+
+def estimate_mean_from_quantiles(
+        preds, 
+        weights: list[float]|None=None
+    ):
+    if weights is None:
+        return np.mean(preds, axis=1).flatten()
+    else:
+        return (preds @ np.array(weights).reshape(-1,1)).flatten()
+
+def get_mean_preds(
+        quantile_preds: pd.DataFrame,
+        models: list[str],
+        weights: list[float]|None=None
+):
+
+    mean_preds = {}           
+    for model in models:
+        model_cols = [c for c in quantile_preds.columns if model in c]
+        if 'Naive_Mean' in model_cols:
+            model_cols.remove('Naive_Mean')
+        
+        model_preds = quantile_preds.loc[:, model_cols]
+        model_mean_preds = estimate_mean_from_quantiles(
+            model_preds.values,
+            weights=weights
+        )
+        mean_preds[model] = model_mean_preds
+    
+    mean_preds_df = pd.DataFrame(mean_preds, index=quantile_preds.index)
+    return mean_preds_df
 
 
 def concat_preds(
@@ -105,7 +137,7 @@ def r1_score(
         1 
         - mean_pinball_loss(y_true=y_true, y_pred=y_pred, alpha=q)
         / mean_pinball_loss(y_true=y_true, y_pred=benchmark, alpha=q)
-    )
+    ) * 100
 
     return r1
         
@@ -126,7 +158,7 @@ def r2_score(
         1 
         - mean_squared_error(y_true=y_true, y_pred=y_pred)
         / mean_squared_error(y_true=y_true, y_pred=benchmark)
-    )
+    ) * 100
 
     return r2
 
@@ -166,7 +198,7 @@ def _compute_r1_scores(
             benchmark=benchmark_q,
             q=q
         )
-        scores[q] = r1_q
+        scores[str(int_quantiles[i])] = r1_q
 
     scores['Mean'] = np.mean(list(scores.values()))
 
@@ -196,3 +228,20 @@ def get_r1_results_df(
 
     return pd.DataFrame(results)
 
+def get_r2_results_df(
+        y_true: pd.Series,
+        preds_df: pd.DataFrame,
+        benchmark: pd.Series,
+        models: list[str],
+):
+    r2s = {}
+    for model in models:
+        r2s[model] = [
+            r2_score(
+                y_true=y_true,
+                y_pred=preds_df.loc[:,model],
+                benchmark=benchmark
+            )
+        ]
+    
+    return pd.DataFrame(r2s)

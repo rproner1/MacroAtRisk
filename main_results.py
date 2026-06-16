@@ -13,7 +13,9 @@ from datetime import date
 from operator import itemgetter
 from src.eval.eval_utils import (
     concat_preds,
-    get_r1_results_df
+    get_r1_results_df,
+    get_r2_results_df,
+    get_mean_preds
 )
 from src.data.concat_preds import concat_predictions
 from src.eval.make_tables import make_r1_multitarget_table_body, make_r2_multitarget_table
@@ -42,7 +44,7 @@ parser.add_argument(
 parser.add_argument(
     "--date", 
     type=str, 
-    default=None, 
+    default=str(date.today()), 
     help="Date identifier for results (default: from config)"
 )
 parser.add_argument(
@@ -150,6 +152,7 @@ def main():
     targets = pd.read_csv(TARGETS_PATH, index_col=0, parse_dates=True)
 
     all_r1_results = {}
+    all_r2_results = {}
     for target in TARGETS:
 
         preds_file = f'all_models_predictions_{COUNTRY}_{HORIZON}q_{target}.csv'
@@ -170,12 +173,7 @@ def main():
         q_benchmark_cols = [f'Naive_Q{q}' for q in INT_QUANTILES]
         target_q_benchmark = target_preds.loc[:, q_benchmark_cols]
 
-        # Compute R1 results -> dataframe of R1 for quantile x model
-        # TODO Compute r1 results
-
-        # print(y_true.shape, y_true)
-        # print(target_preds.shape, target_preds)
-
+        # Compute R1 scores for each model and quantile 
         r1_results_df = get_r1_results_df(
             y_true=y_true,
             preds_df=target_preds,
@@ -185,13 +183,25 @@ def main():
         )
         all_r1_results[target] = r1_results_df
         
-        # TODO Get mean predictions from quantiles
-        
+        # Get mean predictions from quantiles
+        mean_preds = get_mean_preds(
+            quantile_preds=target_preds,
+            models=MODELS,
+            weights=[0.15, 0.225, 0.25, 0.225, 0.15]
+        )
 
-        # TODO Compute R2 results
-
-        # TODO store results somehow
+        # Compute R2 results
+        r2_df = get_r2_results_df(
+            y_true=y_true,
+            preds_df=mean_preds,
+            benchmark=target_preds['Naive_Mean'],
+            models=MODELS
+        )
+        all_r2_results[target] = r2_df
     
+    # Save results
+
+    # R1 results
     all_r1_results_df = pd.concat(all_r1_results)
     all_r1_results_df.index.names = ['Target', 'Quantile']
     all_r1_results_df.index = all_r1_results_df.index.set_levels(
@@ -206,6 +216,24 @@ def main():
     all_r1_results_df.to_latex(
         TABLES_DIR / f'r1_{COUNTRY}_{HORIZON}q_{TEST_START}-{TEST_END}.tex',
         multirow=True,
+        float_format="%.2f"
+    )
+
+    # R2 results
+    all_r2_results_df = pd.concat(all_r2_results).droplevel(1)
+    all_r2_results_df.index.name = 'Target'
+
+    all_r2_results_df.index = all_r2_results_df.index.str.replace(
+        r'_yoy', '', regex=False
+    )
+
+    all_r2_results_df.to_csv(
+        RESULTS_DIR / f'r2_{COUNTRY}_{HORIZON}q_{TEST_START}-{TEST_END}.csv'
+    )
+
+    all_r2_results_df.to_latex(
+        TABLES_DIR / f'r2_{COUNTRY}_{HORIZON}q_{TEST_START}-{TEST_END}.tex',
+        multirow=False,
         float_format="%.2f"
     )
 

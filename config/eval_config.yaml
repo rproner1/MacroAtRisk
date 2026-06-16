@@ -1,5 +1,5 @@
 target_file: 'us_4q_fred_y.csv'
-target_scaling: 100
+target_scaling: 1
 make_results: true
 make_r1_tables: true
 models: [
