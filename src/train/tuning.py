@@ -10,9 +10,11 @@ import logging
 from src.utils.files import save_hyperparameters
 
 def _take_rows(data, indices):
+    
     if hasattr(data, 'iloc'):
         return data.iloc[indices]
-    return np.asarray(data)[indices]
+    else:
+        return np.asarray(data)[indices]
 
 
 def _filter_builder_kwargs(builder_func, params):
@@ -90,13 +92,27 @@ class CVObjective:
         return trial_kwargs
 
     def _fit_and_evaluate_on_split(self, trial_kwargs, train_idx, test_idx):
-        X_train = _take_rows(self.X_tr, train_idx)
+        
+        if isinstance(self.X_tr, list):
+            X_train = [_take_rows(x, train_idx) for x in self.X_tr]
+            X_test = [_take_rows(x, test_idx) for x in self.X_tr]
+        else:
+            X_train = _take_rows(self.X_tr, train_idx)
+            X_test = _take_rows(self.X_tr, test_idx)
+
         y_train = _take_rows(self.y_tr, train_idx)
-        X_test = _take_rows(self.X_tr, test_idx)
         y_test = _take_rows(self.y_tr, test_idx)
 
-        split_idx = int(len(X_train) * (1 - self.val_size))
-        X_train_split, X_val_split = X_train[:split_idx], X_train[split_idx:]
+        # Split the training set further for early stopping
+        if isinstance(self.X_tr, list):
+            split_idx = int(len(X_train[0]) * (1 - self.val_size))
+            X_train_split = [x[:split_idx] for x in X_train]
+            X_val_split = [x[split_idx:] for x in X_train]
+        else:
+            split_idx = int(len(X_train) * (1 - self.val_size))
+            X_train_split = X_train[:split_idx]
+            X_val_split = X_train[split_idx:]
+
         y_train_split, y_val_split = y_train[:split_idx], y_train[split_idx:]
 
         model = self.builder_func(**_filter_builder_kwargs(self.builder_func, trial_kwargs))
