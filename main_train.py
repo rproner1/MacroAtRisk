@@ -15,8 +15,13 @@ import optuna
 import warnings
 import keras
 from copy import deepcopy
+import json
 
-from src.data.prepare_data import prepare_non_rnn_data, prepare_rnn_data
+from src.data.prepare_data import (
+    prepare_non_rnn_data, 
+    prepare_rnn_data,
+    concatenate_multi_input_data
+)
 from src.train.shelf_models import *
 from src.train.losses import make_tilted_loss, make_total_tilted_loss
 from src.train.models import build_dmq
@@ -152,9 +157,16 @@ TEST_IDX = pd.date_range(
 )
 TARGET_SCALE_FACTOR = data_config['target_scale_factor']
 
+with open('data/fred_group_dict.json', 'r') as f:
+    FRED_GROUP_DICT = json.load(f)
+
+FRED_GROUPS = list(FRED_GROUP_DICT.values())
+
 # General
 QUANTILES = config['quantiles']
 PATH_QUANTILES = [int(q*100) for q in QUANTILES]
+LOWER_QUANTILES = sorted([q for q in QUANTILES if q < .5])
+UPPER_QUANTILES = sorted([q for q in QUANTILES if q > .5])
 
 # Tuning
 tuning_config = config['tuning']
@@ -181,6 +193,7 @@ if LOCAL_TEST:
     K_FOLDS=2
     TRIALS=1
     OPTUNA_STORAGE = 'inmemory'
+
 
 
 def _load_shelf_data(
@@ -456,10 +469,16 @@ def train_deep_models():
         n_timesteps=TIME_STEPS,
         val_months=VAL_MONTHS,
         test_months=TEST_MONTHS,
-        target_scale_factor=TARGET_SCALE_FACTOR
+        target_scale_factor=TARGET_SCALE_FACTOR,
+        split_groups=FRED_GROUPS
     )
 
-    X_train_full = np.concatenate([X_train, X_val], axis=0)
+    if isinstance(X_train, list):
+        X_train_full = concatenate_multi_input_data(X_train, X_val)
+        input_shapes = [x.shape[1:] for x in X_train_full]
+    else:
+        X_train_full = np.concatenate([X_train, X_val], axis=0)
+        input_shapes = [X_train_full.shape[1:]]
 
     y_train = t_train[:, TARGET_IDX]
     y_val = t_val[:, TARGET_IDX]
@@ -525,9 +544,9 @@ def train_deep_models():
         # Update builder params with runtime arguments
         builder_params.update(
             {
-                'input_shapes': [X_train.shape[1:]],
-                'lower_quantiles': [q for q in QUANTILES if q < 0.5],
-                'upper_quantiles': [q for q in QUANTILES if q > 0.5]
+                'input_shapes': input_shapes,
+                'lower_quantiles': LOWER_QUANTILES,
+                'upper_quantiles': UPPER_QUANTILES
             }
         )
         
