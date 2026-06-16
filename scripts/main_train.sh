@@ -4,9 +4,9 @@
 # ---------------------------------------------------------------------
 #SBATCH --account=rrg-camera
 #SBATCH --cpus-per-task=4
-#SBATCH --time=3-00:00
-#SBATCH --mem=140G
-#SBATCH --array=1997-2023
+#SBATCH --time=0-20:00
+#SBATCH --mem=32G
+#SBATCH --array=1997
 #SBATCH --output=output/slurm-%A_%a.out
 #SBATCH --mail-user=robert.proner@mail.utoronto.ca
 #SBATCH --mail-type=ALL
@@ -21,5 +21,5 @@ python -m pip install --no-index -r requirements.txt
 #python -m pip install --no-index ~/projects/rrg-camera/rproner/xlstm
 
 TARGET=0
-DATE=2026-06-12
+DATE=2026-06-16
 python main_train.py --year $SLURM_ARRAY_TASK_ID --date $DATE --target $TARGET --model-type deep
