@@ -25,6 +25,7 @@ from src.data.prepare_data import (
 from src.train.shelf_models import *
 from src.train.losses import make_tilted_loss, make_total_tilted_loss
 from src.train.models import build_dmq
+from src.train.slstm import LayerNormLSTMCell
 from src.train.train_utils import fit_models
 from src.train.tuning import perform_hpo
 from src.utils.files import (
@@ -502,6 +503,7 @@ def train_deep_models():
     
     # Custom objects for loading models
     custom_objects = {
+        'LayerNormLSTMCell': LayerNormLSTMCell,
         **{f'tilted_loss_{Q}': make_tilted_loss(Q) for Q in PATH_QUANTILES},
         **{
             f"total_tilted_loss_{'_'.join(map(str, PATH_QUANTILES))}": 
@@ -560,6 +562,7 @@ def train_deep_models():
         else:
             logging.info(f"No existing hyperparameters for {study_name}, optimizing...")
             
+            print([x.shape[1:] for x in X_tr.shape])
             best_params = perform_hpo(
                 X_train=X_tr,
                 y_train=y_tr,
