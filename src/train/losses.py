@@ -3,9 +3,7 @@ import warnings
 from statsmodels.regression.quantile_regression import QuantReg
 from statsmodels.tools.sm_exceptions import IterationLimitWarning
 from statsmodels.tools import add_constant
-import tensorflow as tf
 import keras
-from typing import List, Union
 
 def compute_quantile_subgradient(u: np.ndarray, q: float) -> float:
     """Check function for quantile regression."""
@@ -16,6 +14,8 @@ def quantile_loss(u: np.ndarray, q: float) -> float:
     return u * compute_quantile_subgradient(u, q)
 
 def compute_qpc(y: np.ndarray, X_s: np.ndarray , X_j: np.ndarray, q: float) -> float:
+
+    '''Computes quantile partial correlation between X_s and X_j'''
 
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=IterationLimitWarning)
@@ -34,45 +34,42 @@ def compute_qpc(y: np.ndarray, X_s: np.ndarray , X_j: np.ndarray, q: float) -> f
 
     return qpc
 
-
-
-def tilted_loss(y_true: tf.Tensor, y_pred: tf.Tensor, q: float=0.5) -> tf.Tensor:
+def tilted_loss(
+        y_true,
+        y_pred, 
+        q
+):
     """
     Computes tilted loss for quantile regression.
-
-    Parameters:
-    ----------
-    y_true: 
     """
-    # Cast both as float32 to avoid dtype issues
     e = y_true - y_pred
-    return tf.reduce_mean(tf.maximum(q * e, (q - 1.0) * e), axis=-1)
-
-def temporal_smooth_penalty(y_pred):
-    diff = y_pred[1:,:] - y_pred[:-1,:]
-    return tf.reduce_mean(tf.abs(diff))
+    return keras.ops.mean(keras.ops.maximum(q * e, (q - 1.0) * e), axis=-1)
 
 @keras.saving.register_keras_serializable()
-def make_tilted_loss(q: Union[float, int]):
-    q = float(q/100.0) if q > 1 else float(q)
+def make_tilted_loss(q: float):
+
     def loss(y_true, y_pred):
         e = y_true - y_pred
-        return tf.reduce_mean(tf.maximum(q * e, (q - 1.0) * e))
+        return keras.ops.mean(keras.ops.maximum(q * e, (q - 1.0) * e))
+    
     loss.__name__ = f"tilted_loss_{int(q*100)}"
+
     return loss
 
 @keras.saving.register_keras_serializable()
-def make_total_tilted_loss(quantiles: List[Union[float, int]], q_loss_weights: List[float]=[1.0]*5):
+def make_total_tilted_loss(
+    quantiles: list[float], 
+    q_loss_weights: list[float]|None = None
+):
     """
     Returns a loss function that computes the mean of tilted losses for the given quantiles.
-
-    Parameters:
-    ----------
-    quantiles: List of quantiles (as floats in (0,1) or ints in (1,100))
-        The quantiles for which to compute the tilted losses.
     """
-    qs = [q/100.0 if q > 1 else float(q) for q in quantiles]
-    loss_fns = [make_tilted_loss(q) for q in qs]
+
+    if q_loss_weights is None:
+        q_loss_weights = [1.0] * len(quantiles)
+
+    loss_fns = [make_tilted_loss(q) for q in quantiles]
+    
     def total_tilted_loss(y_true, y_pred):
         # y_pred shape: (batch, len(quantiles))
         losses = []
@@ -80,9 +77,10 @@ def make_total_tilted_loss(quantiles: List[Union[float, int]], q_loss_weights: L
         for i, lf in enumerate(loss_fns):
             losses.append(q_loss_weights[i] * lf(y_true, y_pred[:, i:i+1]))
 
-        return tf.add_n(losses) / tf.cast(len(losses), tf.float32) 
+        return keras.ops.mean(losses) 
 
-    total_tilted_loss.__name__ = "total_tilted_loss_" + "_".join(str(int(q*100)) for q in qs)
+    total_tilted_loss.__name__ = "total_tilted_loss_" + "_".join(str(int(q*100)) for q in quantiles)
+
     return total_tilted_loss
 
 

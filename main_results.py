@@ -27,6 +27,9 @@ load_dotenv()
 with open("./config/eval_config.yaml", "r") as f:
     config = yaml.safe_load(f)
 
+with open("./config/eval_config.yaml", "r") as f:
+    eval_config = yaml.safe_load(f)
+
 parser = argparse.ArgumentParser(description="Generate results and tables")
 
 parser.add_argument(

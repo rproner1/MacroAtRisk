@@ -64,6 +64,8 @@ def concat_predictions(
             preds_y = []
             if 'st' in model_types:
                 st_preds = pd.read_csv(st_pred_dir / f"st_model_predictions_{country}_{horizon_in_quarters}q_{target_name_dict[TARGET_IDX]}_{yr}.csv", index_col=0, parse_dates=True).loc[start:end]
+
+                st_preds /= 100
                 
                 preds_y.append(st_preds)
 
