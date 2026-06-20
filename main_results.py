@@ -10,16 +10,12 @@ import yaml
 import argparse
 from pathlib import Path
 from datetime import date
-from operator import itemgetter
 from src.eval.eval_utils import (
     concat_preds,
     get_r1_results_df,
     get_r2_results_df,
     get_mean_preds
 )
-from src.data.concat_preds import concat_predictions
-from src.eval.make_tables import make_r1_multitarget_table_body, make_r2_multitarget_table
-from src.eval.dm_tests import make_dm_tables
 from src.figures.make_figures import make_quantile_plots, make_mean_plots
 load_dotenv()
 
@@ -96,7 +92,9 @@ BASE_DIR =Path('.')
 DATA_DIR = BASE_DIR / 'data' / 'processed'
 NAIVE_PRED_DIR = BASE_DIR / 'predictions' / 'naive_preds'
 LIT_BENCH_PRED_DIR = BASE_DIR / 'predictions' / 'lit_bench_preds' 
-SHELF_PRED_DIR = BASE_DIR / 'predictions' / 'shelf_preds' / SHELF_DATE
+# SHELF_PRED_DIR = BASE_DIR / 'predictions' / 'shelf_preds' / SHELF_DATE
+LINEAR_PRED_DIR = BASE_DIR / 'predictions' / 'linear_preds' / DATE
+TREE_PRED_DIR = BASE_DIR / 'predictions' / 'tree_preds' / DATE
 ST_PRED_DIR = BASE_DIR / 'predictions' / 'st_preds' / ST_DATE
 CONCAT_PRED_DIR = BASE_DIR / 'predictions' / 'concatenated' / DATE
 RESULTS_DIR = BASE_DIR / "results" / DATE
@@ -106,7 +104,7 @@ FIGURES_DIR = BASE_DIR / "results_figures" / DATE
 for dir in [
     NAIVE_PRED_DIR,
     LIT_BENCH_PRED_DIR,
-    SHELF_PRED_DIR,
+    # SHELF_PRED_DIR,
     ST_PRED_DIR,
     CONCAT_PRED_DIR, 
     RESULTS_DIR, 
@@ -128,7 +126,7 @@ TARGETS_FILE = config['target_file']
 TARGETS_PATH = DATA_DIR / TARGETS_FILE
 TARGET_NAME_DICT = {0: 'Infl_yoy', 1: 'IP_yoy', 2: 'Unrate_yoy'}
 MODELS = config['models']
-
+TARGET_SCALE = config['target_scale']
 
 def main():
     """Combine predictions and generate evaluation tables and figures."""
@@ -140,7 +138,8 @@ def main():
             pred_dir_paths = [
                 NAIVE_PRED_DIR, 
                 LIT_BENCH_PRED_DIR,
-                SHELF_PRED_DIR,
+                LINEAR_PRED_DIR,
+                TREE_PRED_DIR,
                 ST_PRED_DIR 
             ],
             out_dir = CONCAT_PRED_DIR,
@@ -152,7 +151,8 @@ def main():
         )
 
     # Load targets 
-    targets = pd.read_csv(TARGETS_PATH, index_col=0, parse_dates=True)
+    targets = pd.read_csv(TARGETS_PATH, index_col=0, parse_dates=True) 
+    targets *= TARGET_SCALE
 
     all_r1_results = {}
     all_r2_results = {}
@@ -175,6 +175,11 @@ def main():
         
         q_benchmark_cols = [f'Naive_Q{q}' for q in INT_QUANTILES]
         target_q_benchmark = target_preds.loc[:, q_benchmark_cols]
+        target_mean_benchmark = target_preds.loc[:, 'Naive_Mean']
+        target_preds = target_preds.drop(
+            columns=(q_benchmark_cols + ['Naive_Mean'])
+        )
+        print(target_preds.columns)
 
         # Compute R1 scores for each model and quantile 
         r1_results_df = get_r1_results_df(
@@ -188,7 +193,7 @@ def main():
         
         # Get mean predictions from quantiles
         mean_preds = get_mean_preds(
-            quantile_preds=target_preds,
+            quantile_preds=target_preds.drop(columns=['AR1_Mean']),
             models=MODELS,
             weights=[0.15, 0.225, 0.25, 0.225, 0.15]
         )
@@ -197,7 +202,7 @@ def main():
         r2_df = get_r2_results_df(
             y_true=y_true,
             preds_df=mean_preds,
-            benchmark=target_preds['Naive_Mean'],
+            benchmark=target_mean_benchmark,
             models=MODELS
         )
         all_r2_results[target] = r2_df
@@ -240,59 +245,6 @@ def main():
         float_format="%.2f"
     )
 
-    # target_labels = {0: 'INFL', 1: 'IP', 2: 'UNRATE'}
-    # selected_label = '/'.join(target_labels[i] for i in TARGET_ORDER)
-    # print(f"\nStep 2: Generating combined R1 table body across {selected_label}...")
-
-    # make_r1_multitarget_table_body(
-    #     targets_path=TARGET_PATH,
-    #     pred_dir=CONCAT_PRED_DIR,
-    #     results_dir=RESULTS_DIR,
-    #     tables_dir=TABLES_DIR,
-    #     base_models_subset=config['base_models_subset'],
-    #     country=COUNTRY,
-    #     horizon_in_quarters=HORIZON,
-    #     quantiles=QUANTILES,
-    #     test_start=TEST_START,
-    #     test_end=TEST_END,
-    #     date_str=DATE,
-    #     target_order=TARGET_ORDER
-    # )
-
-    # print(f"\nStep 3: Generating combined R2 table across {selected_label}...")
-    # make_r2_multitarget_table(
-    #     targets_path=DATA_DIR / config['target_file'],
-    #     pred_dir=PRED_DIR,
-    #     results_dir=RESULTS_DIR,
-    #     tables_dir=TABLES_DIR,
-    #     base_models_subset=config['base_models_subset'],
-    #     country=COUNTRY,
-    #     horizon_in_quarters=HORIZON,
-    #     quantiles=QUANTILES,
-    #     test_start=TEST_START,
-    #     test_end=TEST_END,
-    #     date_str=DATE,
-    #     target_order=TARGET_ORDER
-    # )
-
-    # print("\nStep 4: Generating pairwise Diebold-Mariano tables...")
-    # if args.dm_test:
-    #     make_dm_tables(
-    #         targets_path=DATA_DIR / config['target_file'],
-    #         pred_dir=PRED_DIR,
-    #         results_dir=RESULTS_DIR,
-    #         tables_dir=TABLES_DIR,
-    #         base_models_subset=config['base_models_subset'],
-    #         country=COUNTRY,
-    #         horizon_in_quarters=HORIZON,
-    #         quantiles=QUANTILES,
-    #         test_start=TEST_START,
-    #         test_end=TEST_END,
-    #         alpha=0.05,
-    #         date_str=DATE,
-    #         target_order=TARGET_ORDER
-    #     )
-    
     # if PLOT_QUANTILES:
     #     print("\nStep 5: Generating quantile plots...")
     #     make_quantile_plots(
