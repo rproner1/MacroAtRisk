@@ -575,7 +575,8 @@ def train_deep_models():
             {
                 'input_shapes': input_shapes,
                 'lower_quantiles': LOWER_QUANTILES,
-                'upper_quantiles': UPPER_QUANTILES
+                'upper_quantiles': UPPER_QUANTILES,
+                'bias_initializers': bias_initializers
             }
         )
         
