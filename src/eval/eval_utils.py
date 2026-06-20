@@ -7,6 +7,8 @@ import re
 from sklearn.metrics import mean_pinball_loss, mean_squared_error
 
 
+
+
 def _get_missing_years(files, start_year: int = 1997, end_year: int = 2023):
     
     years_present = []
@@ -37,9 +39,7 @@ def get_mean_preds(
 
     mean_preds = {}           
     for model in models:
-        model_cols = [c for c in quantile_preds.columns if model in c]
-        if 'Naive_Mean' in model_cols:
-            model_cols.remove('Naive_Mean')
+        model_cols = [c for c in quantile_preds.columns if c.startswith(f"{model}_")]
         
         model_preds = quantile_preds.loc[:, model_cols]
         model_mean_preds = estimate_mean_from_quantiles(
@@ -96,7 +96,10 @@ def concat_preds(
                     start_year=start_year,
                     end_year=end_year
                 )
-                warnings.warn(f'Predictions missing for years {missing}')
+                warnings.warn(
+                    f'Predictions missing for years {missing} '
+                    f'in directory {dir_path}'    
+                )
 
             # Concatenate predictions within model families
             # Allow for some model types to be missing
