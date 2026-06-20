@@ -81,7 +81,7 @@ tuning:
   dmq_grid:
     l2:
       type: 'float'
-      values: [0.00001, 0.0001]
+      values: [0.00001, 0.001]
       log_scale: true
     lr:
       type: 'float'
