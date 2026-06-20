@@ -1048,7 +1048,7 @@ def build_dmq_v0(
                 1, 
                 activation='linear', 
                 kernel_regularizer=keras.regularizers.L1L2(l1,l2), 
-                kernel_initializer=initializer,
+                kernel_initializer='glorot_uniform',
                 bias_initializer=bias_initializers[q],
                 name=f'q{q}_task_out_layer_{i}'
             )
