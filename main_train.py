@@ -24,7 +24,7 @@ from src.data.prepare_data import (
 )
 from src.train.shelf_models import *
 from src.train.losses import make_tilted_loss, make_total_tilted_loss
-from src.train.models import build_dmq
+from src.train.models import build_dmq_v0
 from src.train.slstm import LayerNormLSTMCell
 from src.train.train_utils import fit_models
 from src.train.tuning import perform_hpo
@@ -59,7 +59,7 @@ parser.add_argument(
     help="Training cutoff year"
 )
 parser.add_argument(
-    "--target", 
+    "--target-idx", 
     type=int, 
     required=True, 
     help="Target index (0=Infl, 1=IP, 2=Unrate)"
@@ -94,7 +94,7 @@ args = parser.parse_args()
 # Command-line args
 DATE = args.date
 YEAR = args.year
-TARGET_IDX = args.target
+TARGET_IDX = args.target_idx
 MODEL_TYPE = args.model_type
 LOCAL_TEST = args.local_test
 
@@ -102,7 +102,10 @@ LOCAL_TEST = args.local_test
 BASE_DIR = Path('./')
 DATA_DIR = BASE_DIR / 'data' / 'processed'
 SHELF_MODEL_DIR = BASE_DIR / 'models' / 'shelf_models' / DATE
-SHELF_PRED_DIR = BASE_DIR / 'predictions' / 'shelf_preds' / DATE
+# SHELF_PRED_DIR = BASE_DIR / 'predictions' / 'shelf_preds' / DATE
+LINEAR_PRED_DIR = BASE_DIR / 'predictions' / 'linear_preds' / DATE
+TREE_PRED_DIR = BASE_DIR / 'predictions' / 'tree_preds' / DATE
+
 SHELF_TUNING_LOG_PATH = BASE_DIR / 'tuning_logs' / f"shelf_tuning_log_{DATE}.json"
 NAIVE_PRED_DIR = BASE_DIR / 'predictions' / 'naive_preds' 
 LIT_BENCH_PRED_DIR = BASE_DIR / 'predictions' / 'lit_bench_preds'
@@ -115,7 +118,9 @@ for path in [
     NAIVE_PRED_DIR,
     LIT_BENCH_PRED_DIR,
     SHELF_MODEL_DIR,
-    SHELF_PRED_DIR, 
+    # SHELF_PRED_DIR,
+    LINEAR_PRED_DIR,
+    TREE_PRED_DIR, 
     SHELF_TUNING_LOG_PATH.parent, 
     DEEP_MODEL_DIR, 
     DEEP_PRED_DIR, 
@@ -157,11 +162,29 @@ TEST_IDX = pd.date_range(
     freq='MS'
 )
 TARGET_SCALE_FACTOR = data_config['target_scale_factor']
+SPLIT_FEATURES = data_config['split_features']
+FEATURE_SPLIT_METHOD = data_config['split_by']
 
 with open('data/fred_group_dict.json', 'r') as f:
-    FRED_GROUP_DICT = json.load(f)
+    FRED_THEME_DICT = json.load(f)
 
-FRED_GROUPS = list(FRED_GROUP_DICT.values())
+with open('data/jkp_chars_dict.json', 'r') as f:
+    JKP_THEME_DICT = json.load(f)
+
+FRED_THEMES = list(FRED_THEME_DICT.values())
+MACRO_GROUP = sum(FRED_THEMES, start=[])
+
+JKP_THEMES = list(JKP_THEME_DICT.values())
+FINANCE_GROUP = sum(JKP_THEMES, start=[])
+
+if (FEATURE_SPLIT_METHOD == 'group') and SPLIT_FEATURES:
+    FEATURE_SPLITS = [MACRO_GROUP, FINANCE_GROUP]
+
+elif (FEATURE_SPLIT_METHOD == 'theme') and SPLIT_FEATURES:
+    FEATURE_SPLITS = FRED_THEMES + JKP_THEMES
+
+else: 
+    FEATURE_SPLITS = None
 
 # General
 QUANTILES = config['quantiles']
@@ -309,14 +332,6 @@ def train_linear_models():
 
     all_preds = {}
 
-    # AR(1) models
-    # ar1_x_path = DATA_DIR / f"{COUNTRY}_{HORIZON_IN_QUARTERS}q_ar1_x.csv"
-    # X_ar1 = pd.read_csv(ar1_x_path, index_col=0, parse_dates=True)
-    # X_train_ar1 = X_ar1.loc['1961-02-01':f'{YEAR}-12-01', f"{TARGET_NAME}_t-1"]
-    # X_test_ar1 = X_ar1.loc[f'{YEAR+1}-01-01': f'{YEAR+1}-12-01', f"{TARGET_NAME}_t-1"]
-    # y_train_ar1 = y_train_full.loc['1961-02-01':f'{YEAR}-12-01']
-    # ar1_preds = fit_ar1(X_train_ar1, y_train_ar1, X_test_ar1, QUANTILES, TARGET_NAME, YEAR, verbose=False)
-
     ar1_preds = train_ar1_model()
     all_preds.update(ar1_preds)
 
@@ -350,7 +365,11 @@ def train_linear_models():
         all_preds,
         index=TEST_IDX
     )
-    output_path = SHELF_PRED_DIR / f"linear_model_predictions_{COUNTRY}_{HORIZON_IN_QUARTERS}q_{TARGET_NAME}_{YEAR}.csv"
+    output_path = (
+        LINEAR_PRED_DIR 
+        / f"linear_model_predictions_{COUNTRY}_{HORIZON_IN_QUARTERS}q_"
+        f"{TARGET_NAME}_{YEAR}.csv"
+    )
     preds_df.to_csv(output_path)
     logging.info(f"Linear model predictions saved to {output_path}")
 
@@ -405,7 +424,7 @@ def train_tree_models():
     )
 
     output_path = (
-        SHELF_PRED_DIR 
+        TREE_PRED_DIR 
         / (
             f"tree_model_predictions_{COUNTRY}_{HORIZON_IN_QUARTERS}q_"
             f"{TARGET_NAME}_{YEAR}.csv"
@@ -471,7 +490,7 @@ def train_deep_models():
         val_months=VAL_MONTHS,
         test_months=TEST_MONTHS,
         target_scale_factor=TARGET_SCALE_FACTOR,
-        split_groups=FRED_GROUPS
+        split_groups=FEATURE_SPLITS
     )
 
     if isinstance(X_train, list):
@@ -503,7 +522,6 @@ def train_deep_models():
     
     # Custom objects for loading models
     custom_objects = {
-        'LayerNormLSTMCell': LayerNormLSTMCell,
         **{f'tilted_loss_{Q}': make_tilted_loss(Q) for Q in PATH_QUANTILES},
         **{
             f"total_tilted_loss_{'_'.join(map(str, PATH_QUANTILES))}": 
@@ -567,7 +585,7 @@ def train_deep_models():
                 y_train=y_tr,
                 val_size=VAL_SIZE,
                 n_splits=K_FOLDS,
-                builder_func=build_dmq,
+                builder_func=build_dmq_v0,
                 fit_params=fit_params,
                 early_stopping_args=EARLY_STOPPING_ARGS,
                 grid=DMQ_GRID,
@@ -588,7 +606,7 @@ def train_deep_models():
         estimators = fit_models(
             X_tr,
             y_tr,
-            build_dmq,
+            build_dmq_v0,
             model_name=study_name,
             hps=best_params,
             fit_params=fit_params,
@@ -652,15 +670,22 @@ def main():
 
     if run_all or 'lit' in MODEL_TYPE:
         train_lit_bench_models()
+        # Saved in separate dir
 
     if run_all or 'naive' in MODEL_TYPE:
         train_naive_models()
+        # Saved in separate dir
 
+    # shelf_preds = {}
     if run_all or "linear" in MODEL_TYPE:
         train_linear_models()
+        # shelf_preds.update(linear_preds)
 
     if run_all or "trees" in MODEL_TYPE:
         train_tree_models()
+        # shelf_preds.update(tree_preds)
+    
+    # Save shelf predictions 
 
     if run_all or "deep" in MODEL_TYPE:
         train_deep_models()
