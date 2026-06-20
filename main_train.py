@@ -206,6 +206,7 @@ DMQ_GRID = tuning_config['dmq_grid']
 # Training
 training_config = config['training']
 N_ESTIMATORS = training_config['n_estimators']
+INIT_BIAS = training_config['init_hist_bias']
 FIT_PARAMS = training_config['fit_params']
 EARLY_STOPPING_ARGS = training_config['early_stopping']
 BUILDER_PARAMS = training_config['builder_params']
@@ -552,6 +553,13 @@ def train_deep_models():
     fit_params.update(
         {'validation_data': validation_data}
     )
+
+    if INIT_BIAS:
+        bias_initializers = {
+            q: keras.initializers.Constant(y_train.quantile(q)) for q in QUANTILES
+        }
+    else:
+        bias_initializers = None # uses defaults ('zeros')
     
     # Train each model variant
     for model_type in model_names:
