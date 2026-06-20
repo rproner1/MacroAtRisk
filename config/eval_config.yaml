@@ -1,7 +1,10 @@
+target_file: 'us_4q_fred_y.csv'
+target_scaling: 1
 make_results: true
 make_r1_tables: true
-base_models_subset: [
-  # 'Naive',
+models: [
+  'Naive',
+  'LIT',
   # 'QR',
   # 'EN',
   # 'QPCR',
@@ -10,13 +13,21 @@ base_models_subset: [
   # 'sDMQ',
   # 'DMQv0',
   # 'DMQv1',
-  'DMQs',
-  'DMQm',
-  'DMQl',
-  'DMQe',
+  # 'DMQs',
+  # 'DMQm',
+  # 'DMQl',
+  # 'DMQe',
   # 'sDMQm',
   # 'DMQv2c'
 ]
+ensemble_models: [
+  'DMQs',
+  'DMQm', 
+  'DMQl'
+]
+country: 'us'
+horizon_in_quarters: 4
+quantiles: [0.05, 0.25, 0.5, 0.75, 0.95]
 test_start: "1998-01-01"
 test_end: "2024-12-01"
 start_year: 1997

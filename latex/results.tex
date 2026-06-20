@@ -13,7 +13,7 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{multirow}
-
+\usepackage{numprint}
 \geometry{margin=1in}
 \onehalfspacing
 
@@ -35,6 +35,8 @@
 
 
 \begin{document}
+\npdecimalsign{.}
+\nprounddigits{2}
 
 \maketitle
 
@@ -43,7 +45,7 @@
 \begin{table}[htbp]
   \centering
   \resizebox{\textwidth}{!}{
-  \input{../results_tables/\resultsdate/r1_combined_body_us_4q_1998-01-01-2024-12-01.tex}
+  \input{../results_tables/\resultsdate/r1_us_4q_1998-01-01-2024-12-01.tex}
   }
   \caption{$R^1$ table for annual inflation, annual IP growth, and annual percent change in the unemployment rate for the period January 1998 to December 2024}
   \label{tab: baseline r1 table}
@@ -84,7 +86,7 @@
 \begin{table}[htbp]
   \centering
   \resizebox{\textwidth}{!}{
-  \input{../results_tables/\resultsdate/r2_combined_us_4q_1998-01-01-2024-12-01.tex}
+  \input{../results_tables/\resultsdate/r2_us_4q_1998-01-01-2024-12-01.tex}
   }
   \caption{$R^2$ table}
   \label{tab: baseline r2 table}
