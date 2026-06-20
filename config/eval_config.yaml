@@ -1,15 +1,15 @@
 target_file: 'us_4q_fred_y.csv'
-target_scaling: 1
+target_scale: 100
 make_results: true
 make_r1_tables: true
 models: [
-  'Naive',
   'LIT',
-  # 'QR',
-  # 'EN',
+  'AR1',
+  'QR',
+  'EN',
   # 'QPCR',
-  # 'QRF',
-  # 'QGB',
+  'QRF',
+  'QGB',
   # 'sDMQ',
   # 'DMQv0',
   # 'DMQv1',
@@ -21,9 +21,9 @@ models: [
   # 'DMQv2c'
 ]
 ensemble_models: [
-  'DMQs',
-  'DMQm', 
-  'DMQl'
+  # 'DMQs',
+  # 'DMQm', 
+  # 'DMQl'
 ]
 country: 'us'
 horizon_in_quarters: 4
