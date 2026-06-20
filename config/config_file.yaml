@@ -13,6 +13,9 @@ data:
   val_months: 24  # Number of months for early stopping
   test_months: 12 # Size of test set
   target_scale_factor: 100
+  split_features: False
+  split_by: 'group' # {'group', 'theme'}. 'group' splits by macro/finance
+    # 'theme' splits by output, prices, ..., value, profitability, etc.
 
 # general 
 quantiles: [0.05, 0.25, 0.50, 0.75, 0.95]
@@ -36,48 +39,18 @@ training:
     verbose: 0
   
   builder_params:
-    DMQs:
-      # input_shapes: updated at runtime
-      shared_recurrent_sizes: [4]
-      shared_dense_sizes: [32]
-      task_sizes: [32]
-      # l2: tuned
-      # lr: tuned
-      # lower_quantiles: updated at runtime 
-      # upper_quantiles: updated at runtime
-      recurrent_type: 'ln_lstm'
-      dense_activation: 'relu'
-      dense_kernel_initializer: 'he_normal'
-      # bias_initializers: use default (None)
-      loss_weights: [0.28, 0.17, 0.11, 0.17, 0.28] 
     DMQm:
-      # input_shapes: updated at runtime
-      shared_recurrent_sizes: [4,4]
-      shared_dense_sizes: [32,32]
-      task_sizes: [32,32]
-      # l2: tuned
-      # lr: tuned
-      # lower_quantiles: updated at runtime 
-      # upper_quantiles: updated at runtime
-      recurrent_type: 'ln_lstm'
-      dense_activation: 'relu'
-      dense_kernel_initializer: 'he_normal'
-      # bias_initializers: use default (None)
-      loss_weights: [0.28, 0.17, 0.11, 0.17, 0.28]
-    DMQl:
-      # input_shapes: updated at runtime
-      shared_recurrent_sizes: [4,4,4]
-      shared_dense_sizes: [32,32]
-      task_sizes: [32,32]
-      # l2: tuned
-      # lr: tuned
-      # lower_quantiles: updated at runtime 
-      # upper_quantiles: updated at runtime
-      recurrent_type: 'ln_lstm'
-      dense_activation: 'relu'
-      dense_kernel_initializer: 'he_normal'
-      # bias_initializers: use default (None)
-      loss_weights: [0.28, 0.17, 0.11, 0.17, 0.28]
+      n_recurrent_layers: 2
+      n_shared_layers: 2
+      n_qtask_layers: 2
+      n_recurrent_nodes: 32
+      n_shared_nodes: 32
+      n_task_nodes: 32
+      initializer: 'glorot_uniform'
+      lower_quantiles: [0.05, 0.25]
+      upper_quantiles: [0.75, 0.95]
+      loss_weights: [0.28, 0.17, 0.11, 0.17, 0.28] 
+    
 
 tuning:
   optuna_storage: 'journal'
@@ -108,12 +81,8 @@ tuning:
   dmq_grid:
     l2:
       type: 'float'
-      values: [0.0, 1.0]
-      log_scale: false
-    dropout:
-      type: 'float'
-      values: [0.0, 0.5]
-      log_scale: false
+      values: [0.00001, 0.0001]
+      log_scale: true
     lr:
       type: 'float'
       values: [0.0005, 0.002]
