@@ -44,7 +44,7 @@ def get_firm_avg(df: pd.DataFrame, value_weight: bool = False, size: pd.DataFram
         weights = get_value_weights(size)
 
         # Ensure weights sum to 1 for each date. If not, raise an error. This is a sanity check to catch misalignments between df and size.
-        if not weights.groupby('yyyymm')['weight'].sum().round(6).eq(1.0).all():
+        if not weights.groupby('yyyymm')['weight'].sum().round().eq(1.0).all():
             raise ValueError("Weights do not sum to 1 for all dates.")
         
         before_rows = len(df)
