@@ -291,328 +291,277 @@ def _build_input_layer(
 
     return inputs
 
-def _get_recurrent_layer(
-        size=32,
-        type='lstm',
-        num_heads=None,
-        kernel_regularizer=None,
-        recurrent_regularizer=None,
-        return_sequences=False,
-        name='rnn_layer'
-):
-    """
-    Returns a keras recurrent layer.
-
-    Parameters:
-    -----------
-    size: int
-        The number of hidden units in the layer
-    type: str
-        One of {'lstm', 'ln_lstm', 'gru', 'slstm', 'slstm_block'}
-    
-    
-    """
-    
-    if type == 'lstm':
-        return keras.layers.LSTM(
-            units=size,
-            kernel_regularizer=kernel_regularizer,
-            recurrent_regularizer=recurrent_regularizer,
-            return_sequences=return_sequences,
-            name=name
-        )
-    
-    if type == 'ln_lstm':
-        return keras.layers.RNN(
-            LayerNormLSTMCell(
-                units=size,
-                kernel_regularizer=kernel_regularizer,
-                recurrent_regularizer=recurrent_regularizer,
-            ),
-            return_sequences=return_sequences,
-            name=name
-        )
-    
-    elif type == 'gru':
-        return keras.layers.GRU(
-            units=size,
-            kernel_regularizer=kernel_regularizer,
-            recurrent_regularizer=recurrent_regularizer,
-            return_sequences=return_sequences,
-            name=name
-        )
-
-    elif type == 'slstm':
-        return keras.layers.RNN(
-            sLSTMCell(
-                units=size,
-                kernel_regularizer=kernel_regularizer,
-                recurrent_regularizer=recurrent_regularizer,
-            ),
-            return_sequences=return_sequences,
-            name=name
-        )
-    
-    elif type == 'slstm_block':
-        if not num_heads:
-            raise TypeError(
-                'num_heads must be provided for layer type slstm_block.'
-                )
-        
-        return sLSTMBlock(
-            units=size,
-            num_heads=num_heads,
-            return_sequences=return_sequences,
-            kernel_regularizer=kernel_regularizer,
-            recurrent_regularizer=recurrent_regularizer,
-            name=name
-        )
-
-def _build_rnn_layers(
-        hidden_sizes,
-        num_heads=None,
-        layer_type='lstm',
-        kernel_regularizer=None,
-        recurrent_regularizer=None,
-        dropout=0.0,
-        return_sequences=True
-):
-
-    rnn_layers = []
-    for i, size in enumerate(hidden_sizes):
-        is_not_last = (i < len(hidden_sizes)-1)
-        if not return_sequences:
-            ret_seq = is_not_last
-        else:
-            ret_seq = return_sequences
-
-        rnn_layers.append(
-            _get_recurrent_layer(
-                size=size,
-                type=layer_type,
-                num_heads=num_heads,
-                kernel_regularizer=kernel_regularizer,
-                recurrent_regularizer=recurrent_regularizer,
-                return_sequences=ret_seq,
-                name=f'rnn_layer_{i+1}'
-            )
-        )
-
-        if layer_type != 'ln_lstm':
-            rnn_layers.append(
-                keras.layers.LayerNormalization()
-            )
-
-        if dropout > 0.0:
-            rnn_layers.append(
-                keras.layers.Dropout(rate=dropout)
-            )
-
-    return rnn_layers
-
-def _build_dense_layers(
-        hidden_sizes,
-        kernel_initializer='he_normal',
-        activation='relu',
-        normalization_layer=None,
-        kernel_regularizer=None,
-        normalize_last=True,
-        dropout=0.0
+def _build_recurrent_layers(
+        n_layers: int = 1,
+        n_units: int = 32,
+        l1: float = 0.0,
+        l2: float = 0.0,
+        rec_drop: float = 0.0,
+        initializer: str = 'glorot_uniform'
 ):
     layers = []
-    for i, size in enumerate(hidden_sizes):
+    for i in range(1, n_layers+1):
+        layers.append(
+            keras.layers.LSTM(
+                n_units, 
+                return_sequences=(i < n_layers), 
+                kernel_regularizer=keras.regularizers.L1L2(l1,l2), 
+                recurrent_dropout=rec_drop,
+                kernel_initializer=initializer,
+                name=f'recurrent_layer_{i}'
+            )
+        )
+
+        layers.append(
+            keras.layers.LayerNormalization()
+        )
+
+    return layers
+
+def _build_dense_layers(
+        n_layers: int = 1,
+        n_units: int = 32,
+        l1: float = 0.0,
+        l2: float = 0.0,
+        initializer: str = 'glorot_uniform',
+        name_prefix: str | None = None
+):
+    layers = []
+    for i in range(1, n_layers+1):
         layers.append(
             keras.layers.Dense(
-                units=size,
-                kernel_initializer=kernel_initializer,
-                kernel_regularizer=kernel_regularizer,
-                name=f'dense_layer_{i+1}'
+                units=n_units,
+                kernel_initializer=initializer,
+                kernel_regularizer=keras.regularizers.L1L2(l1,l2),
+                name=f'{name_prefix}_dense_layer_{i}'
             )
         ) 
 
-        if normalize_last:
-            if normalization_layer is not None:
-                layers.append(
-                    normalization_layer()
-                )
-        
-        else:
-            if i < len(hidden_sizes)-1:
-                if normalization_layer is not None:
-                    layers.append(
-                        normalization_layer()
-                    )
-                
         layers.append(
-                keras.layers.Activation(activation)
-            )
-
-        if dropout > 0.0:
-            layers.append(
-                keras.layers.Dropout(rate=dropout)
-            )
-    
+            keras.layers.LayerNormalization()
+        )
+        
     return layers
 
-def build_dmq_prev(
-        input_shapes,
-        shared_recurrent_sizes = None,
-        shared_dense_sizes = None,
-        task_sizes = None,
-        dropout=0.0,
-        l2=0.0,
-        lr=1e-3,
-        lower_quantiles = None, 
-        upper_quantiles = None,
-        recurrent_type='ln_lstm',
-        dense_activation='relu',
-        dense_kernel_initializer='he_normal',
-        bias_initializers = None,
-        loss_weights = None
+def _build_task_heads(
+        inputs,
+        n_layers: int,
+        n_units: int,
+        quantiles: list[float],
+        initializer: str = 'he_normal',
+        l1: float = 0.0,
+        l2: float = 0.0,
+        bias_initializers: dict[keras.initializers.Constant] | None = None
 ):
     
-    if shared_recurrent_sizes is None:
-        shared_recurrent_sizes = [32]
-    if shared_dense_sizes is None: 
-        shared_dense_sizes = [32]
-    if task_sizes is None:
-        task_sizes = [32]
-    if lower_quantiles is None:
-        lower_quantiles = [0.05, 0.25]
-    if upper_quantiles is None:
-        upper_quantiles = [0.75, 0.95]
-    
-    
-    inputs = _build_input_layer(input_shapes)
-
-    quantiles = lower_quantiles + [0.5] + upper_quantiles
-
-    if loss_weights is None:
-        loss_weights = [1/len(quantiles)] * len(quantiles)
-
     if bias_initializers is None:
-        bias_initializers = {
-            q: 'zeros' for q in quantiles
-        }
-
-    x_rnn_layers = _build_rnn_layers(
-        hidden_sizes=shared_recurrent_sizes,
-        num_heads=None,
-        layer_type=recurrent_type,
-        dropout=dropout,
-        return_sequences=False
-    )
-
-    dense_layers = _build_dense_layers(
-        hidden_sizes=shared_dense_sizes,
-        activation=dense_activation,
-        normalization_layer=keras.layers.LayerNormalization,
-        kernel_initializer=dense_kernel_initializer,
-        dropout=dropout,
-        normalize_last=True
-    )
-
-    shared_layers = x_rnn_layers + dense_layers
-
-    merged = keras.layers.Concatenate(axis=-1)(inputs) if len(inputs) > 1 else inputs[0]
-    dense_net = keras.models.Sequential(
-        shared_layers,
-        name='shared_dense'
-    )(merged)
-
+        bias_initializers = {q: 'zeros' for q in quantiles}
+    
     outputs = []
     for q in quantiles:
-        qtask_layers = _build_dense_layers(
-            hidden_sizes=task_sizes,
-            activation=dense_activation,
-            normalization_layer=keras.layers.LayerNormalization,
-            kernel_initializer=dense_kernel_initializer,
-            dropout=dropout,
-            normalize_last=False
-        )
+        qtask_layers = []
+        for i in range(1, n_layers + 1):
+            qtask_layers.append(
+                keras.layers.Dense(
+                    n_units,
+                    activation='relu',
+                    kernel_regularizer=keras.regularizers.L1L2(l1,l2),
+                    kernel_initializer=initializer,
+                    name=f'q{q}_task_dense_layer_{i}'
+                )
+            )
+            if i < n_layers:
+                qtask_layers.append(
+                    keras.layers.LayerNormalization()
+                )
 
         qtask_layers.append(
             keras.layers.Dense(
                 1, 
                 activation='linear', 
-                bias_initializer=bias_initializers.get(q, 'zeros'),
-                name=f'q{q}_task_out_layer'
+                kernel_regularizer=keras.regularizers.L1L2(l1,l2), 
+                kernel_initializer='glorot_uniform',
+                bias_initializer=bias_initializers[q],
+                name=f'q{q}_task_out_layer_{i}'
             )
         )
 
-        q_out = keras.models.Sequential(
-            qtask_layers, 
-            name=f'Q{int(q*100)}_head'
-        )(dense_net)
+        q_out = keras.models.Sequential(qtask_layers, name=f'Q{int(q*100)}_head')(inputs)
         outputs.append(q_out)
+    
+    return outputs
 
-    out_concat = keras.layers.Concatenate(name='out_layer')(outputs)
+def _build_spaced_task_heads(
+        inputs,
+        n_layers: int,
+        n_units: int,
+        quantiles: list[float],
+        initializer: str = 'he_normal',
+        l1: float = 0.0,
+        l2: float = 0.0,
+        bias_initializers: dict[keras.initializers.Constant] | None = None
+):
+    quantiles = sorted(quantiles)
+    lower_quantiles = [q for q in quantiles if q < .5]
+    upper_quantiles = [q for q in quantiles if q > .5]
+    
+    if bias_initializers is None:
+        bias_initializers = {
+            q: 'zeros' for q in quantiles
+        }
 
-    model = keras.models.Model(inputs=inputs, outputs=out_concat)
-
-    loss = make_total_tilted_loss(quantiles, q_loss_weights=loss_weights)
-
-    model.compile(
-        loss=loss, 
-        optimizer=keras.optimizers.AdamW(
-            learning_rate=lr,
-            weight_decay=l2
-        ),
+    # Median head
+    median_head = keras.models.Sequential(name='Q50')
+    for i in range(1, n_layers+1):
+        median_head.add(
+            keras.layers.Dense(
+                n_units, 
+                activation='relu',
+                kernel_regularizer=keras.regularizers.L1L2(l1,l2),
+                kernel_initializer=initializer,
+                name=f'Q50_dense_layer_{i}'
+            )
+        )
+        if i < n_layers:
+            median_head.add(keras.layers.LayerNormalization())
+    
+    median_head.add(
+        keras.layers.Dense(
+            1, 
+            activation='linear', 
+            kernel_regularizer=keras.regularizers.L1L2(l1,l2),
+            bias_initializer=bias_initializers[.5],
+            name=f'Q50_output'
+            )
     )
 
-    return model
+    median_output = median_head(inputs)
+
+    # Lower quantile heads (monotonic chain)
+    lower_outputs = []
+    prev = median_output
+    for q in sorted(lower_quantiles, reverse=True):
+        qtask_layers = []
+        for i in range(1, n_layers+1):
+            qtask_layers.append(
+                keras.layers.Dense(
+                    n_units,
+                    activation='relu',
+                    kernel_regularizer=keras.regularizers.L1L2(l1,l2),
+                    kernel_initializer=initializer,
+                    name=f'Q{int(q*100)}_dense_layer_{i}'
+                )
+            )
+            if i < n_layers:
+                qtask_layers.append(keras.layers.LayerNormalization())
+
+        qtask_layers.append(
+            keras.layers.Dense(
+                1, 
+                activation='linear', 
+                kernel_regularizer=keras.regularizers.L1L2(l1,l2), 
+                kernel_initializer=initializer,
+                bias_initializer=bias_initializers[q]
+            )
+        )
+        q_task_resid = keras.models.Sequential(
+            qtask_layers, 
+            name=f'Q{int(q*100)}_lower_raw'
+        )(inputs)
+
+        q_out = keras.layers.Subtract(
+            name=f'Q{int(q*100)}_from_prev'
+        )([prev, keras.layers.Activation('softplus')(q_task_resid)])
+
+        lower_outputs.append(q_out)
+        prev = q_out
+
+    # Upper quantile heads (monotonic chain)
+    upper_outputs = []
+    prev = median_output
+    for q in upper_quantiles:
+        qtask_layers = []
+        for i in range(1, n_layers+1):
+            qtask_layers.append(
+                keras.layers.Dense(
+                    n_units,
+                    activation='relu',
+                    kernel_regularizer=keras.regularizers.L1L2(l1,l2),
+                    kernel_initializer=initializer,
+                    name=f'Q{int(q*100)}_dense_layer_{i}'
+                )
+            )
+            if i < n_layers:
+                qtask_layers.append(keras.layers.LayerNormalization())
+
+        qtask_layers.append(
+            keras.layers.Dense(
+                1, 
+                activation='linear',
+                kernel_regularizer=keras.regularizers.L1L2(l1,l2), 
+                kernel_initializer=initializer,
+                bias_initializer=bias_initializers[q]
+            )
+        )
+        q_task_resid = keras.models.Sequential(
+            qtask_layers, 
+            name=f'Q{int(q*100)}_upper_raw'
+        )(inputs)
+
+        q_out = keras.layers.Add(
+            name=f'Q{int(q*100)}_from_prev'
+        )([prev, keras.layers.Activation('softplus')(q_task_resid)])
+
+        upper_outputs.append(q_out)
+
+        prev = q_out
+
+    outputs = list(reversed(lower_outputs)) + [median_output] + upper_outputs
+
+    return outputs
 
 def build_dmq(
-        input_shapes,
-        shared_recurrent_sizes = None,
-        shared_dense_sizes = None,
-        task_sizes = None,
-        dropout=0.0,
-        l2=0.0,
-        lr=1e-3,
-        lower_quantiles = None, 
-        upper_quantiles = None,
-        recurrent_type='ln_lstm',
-        dense_activation='relu',
-        dense_kernel_initializer='he_normal',
-        bias_initializers = None,
-        loss_weights = None
+        input_shapes, 
+        n_recurrent_layers: int = 1, 
+        n_shared_layers: int = 1, 
+        n_qtask_layers: int = 1, 
+        n_recurrent_nodes: int = 32,
+        n_shared_nodes: int = 32,
+        n_task_nodes: int = 32,
+        initializer: str = 'glorot_uniform',
+        l1: float = 0.0, 
+        l2: float = 0.0, 
+        lr: float = 0.001, 
+        rec_drop: float = 0.0,
+        quantiles: list[float] | None = None, 
+        loss_weights: list[float] | None = None,
+        bias_initializers: dict[str|keras.Initializer] | None = None,
+        space_quantiles: bool = False
 ):
     
-    if shared_recurrent_sizes is None:
-        shared_recurrent_sizes = [32]
-    if shared_dense_sizes is None: 
-        shared_dense_sizes = [32]
-    if task_sizes is None:
-        task_sizes = [32]
-    if lower_quantiles is None:
-        lower_quantiles = [0.05, 0.25]
-    if upper_quantiles is None:
-        upper_quantiles = [0.75, 0.95]
-    
+    if quantiles is None:
+        quantiles = [0.05, 0.25, 0.5, 0.75, 0.95]
     
     inputs = _build_input_layer(input_shapes)
 
-    quantiles = lower_quantiles + [0.5] + upper_quantiles
-
     if loss_weights is None:
-        loss_weights = [1/len(quantiles)] * len(quantiles)
+        loss_weights = [1.0]*len(quantiles)
 
     if bias_initializers is None:
         bias_initializers = {
             q: 'zeros' for q in quantiles
         }
 
-    shared_layers = []
     if len(inputs) > 1:
         rnn_out = []
         for i, x in enumerate(inputs):
-            x_rnn_layers = _build_rnn_layers(
-                hidden_sizes=shared_recurrent_sizes,
-                num_heads=None,
-                layer_type=recurrent_type,
-                dropout=dropout,
-                return_sequences=False
+            x_rnn_layers = _build_recurrent_layers(
+                n_layers=n_recurrent_layers,
+                n_units=n_recurrent_nodes,
+                l1=l1,
+                l2=l2,
+                rec_drop=rec_drop,
+                initializer=initializer
             )
             x_rnn = keras.models.Sequential(
                 x_rnn_layers,
@@ -624,12 +573,13 @@ def build_dmq(
 
     
     else:
-        rnn_layers = _build_rnn_layers(
-            hidden_sizes=shared_recurrent_sizes,
-            num_heads=None,
-            layer_type=recurrent_type,
-            dropout=dropout,
-            return_sequences=False
+        rnn_layers = _build_recurrent_layers(
+            n_layers=n_recurrent_layers,
+            n_units=n_recurrent_nodes,
+            l1=l1,
+            l2=l2,
+            rec_drop=rec_drop,
+            initializer=initializer
         )
         rnn_out = keras.models.Sequential(
             rnn_layers,
@@ -638,12 +588,12 @@ def build_dmq(
     
 
     dense_layers = _build_dense_layers(
-        hidden_sizes=shared_dense_sizes,
-        activation=dense_activation,
-        normalization_layer=keras.layers.LayerNormalization,
-        kernel_initializer=dense_kernel_initializer,
-        dropout=dropout,
-        normalize_last=True
+        n_layers=n_shared_layers,
+        n_units=n_shared_nodes,
+        l1=l1,
+        l2=l2,
+        initializer=initializer,
+        name_prefix='shared'
     )
 
     dense_net = keras.models.Sequential(
@@ -651,30 +601,166 @@ def build_dmq(
         name='shared_dense'
     )(rnn_out)
 
+    if space_quantiles:
+        outputs = _build_spaced_task_heads(
+            dense_net,
+            n_layers=n_qtask_layers,
+            n_units=n_task_nodes,
+            quantiles=quantiles,
+            initializer=initializer,
+            l1=l1,
+            l2=l2,
+            bias_initializers=bias_initializers
+        )
+    else:
+        outputs = _build_task_heads(
+            dense_net,
+            n_layers=n_qtask_layers,
+            n_units=n_task_nodes,
+            quantiles=quantiles,
+            initializer=initializer,
+            l1=l1,
+            l2=l2,
+            bias_initializers=bias_initializers
+        )
+
+    outputs = keras.layers.Concatenate()(outputs)
+
+    model = keras.models.Model(inputs=inputs, outputs=outputs)
+
+    loss = make_total_tilted_loss(quantiles, q_loss_weights=loss_weights)
+
+    model.compile(
+        loss=loss, 
+        optimizer=keras.optimizers.Adam(
+            learning_rate=lr
+        ),
+    )
+
+    return model
+
+def build_dmq_v0(
+        input_shapes, 
+        n_recurrent_layers: int = 1, 
+        n_shared_layers: int = 1, 
+        n_qtask_layers: int = 1, 
+        n_recurrent_nodes: int = 32,
+        n_shared_nodes: int = 32,
+        n_task_nodes: int = 32,
+        initializer: str = 'glorot_uniform',
+        l1: float = 0.0, 
+        l2: float = 0.0, 
+        lr: float = 0.001, 
+        rec_drop: float = 0.0,
+        lower_quantiles: list[float] | None = None, 
+        upper_quantiles: list[float] | None = None, 
+        loss_weights: list[float] | None = None,
+        bias_initializers: dict[str|keras.initializers.Constant] | None = None,
+        space_quantiles: bool = False
+    ):
+
+    """
+    Base DMQ model
+    """
+
+    if lower_quantiles is None:
+        lower_quantiles = [.05, .25]
+    if upper_quantiles is None:
+        upper_quantiles = [.75, .95]
+
+    lower_quantiles = sorted(lower_quantiles)
+    upper_quantiles = sorted(upper_quantiles)
+    quantiles = lower_quantiles + [0.5] + upper_quantiles
+    
+    # Set defaults
+    if loss_weights is None:
+        loss_weights = [1.0]*len(quantiles)
+
+    if bias_initializers is None:
+        bias_initializers = {
+            q: 'zeros' for q in quantiles
+        }
+
+    inputs = _build_input_layer(input_shapes)
+
+    if isinstance(inputs, list):
+        x_nets = []
+        for x in inputs: 
+            x_layers = _build_recurrent_layers(
+                n_layers=n_recurrent_layers,
+                n_units=n_recurrent_nodes,
+                l1=l1,
+                l2=l2,
+                rec_drop=rec_drop,
+                initializer=initializer
+            )
+            x_net = keras.models.Sequential(x_layers)(x)
+            x_nets.append(x_net)
+
+        recurrent_net = keras.layers.Concatenate()(x_nets)
+    
+    else:
+        recurrent_layers = _build_recurrent_layers(
+            n_layers=n_recurrent_layers,
+            n_units=n_recurrent_nodes,
+            l1=l1,
+            l2=l2,
+            rec_drop=rec_drop,
+            initializer=initializer
+        )
+        recurrent_net = keras.models.Sequential(recurrent_layers)(inputs)
+
+    shared_layers = []
+    for i in range(1, n_shared_layers + 1):
+        shared_layers.append(
+            keras.layers.Dense(
+                n_shared_nodes, 
+                activation='relu', 
+                kernel_regularizer=keras.regularizers.L1L2(l1,l2),
+                kernel_initializer=initializer,
+                name=f'shared_dense_layer_{i}'
+            )
+        )
+        
+        shared_layers.append(
+            keras.layers.LayerNormalization()
+        )
+
+    shared_net = keras.models.Sequential(
+        shared_layers, 
+        name='shared_layers'
+    )(recurrent_net)
+
     outputs = []
     for q in quantiles:
-        qtask_layers = _build_dense_layers(
-            hidden_sizes=task_sizes,
-            activation=dense_activation,
-            normalization_layer=keras.layers.LayerNormalization,
-            kernel_initializer=dense_kernel_initializer,
-            dropout=dropout,
-            normalize_last=False
-        )
+        qtask_layers = []
+        for i in range(1, n_qtask_layers + 1):
+            qtask_layers.append(
+                keras.layers.Dense(
+                    n_task_nodes,
+                    activation='relu',
+                    kernel_regularizer=keras.regularizers.L1L2(l1,l2),
+                    kernel_initializer=initializer,
+                    name=f'q{q}_task_dense_layer_{i}'
+                )
+            )
+            if i < n_qtask_layers:
+                qtask_layers.append(
+                    keras.layers.LayerNormalization()
+                )
 
         qtask_layers.append(
             keras.layers.Dense(
                 1, 
                 activation='linear', 
-                bias_initializer=bias_initializers.get(q, 'zeros'),
-                name=f'q{q}_task_out_layer'
+                kernel_regularizer=keras.regularizers.L1L2(l1,l2), 
+                kernel_initializer='glorot_uniform',
+                bias_initializer=bias_initializers[q],
+                name=f'q{q}_task_out_layer_{i}'
             )
         )
 
-        q_out = keras.models.Sequential(
-            qtask_layers, 
-            name=f'Q{int(q*100)}_head'
-        )(dense_net)
+        q_out = keras.models.Sequential(qtask_layers, name=f'Q{int(q*100)}_head')(shared_net)
         outputs.append(q_out)
 
     out_concat = keras.layers.Concatenate(name='out_layer')(outputs)
@@ -685,10 +771,7 @@ def build_dmq(
 
     model.compile(
         loss=loss, 
-        optimizer=keras.optimizers.AdamW(
-            learning_rate=lr,
-            weight_decay=l2
-        ),
+        optimizer=keras.optimizers.Adam(learning_rate=lr),
     )
 
     return model
@@ -897,169 +980,6 @@ def build_dmq_v1(
     out_concat = keras.layers.Concatenate(name='out_layer')(outputs)
 
     model = keras.model.keras.models.Model(inputs=inputs, outputs=out_concat)
-
-    loss = make_total_tilted_loss(quantiles, q_loss_weights=loss_weights)
-
-    model.compile(
-        loss=loss, 
-        optimizer=keras.optimizers.Adam(learning_rate=lr),
-    )
-
-    return model
-
-def _build_recurrent_layers(
-        n_layers: int = 1,
-        n_units: int = 32,
-        l1: float = 0.0,
-        l2: float = 0.0,
-        rec_drop: float = 0.0,
-        initializer: str = 'glorot_uniform'
-):
-    layers = []
-    for i in range(1, n_layers+1):
-        layers.append(
-            keras.layers.LSTM(
-                n_units, 
-                return_sequences=(i < n_layers), 
-                kernel_regularizer=keras.regularizers.L1L2(l1,l2), 
-                recurrent_dropout=rec_drop,
-                kernel_initializer=initializer,
-                name=f'recurrent_layer_{i}'
-            )
-        )
-
-        layers.append(
-            keras.layers.LayerNormalization()
-        )
-
-    return layers
-
-def build_dmq_v0(
-        input_shapes, 
-        n_recurrent_layers: int = 1, 
-        n_shared_layers: int = 1, 
-        n_qtask_layers: int = 1, 
-        n_recurrent_nodes: int = 32,
-        n_shared_nodes: int = 32,
-        n_task_nodes: int = 32,
-        initializer: str = 'glorot_uniform',
-        l1: float = 0.0, 
-        l2: float = 0.0, 
-        lr: float = 0.001, 
-        rec_drop: float = 0.0,
-        lower_quantiles: list[float] | None = None, 
-        upper_quantiles: list[float] | None = None, 
-        loss_weights: list[float] | None = None,
-        bias_initializers: dict[str|keras.Initializer] | None = None
-    ):
-
-    """
-    Base DMQ model
-    """
-
-    if lower_quantiles is None:
-        lower_quantiles = [.05, .25]
-    if upper_quantiles is None:
-        upper_quantiles = [.75, .95]
-
-    lower_quantiles = sorted(lower_quantiles)
-    upper_quantiles = sorted(upper_quantiles)
-    quantiles = lower_quantiles + [0.5] + upper_quantiles
-    
-    # Set defaults
-    if loss_weights is None:
-        loss_weights = [1.0]*len(quantiles)
-
-    if bias_initializers is None:
-        bias_initializers = {
-            q: 'zeros' for q in quantiles
-        }
-
-    inputs = _build_input_layer(input_shapes)
-
-    if isinstance(inputs, list):
-        x_nets = []
-        for x in inputs: 
-            x_layers = _build_recurrent_layers(
-                n_layers=n_recurrent_layers,
-                n_units=n_recurrent_nodes,
-                l1=l1,
-                l2=l2,
-                rec_drop=rec_drop,
-                initializer='glorot_uniform'
-            )
-            x_net = keras.models.Sequential(x_layers)(x)
-            x_nets.append(x_net)
-
-        recurrent_net = keras.layers.Concatenate()(x_nets)
-    
-    else:
-        recurrent_layers = _build_recurrent_layers(
-            n_layers=n_recurrent_layers,
-            n_units=n_recurrent_nodes,
-            l1=l1,
-            l2=l2,
-            rec_drop=rec_drop,
-            initializer='glorot_uniform'
-        )
-        recurrent_net = keras.models.Sequential(recurrent_layers)(inputs)
-
-    shared_layers = []
-    for i in range(1, n_shared_layers + 1):
-        shared_layers.append(
-            keras.layers.Dense(
-                n_shared_nodes, 
-                activation='relu', 
-                kernel_regularizer=keras.regularizers.L1L2(l1,l2),
-                kernel_initializer=initializer,
-                name=f'shared_dense_layer_{i}'
-            )
-        )
-        
-        shared_layers.append(
-            keras.layers.LayerNormalization()
-        )
-
-    shared_net = keras.models.Sequential(
-        shared_layers, 
-        name='shared_layers'
-    )(recurrent_net)
-
-    outputs = []
-    for q in quantiles:
-        qtask_layers = []
-        for i in range(1, n_qtask_layers + 1):
-            qtask_layers.append(
-                keras.layers.Dense(
-                    n_task_nodes,
-                    activation='relu',
-                    kernel_regularizer=keras.regularizers.L1L2(l1,l2),
-                    kernel_initializer=initializer,
-                    name=f'q{q}_task_dense_layer_{i}'
-                )
-            )
-            if i < n_qtask_layers:
-                qtask_layers.append(
-                    keras.layers.LayerNormalization()
-                )
-
-        qtask_layers.append(
-            keras.layers.Dense(
-                1, 
-                activation='linear', 
-                kernel_regularizer=keras.regularizers.L1L2(l1,l2), 
-                kernel_initializer='glorot_uniform',
-                bias_initializer=bias_initializers[q],
-                name=f'q{q}_task_out_layer_{i}'
-            )
-        )
-
-        q_out = keras.models.Sequential(qtask_layers, name=f'Q{int(q*100)}_head')(shared_net)
-        outputs.append(q_out)
-
-    out_concat = keras.layers.Concatenate(name='out_layer')(outputs)
-
-    model = keras.models.Model(inputs=inputs, outputs=out_concat)
 
     loss = make_total_tilted_loss(quantiles, q_loss_weights=loss_weights)
 
