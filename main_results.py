@@ -93,8 +93,8 @@ DATA_DIR = BASE_DIR / 'data' / 'processed'
 NAIVE_PRED_DIR = BASE_DIR / 'predictions' / 'naive_preds'
 LIT_BENCH_PRED_DIR = BASE_DIR / 'predictions' / 'lit_bench_preds' 
 # SHELF_PRED_DIR = BASE_DIR / 'predictions' / 'shelf_preds' / SHELF_DATE
-LINEAR_PRED_DIR = BASE_DIR / 'predictions' / 'linear_preds' / DATE
-TREE_PRED_DIR = BASE_DIR / 'predictions' / 'tree_preds' / DATE
+LINEAR_PRED_DIR = BASE_DIR / 'predictions' / 'linear_preds' / SHELF_DATE
+TREE_PRED_DIR = BASE_DIR / 'predictions' / 'tree_preds' / SHELF_DATE
 ST_PRED_DIR = BASE_DIR / 'predictions' / 'st_preds' / ST_DATE
 CONCAT_PRED_DIR = BASE_DIR / 'predictions' / 'concatenated' / DATE
 RESULTS_DIR = BASE_DIR / "results" / DATE
@@ -126,6 +126,7 @@ TARGETS_FILE = config['target_file']
 TARGETS_PATH = DATA_DIR / TARGETS_FILE
 TARGET_NAME_DICT = {0: 'Infl_yoy', 1: 'IP_yoy', 2: 'Unrate_yoy'}
 MODELS = config['models']
+MODELS_TO_PLOT = config['models_to_plot']
 TARGET_SCALE = config['target_scale']
 
 def main():
@@ -180,6 +181,19 @@ def main():
             columns=(q_benchmark_cols + ['Naive_Mean'])
         )
         print(target_preds.columns)
+
+        if PLOT_QUANTILES:
+            print("\nGenerating quantile plots...")
+            make_quantile_plots(
+                y_true=y_true,
+                y_pred=target_preds,
+                fig_dir=FIGURES_DIR,
+                models_to_plot=MODELS_TO_PLOT,
+                quantiles=QUANTILES,
+                target_name=target,
+                country=COUNTRY,
+                horizon_in_quarters=HORIZON
+            )
 
         # Compute R1 scores for each model and quantile 
         r1_results_df = get_r1_results_df(
@@ -245,21 +259,6 @@ def main():
         float_format="%.2f"
     )
 
-    # if PLOT_QUANTILES:
-    #     print("\nStep 5: Generating quantile plots...")
-    #     make_quantile_plots(
-    #         target_idx=TARGET_IDX,
-    #         targets_path=DATA_DIR / config['target_file'],
-    #         pred_path=PRED_DIR / f'all_models_predictions_{COUNTRY}_{HORIZON}q_{TARGET_NAME}.csv',
-    #         fig_dir=FIGURES_DIR,
-    #         country=COUNTRY,
-    #         horizon_in_quarters=HORIZON,
-    #         quantiles=QUANTILES,
-    #         test_start=TEST_START,
-    #         test_end=TEST_END,
-    #         date_str=DATE
-    #     )
-    
     # if PLOT_MEANS:
     #     print("\nStep 6: Generating mean plots...")
     #     make_mean_plots(
