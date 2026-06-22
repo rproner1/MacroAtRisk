@@ -557,7 +557,7 @@ def train_deep_models():
     if INIT_BIAS:
         # Initialize as the last year's quantile
         bias_initializers = {
-            q: keras.initializers.Constant(y_train.iloc[:,-12:].quantile(q)) for q in QUANTILES
+            q: keras.initializers.Constant(np.quantile(y_train[-12:], q)) for q in QUANTILES
         }
     else:
         bias_initializers = None # uses defaults ('zeros')
