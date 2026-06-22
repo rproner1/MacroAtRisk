@@ -950,7 +950,8 @@ def build_dmq_v0(
         lower_quantiles: list[float] | None = None, 
         upper_quantiles: list[float] | None = None, 
         loss_weights: list[float] | None = None,
-        bias_initializers: dict[str|keras.Initializer] | None = None
+        bias_initializers: dict[str|keras.Initializer] | None = None,
+        space_quantiles: bool = False
     ):
 
     """
