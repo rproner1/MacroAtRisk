@@ -533,22 +533,16 @@ def build_dmq(
         l2: float = 0.0, 
         lr: float = 0.001, 
         rec_drop: float = 0.0,
-        lower_quantiles: list[float] | None = None, 
-        upper_quantiles: list[float] | None = None, 
+        quantiles: list[float] | None = None, 
         loss_weights: list[float] | None = None,
         bias_initializers: dict[str|keras.Initializer] | None = None,
         space_quantiles: bool = False
 ):
     
-    if lower_quantiles is None:
-        lower_quantiles = [0.05, 0.25]
-    if upper_quantiles is None:
-        upper_quantiles = [0.75, 0.95]
-    
+    if quantiles is None:
+        quantiles = [0.05, 0.25, 0.5, 0.75, 0.95]
     
     inputs = _build_input_layer(input_shapes)
-
-    quantiles = lower_quantiles + [0.5] + upper_quantiles
 
     if loss_weights is None:
         loss_weights = [1.0]*len(quantiles)
