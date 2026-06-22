@@ -6,7 +6,7 @@ data:
   horizon_in_quarters: 4
   input_files: [
     "us_4q_fred_x.csv",
-    "us_4q_jkp_vw_x.csv"
+    # "us_4q_jkp_vw_x.csv"
   ]
   target_file: 'us_4q_fred_y.csv'
   time_steps: 12
