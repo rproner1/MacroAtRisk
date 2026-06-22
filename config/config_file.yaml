@@ -49,8 +49,6 @@ training:
       n_task_nodes: 32
       initializer: 'he_normal'
       quantiles: [0.05, 0.25, 0.5, 0.75, 0.95]
-      # loss_weights: None
-      
     
 
 tuning:
