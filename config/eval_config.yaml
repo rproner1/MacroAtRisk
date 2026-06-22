@@ -10,15 +10,16 @@ models: [
   # 'QPCR',
   'QRF',
   'QGB',
-  # 'sDMQ',
-  # 'DMQv0',
-  # 'DMQv1',
-  # 'DMQs',
-  # 'DMQm',
-  # 'DMQl',
-  # 'DMQe',
-  # 'sDMQm',
-  # 'DMQv2c'
+  'DMQm',
+]
+models_to_plot: [
+  'LIT',
+  'AR1',
+  'QR',
+  'EN',
+  'DMQm',
+  'QRF',
+  'QGB'
 ]
 ensemble_models: [
   # 'DMQs',
