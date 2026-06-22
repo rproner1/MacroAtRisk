@@ -1,8 +1,9 @@
 import pandas as pd
 import numpy as np
 from dateutil.relativedelta import relativedelta
-from src.utils.clean_data import remove_cols
 from pathlib import Path
+
+from src.data.data_utils import remove_cols
 
 financial_fred_vars = [
     'S&P 500', 

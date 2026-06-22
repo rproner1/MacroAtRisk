@@ -2,7 +2,8 @@ import pandas as pd
 from pathlib import Path
 from statsmodels.tsa.stattools import adfuller
 from src.utils.files import get_latest_file
-from src.utils.clean_data import remove_cols
+
+from src.data.data_utils import remove_cols
 
 TRAIN_END = '1997-12-01'
 ALPHA = 0.05

@@ -1,9 +1,11 @@
 
 import pandas as pd
 from dateutil.relativedelta import relativedelta
-from src.utils.clean_data import remove_cols
 from pathlib import Path
 from statsmodels.tsa.stattools import adfuller
+
+from src.data.data_utils import remove_cols
+
 
 """
 Variables that do not aggregate to a economically meaningful variable:
