@@ -40,7 +40,7 @@ training:
     verbose: 0
   
   builder_params:
-    DMQm:
+    DMQ:
       n_recurrent_layers: 2
       n_shared_layers: 2
       n_qtask_layers: 2
@@ -49,6 +49,16 @@ training:
       n_task_nodes: 32
       initializer: 'he_normal'
       quantiles: [0.05, 0.25, 0.5, 0.75, 0.95]
+    DMQsp:
+      n_recurrent_layers: 2
+      n_shared_layers: 2
+      n_qtask_layers: 2
+      n_recurrent_nodes: 32
+      n_shared_nodes: 32
+      n_task_nodes: 32
+      initializer: 'he_normal'
+      quantiles: [0.05, 0.25, 0.5, 0.75, 0.95]
+      space_quantiles: True
     
 
 tuning:

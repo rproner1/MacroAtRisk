@@ -17,6 +17,6 @@ source $SLURM_TMPDIR/env/bin/activate
 python -m pip install --no-index --upgrade pip
 python -m pip install --no-index -r requirements.txt
 
-TARGET=0
+TARGET=2
 DATE=2026-06-22
 python main_train.py --year $SLURM_ARRAY_TASK_ID --date $DATE --target $TARGET --model-type deep
