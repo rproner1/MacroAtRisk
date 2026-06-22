@@ -23,7 +23,7 @@ quantiles: [0.05, 0.25, 0.50, 0.75, 0.95]
 # Fit params
 training:
   n_estimators: 5
-  init_hist_bias: False
+  init_hist_bias: True
 
   fit_params:
     epochs: 500
