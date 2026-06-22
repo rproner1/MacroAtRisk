@@ -1,6 +1,52 @@
 import numpy as np
 from typing import Tuple, Union
 import pandas as pd
+from statsmodels.tsa.stattools import adfuller
+
+
+def stationarity_filter(df: pd.DataFrame, alpha=0.05) -> pd.DataFrame:
+    """
+    Tests each variable for stationarity using the Augmented Dickey-Fuller test. If a variable is non-stationary, it is first-differenced and tested again. If it remains non-stationary after first-differencing, it is excluded from the dataset.
+
+    Parameters: 
+        df (pd.DataFrame): 
+            DataFrame containing the variables to be tested for stationarity.
+        alpha: float, optional
+            Significance level for the Augmented Dickey-Fuller test (default is 0.05).
+    Returns:
+        pd.DataFrame: 
+            DataFrame with non-stationary variables removed.
+    
+    """
+    stationary_cols = []
+    for col in df.columns:
+        result = adfuller(df[col].dropna())
+        p_value = result[1]
+        if p_value < alpha:
+            stationary_cols.append(col)
+        else: 
+            result_diff = adfuller(df[col].diff().dropna())
+            p_val_diff = result_diff[1]
+            if p_val_diff < alpha:
+                col_diff = col + '_diff'
+                df[col_diff] = df[col].diff()
+                stationary_cols.append(col_diff)
+
+    return df[stationary_cols]
+
+def get_value_weights(df: pd.DataFrame) -> pd.DataFrame:
+
+    # Weights are size of firm relative to size of all firms in the month
+    df['weight'] = df.groupby('date')['size'].transform(lambda x: x / x.sum())
+
+    return df[['date', 'permno', 'weight']]
+
+def remove_cols(threshold: float, df: pd.DataFrame, train_end: str):
+
+    train_df = df.loc[:train_end]
+    cols_to_keep = [c for c in df.columns if (train_df[c].isna().sum() / train_df.shape[0] < threshold)]
+    df_clean = df.loc[:, cols_to_keep]
+    return df_clean
 
 def remove_outliers(X: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     """
