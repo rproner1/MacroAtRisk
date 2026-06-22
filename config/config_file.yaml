@@ -6,13 +6,13 @@ data:
   horizon_in_quarters: 4
   input_files: [
     "us_4q_fred_x.csv",
-    "us_4q_jkp_vw_x.csv"
+    # "us_4q_jkp_vw_x.csv"
   ]
   target_file: 'us_4q_fred_y.csv'
   time_steps: 12
-  val_months: 24  # Number of months for early stopping
+  val_months: 60  # Number of months for early stopping
   test_months: 12 # Size of test set
-  target_scale_factor: 100
+  target_scale_factor: 1
   split_features: False
   split_by: 'group' # {'group', 'theme'}. 'group' splits by macro/finance
     # 'theme' splits by output, prices, ..., value, profitability, etc.
@@ -23,7 +23,7 @@ quantiles: [0.05, 0.25, 0.50, 0.75, 0.95]
 # Fit params
 training:
   n_estimators: 5
-  init_hist_bias: True
+  init_hist_bias: False
 
   fit_params:
     epochs: 500
@@ -82,7 +82,7 @@ tuning:
   dmq_grid:
     l2:
       type: 'float'
-      values: [0.00001, 0.001]
+      values: [0.00001, 0.0001]
       log_scale: true
     lr:
       type: 'float'
