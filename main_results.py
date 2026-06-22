@@ -180,7 +180,6 @@ def main():
         target_preds = target_preds.drop(
             columns=(q_benchmark_cols + ['Naive_Mean'])
         )
-        print(target_preds.columns)
 
         if PLOT_QUANTILES:
             print("\nGenerating quantile plots...")
@@ -211,6 +210,18 @@ def main():
             models=MODELS,
             weights=[0.15, 0.225, 0.25, 0.225, 0.15]
         )
+
+        if PLOT_MEANS:
+            print("\nGenerating mean plots...")
+            make_mean_plots(
+                y_true=y_true,
+                y_pred=mean_preds,
+                fig_dir=FIGURES_DIR,
+                models_to_plot=MODELS_TO_PLOT,
+                target_name=target,
+                country=COUNTRY,
+                horizon_in_quarters=HORIZON
+            )
 
         # Compute R2 results
         r2_df = get_r2_results_df(
@@ -259,21 +270,8 @@ def main():
         float_format="%.2f"
     )
 
-    # if PLOT_MEANS:
-    #     print("\nStep 6: Generating mean plots...")
-    #     make_mean_plots(
-    #         target_idx=TARGET_IDX,
-    #         targets_path=DATA_DIR / config['target_file'],
-    #         pred_path=PRED_DIR / f'all_models_predictions_{COUNTRY}_{HORIZON}q_{TARGET_NAME}.csv',
-    #         fig_dir=FIGURES_DIR,
-    #         country=COUNTRY,
-    #         horizon_in_quarters=HORIZON,
-    #         quantiles=QUANTILES,
-    #         test_start=TEST_START,
-    #         test_end=TEST_END,
-    #         date_str=DATE
-    #     )
-    # print(f"\nResults complete. Tables saved to {TABLES_DIR}, Figures saved to {FIGURES_DIR}")
+    
+    print(f"\nResults complete. Tables saved to {TABLES_DIR}, Figures saved to {FIGURES_DIR}")
 
 
 if __name__ == "__main__":
