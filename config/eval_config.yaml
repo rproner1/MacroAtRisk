@@ -8,18 +8,18 @@ models: [
   'QR',
   'EN',
   # 'QPCR',
-  'QRF',
-  'QGB',
-  'DMQm',
+  # 'QRF',
+  # 'QGB',
+  # 'DMQm',
 ]
 models_to_plot: [
-  'LIT',
-  'AR1',
-  'QR',
+  # 'LIT',
+  # 'AR1',
+  # 'QR',
   'EN',
-  'DMQm',
-  'QRF',
-  'QGB'
+  # 'DMQm',
+  # 'QRF',
+  # 'QGB'
 ]
 ensemble_models: [
   # 'DMQs',
