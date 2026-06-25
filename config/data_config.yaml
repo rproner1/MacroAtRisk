@@ -11,6 +11,7 @@ last_date_of_sample: "2024-12-01"
 remove_cols_threshold: 0.3
 diff_signals: False
 horizon_in_quarters: 4
+lags: 12
 
 # OAP signal construction configurations
 oap_signals:
