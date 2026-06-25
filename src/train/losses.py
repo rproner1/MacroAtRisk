@@ -34,6 +34,16 @@ def compute_qpc(y: np.ndarray, X_s: np.ndarray , X_j: np.ndarray, q: float) -> f
 
     return qpc
 
+def keras_expectile_loss(
+        y_true,
+        y_pred,
+        q
+):
+    '''Computes expectile loss'''
+
+    e = (y_true - y_pred)**2
+    return keras.ops.mean(keras.ops.maximum(q * e, (q - 1.0) * e), axis=-1)
+
 def tilted_loss(
         y_true,
         y_pred, 
@@ -53,6 +63,16 @@ def make_tilted_loss(q: float):
         return keras.ops.mean(keras.ops.maximum(q * e, (q - 1.0) * e))
     
     loss.__name__ = f"tilted_loss_{int(q*100)}"
+
+    return loss
+
+def make_expectile_loss(q: float):
+
+    def loss(y_true, y_pred):
+        e = (y_true - y_pred)**2
+        return keras.ops.mean(keras.ops.maximum(q * e, (q - 1.0) * e))
+    
+    loss.__name__ = f"expectile_loss_{int(q*100)}"
 
     return loss
 
@@ -83,4 +103,28 @@ def make_total_tilted_loss(
 
     return total_tilted_loss
 
+def make_total_expectile_loss(
+    quantiles: list[float], 
+    q_loss_weights: list[float]|None = None
+):
+    """
+    Returns a loss function that computes the mean of tilted losses for the given quantiles.
+    """
 
+    if q_loss_weights is None:
+        q_loss_weights = [1.0] * len(quantiles)
+
+    loss_fns = [make_expectile_loss(q) for q in quantiles]
+    
+    def total_expectile_loss(y_true, y_pred):
+        # y_pred shape: (batch, len(quantiles))
+        losses = []
+        # Compute loss on each quantile
+        for i, lf in enumerate(loss_fns):
+            losses.append(q_loss_weights[i] * lf(y_true, y_pred[:, i:i+1]))
+
+        return keras.ops.mean(losses) 
+
+    total_expectile_loss.__name__ = "total_expectile_loss_" + "_".join(str(int(q*100)) for q in quantiles)
+
+    return total_expectile_loss
