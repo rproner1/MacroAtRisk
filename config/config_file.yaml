@@ -49,6 +49,7 @@ training:
       n_task_nodes: 32
       initializer: 'he_normal'
       quantiles: [0.05, 0.25, 0.5, 0.75, 0.95]
+      space_quantiles: False
     DMQsp:
       n_recurrent_layers: 2
       n_shared_layers: 2
@@ -59,7 +60,6 @@ training:
       initializer: 'he_normal'
       quantiles: [0.05, 0.25, 0.5, 0.75, 0.95]
       space_quantiles: True
-    
 
 tuning:
   optuna_storage: 'journal'
@@ -72,30 +72,30 @@ tuning:
       lr:
         type: 'float'
         values: [0.0005, 0.002]
-        log_scale: true
+        log_scale: True
     EN:
       l1:
         type: 'float'
-        values: [0.00001, 1.0]
-        log_scale: true
+        values: [0.0001, 10.0]
+        log_scale: True
       l2:
         type: 'float'
-        values: [0.00001, 1.0]
-        log_scale: true
+        values: [0.0001, 10.0]
+        log_scale: True
       lr:
         type: 'float'
         values: [0.0005, 0.002]
-        log_scale: true
+        log_scale: True
 
   dmq_grid:
     l2:
       type: 'float'
       values: [0.01, 0.2]
-      log_scale: true
+      log_scale: True
     lr:
       type: 'float'
       values: [0.0005, 0.002]
-      log_scale: true
+      log_scale: True
 
   qrf_grid:
     n_estimators: [100, 500, 1000]
