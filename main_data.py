@@ -11,7 +11,7 @@ import os
 import yaml
 
 
-from src.data.prepare_ar1_x import get_ar1_x
+from src.data.prepare_ar1_x import get_ar1_x, get_ar_x
 from src.data.prepare_fred import get_fred_md_x, get_targets
 from src.data.prepare_oap_x import get_firm_level_x
 from src.data.make_oap_signals import get_firm_avg, get_firm_spread
@@ -47,6 +47,9 @@ CONSTRUCT_OAP_SIGNALS = config["construct_oap_signals"]
 SKIP_PROCESSED_DATA = config["skip_processed_data"]
 HORIZON_IN_QUARTERS = config['horizon_in_quarters']
 FIRST_DIFFERENCE_SIGNALS = config['diff_signals']
+LAGS = config['lags']
+
+TARGETS = ['Infl_yoy', 'IP_yoy', 'Unrate_yoy']
 
 # ----- Paths -----
 BASE_DIR = Path('.')
@@ -79,7 +82,7 @@ def main():
     
     # VG benchmark
     vg_file = PROCESSED_DIR / f"us_{h}q_vg_x.csv"
-    if SKIP_PROCESSED_DATA and get_latest_file(vg_file) is not None:
+    if SKIP_PROCESSED_DATA and os.path.exists(vg_file):
         logging.info(f"Skipping VG predictors - file already exists")
     else:
         logging.info("Preparing VG benchmark predictors...")
@@ -95,7 +98,7 @@ def main():
     
     # IAR benchmark
     iar_file = PROCESSED_DIR / f"us_{h}q_iar_x.csv"
-    if SKIP_PROCESSED_DATA and get_latest_file(iar_file) is not None:
+    if SKIP_PROCESSED_DATA and os.path.exists(iar_file):
         logging.info(f"Skipping IAR predictors - file already exists")
     else:
         logging.info("Preparing IAR benchmark predictors...")
@@ -113,7 +116,7 @@ def main():
     
     # UAR benchmark
     uar_file = PROCESSED_DIR / f"us_{h}q_uar_x.csv"
-    if SKIP_PROCESSED_DATA and get_latest_file(uar_file) is not None:
+    if SKIP_PROCESSED_DATA and os.path.exists(uar_file):
         logging.info(f"Skipping UAR predictors - file already exists")
     else:
         logging.info("Preparing UAR benchmark predictors...")
@@ -128,7 +131,7 @@ def main():
 
     # FRED-MD predictors
     fred_file = PROCESSED_DIR / f"us_{h}q_fred_x.csv"
-    if SKIP_PROCESSED_DATA and get_latest_file(fred_file) is not None:
+    if SKIP_PROCESSED_DATA and os.path.exists(fred_file):
         logging.info(f"Skipping FRED-MD predictors - file already exists")
     else:
         logging.info("Preparing FRED-MD predictors...")
@@ -145,7 +148,7 @@ def main():
     
     # AR(1) predictors
     ar1_file = PROCESSED_DIR / f"us_{h}q_ar1_x.csv"
-    if SKIP_PROCESSED_DATA and get_latest_file(ar1_file) is not None:
+    if SKIP_PROCESSED_DATA and os.path.exists(ar1_file):
         logging.info(f"Skipping AR(1) predictors - file already exists")
     else:
         logging.info("Preparing AR(1) predictors...")
@@ -157,10 +160,28 @@ def main():
         )
         ar1_x.to_csv(ar1_file)
         logging.info(f"AR(1) predictors saved")
+
+    # AR predictors
+    for target in TARGETS:
+        ar_file = PROCESSED_DIR / f"us_{h}q_{target}_ar_x.csv"
+        if SKIP_PROCESSED_DATA and os.path.exists(ar_file):
+            logging.info(f"Skipping AR predictors - file already exists")
+        else:
+            logging.info("Preparing AR predictors...")
+            ar_x = get_ar_x(
+                file_path=fred_file_path, 
+                desired_start_date_of_samples=DESIRED_START_DATE_OF_SAMPLES, 
+                horizon_in_quarters=HORIZON_IN_QUARTERS, 
+                last_date_of_sample=LAST_DATE_OF_SAMPLE,
+                target=target,
+                lags=LAGS
+            )
+            ar_x.to_csv(ar_file)
+    logging.info(f"AR predictors saved")
     
     # Target variables
     target_file = PROCESSED_DIR / f"us_{h}q_fred_y.csv"
-    if SKIP_PROCESSED_DATA and get_latest_file(target_file) is not None:
+    if SKIP_PROCESSED_DATA and os.path.exists(target_file):
         logging.info(f"Skipping target variables - file already exists")
     else:
         logging.info("Preparing target variables...")
@@ -174,7 +195,7 @@ def main():
 
     # ----- Firm signals -----
     jkp_file = PROCESSED_DIR / f'us_{h}q_jkp_vw_x.csv'
-    if SKIP_PROCESSED_DATA and get_latest_file(jkp_file) is not None:
+    if SKIP_PROCESSED_DATA and os.path.exists(jkp_file):
         logging.info(f"Skipping jkp features - file already exists")
     else:
         logging.info("Preparing jkp variables...")
