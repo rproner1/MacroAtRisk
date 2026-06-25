@@ -129,6 +129,7 @@ for path in [
 
 # Other
 TARGET_NAME_DICT = {0: 'Infl_yoy', 1: 'IP_yoy', 2: 'Unrate_yoy'}
+TARGETS = list(TARGET_NAME_DICT.values())
 TARGET_NAME = TARGET_NAME_DICT[TARGET_IDX]
 
 
@@ -143,6 +144,13 @@ TARGET_PATH = DATA_DIR / TARGET_FILE
 INPUT_PATHS = [
     DATA_DIR / file for file in INPUT_FILES 
 ]
+AR_PATH_DICT = {
+    target: DATA_DIR / f'us_4q_{target}_ar_x.csv' for target in TARGETS
+}
+USE_LAGS = data_config['use_lags']
+if USE_LAGS:
+    INPUT_PATHS.append(AR_PATH_DICT[TARGET_NAME])
+
 BENCHMARK_FILE_DICT = {
     0: f"{COUNTRY}_{HORIZON_IN_QUARTERS}q_iar_x.csv",
     1: f"{COUNTRY}_{HORIZON_IN_QUARTERS}q_vg_x.csv",
