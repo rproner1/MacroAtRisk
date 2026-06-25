@@ -14,7 +14,8 @@ from src.train.losses import (
     compute_qpc, 
     quantile_loss, 
     make_tilted_loss, 
-    make_total_tilted_loss
+    make_total_tilted_loss,
+    make_total_expectile_loss
 )
 
 def get_confounding_set(X: np.ndarray, m: int, j: int) -> list:
@@ -536,9 +537,10 @@ def build_dmq(
         quantiles: list[float] | None = None, 
         loss_weights: list[float] | None = None,
         bias_initializers: dict[str|keras.Initializer] | None = None,
-        space_quantiles: bool = False
+        space_quantiles: bool = False,
+        loss: str = 'quantile'
 ):
-    
+
     if quantiles is None:
         quantiles = [0.05, 0.25, 0.5, 0.75, 0.95]
     
@@ -628,8 +630,13 @@ def build_dmq(
 
     model = keras.models.Model(inputs=inputs, outputs=outputs)
 
-    loss = make_total_tilted_loss(quantiles, q_loss_weights=loss_weights)
-
+    if loss == 'quantile':
+        loss = make_total_tilted_loss(quantiles, q_loss_weights=loss_weights)
+    elif loss == 'expectile':
+        loss = make_total_expectile_loss(
+            quantiles=quantiles, 
+            q_loss_weights=loss_weights
+        )
     model.compile(
         loss=loss, 
         optimizer=keras.optimizers.Adam(
