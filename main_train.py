@@ -24,8 +24,7 @@ from src.data.prepare_data import (
 )
 from src.train.shelf_models import *
 from src.train.losses import make_tilted_loss, make_total_tilted_loss
-from src.train.models import build_dmq_v0
-from src.train.slstm import LayerNormLSTMCell
+from src.train.models import build_dmq
 from src.train.train_utils import fit_models
 from src.train.tuning import perform_hpo
 from src.utils.files import (
@@ -189,8 +188,6 @@ else:
 # General
 QUANTILES = config['quantiles']
 PATH_QUANTILES = [int(q*100) for q in QUANTILES]
-LOWER_QUANTILES = sorted([q for q in QUANTILES if q < .5])
-UPPER_QUANTILES = sorted([q for q in QUANTILES if q > .5])
 
 # Tuning
 tuning_config = config['tuning']
@@ -574,8 +571,7 @@ def train_deep_models():
         builder_params.update(
             {
                 'input_shapes': input_shapes,
-                'lower_quantiles': LOWER_QUANTILES,
-                'upper_quantiles': UPPER_QUANTILES,
+                'quantiles': QUANTILES,
                 'bias_initializers': bias_initializers
             }
         )
@@ -595,7 +591,7 @@ def train_deep_models():
                 y_train=y_tr,
                 val_size=VAL_SIZE,
                 n_splits=K_FOLDS,
-                builder_func=build_dmq_v0,
+                builder_func=build_dmq,
                 fit_params=fit_params,
                 early_stopping_args=EARLY_STOPPING_ARGS,
                 grid=DMQ_GRID,
@@ -616,7 +612,7 @@ def train_deep_models():
         estimators = fit_models(
             X_tr,
             y_tr,
-            build_dmq_v0,
+            build_dmq,
             model_name=study_name,
             hps=best_params,
             fit_params=fit_params,
