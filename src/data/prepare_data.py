@@ -5,9 +5,10 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-from src.data.data_utils import split_sequences
 from pathlib import Path
 import logging
+from functools import reduce
+from src.data.data_utils import split_sequences
 
 
 FRED_DICT = {
@@ -378,7 +379,14 @@ def _read_and_merge_data(
             parse_dates=True
         ) for path in input_paths
     ]
-    X = pd.concat(inputs, axis=1)
+
+    # Get common indicies
+    common_idx = reduce(
+        lambda left, right: left.intersection(right), 
+        [df.index for df in inputs]
+    )
+
+    X = pd.concat(inputs, axis=1).loc[common_idx]
 
     targets = pd.read_csv(targets_path, index_col=0, parse_dates=True)
 
