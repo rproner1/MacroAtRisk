@@ -5,9 +5,9 @@ data:
   country: "us"
   horizon_in_quarters: 4
   input_files: [
-    "us_4q_fred_x.csv",
-    # "us_4q_jkp_vw_x.csv"
+    "us_4q_jkp_vw_x.csv"
   ]
+  use_lags: True
   target_file: 'us_4q_fred_y.csv'
   time_steps: 12
   val_months: 60  # Number of months for early stopping
