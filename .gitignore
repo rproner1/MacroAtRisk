@@ -41,3 +41,5 @@ local_tuning_logs/*
 
 # Config files
 *.yaml
+
+*.sh
