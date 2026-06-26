@@ -6,6 +6,8 @@ from typing import Tuple
 import inspect
 import optuna
 import logging
+import keras
+import gc
 
 from src.utils.files import save_hyperparameters
 
@@ -128,6 +130,10 @@ class CVObjective:
         val_score = model.evaluate(X_test, y_test, verbose=0)
         if isinstance(val_score, list):
             val_score = val_score[0]
+
+        del model
+        keras.backend.clear_session()
+        gc.collect()
 
         return val_score
 
