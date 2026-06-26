@@ -65,6 +65,68 @@ parser.add_argument(
 )
 
 # Optional arguments
+
+# Data
+parser.add_argument(
+    '--input-files',
+    type=str,
+    nargs='+',
+    default=['us_4q_fred_x.csv'],
+    choices=[
+        'us_4q_fred_x.csv',
+        'us_4q_jkp_vw_x.csv'
+    ],
+    help='Features to use for training'
+)
+parser.add_argument(
+    '--use-lags',
+    type=int,
+    default=0,
+    choices=[0,1],
+    help='Whether or not to use lags of target as a feature'
+)
+parser.add_argument(
+    '--target-scale-factor',
+    type=int,
+    default=100,
+    help="Scaling factor for the targets: t = t * scale"
+)
+parser.add_argument(
+    '--split-features',
+    type=int,
+    default=0,
+    help="Splits features if 1 else keeps them as one set of inputs"
+)
+parser.add_argument(
+    '--split-by',
+    type=str,
+    default='group',
+    choices=['group', 'theme'],
+    help=(
+        "If the split feature flag is on, splits features by macro/finance"
+        "if 'group' and into themes (output, profitability, etc) if 'theme'"
+    ) 
+)
+parser.add_argument(
+    '--time-steps',
+    type=int,
+    default=12,
+    help="number of time-steps for LSTM sequences"
+)
+parser.add_argument(
+    '--val-months',
+    type=int,
+    default=60,
+    help="number of months of data to use for validation"
+)
+parser.add_argument(
+    '--test-months',
+    type=int,
+    default=12,
+    help="number of months of data to use for out-of-sample testing"
+)
+
+# Other
 parser.add_argument(
     "--model-type",
     type=str, 
@@ -90,12 +152,22 @@ parser.add_argument(
 
 args = parser.parse_args()
 
+print(args)
+
 # Command-line args
 DATE = args.date
 YEAR = args.year
 TARGET_IDX = args.target_idx
 MODEL_TYPE = args.model_type
 LOCAL_TEST = args.local_test
+INPUT_FILES = args.input_files
+USE_LAGS = bool(args.use_lags)
+TARGET_SCALE_FACTOR = args.target_scale_factor
+SPLIT_FEATURES = bool(args.split_features)
+FEATURE_SPLIT_METHOD = args.split_by
+TIME_STEPS = args.time_steps
+VAL_MONTHS = args.val_months
+TEST_MONTHS = args.test_months
 
 # Paths
 BASE_DIR = Path('./')
@@ -138,7 +210,7 @@ data_config = config['data']
 START_DATE = data_config['start_date']
 COUNTRY = data_config['country']
 HORIZON_IN_QUARTERS = data_config['horizon_in_quarters']
-INPUT_FILES = data_config['input_files']
+# INPUT_FILES = data_config['input_files']
 TARGET_FILE = data_config['target_file']
 TARGET_PATH = DATA_DIR / TARGET_FILE
 INPUT_PATHS = [
@@ -147,7 +219,7 @@ INPUT_PATHS = [
 AR_PATH_DICT = {
     target: DATA_DIR / f'us_4q_{target}_ar_x.csv' for target in TARGETS
 }
-USE_LAGS = data_config['use_lags']
+# USE_LAGS = data_config['use_lags']
 if USE_LAGS:
     INPUT_PATHS.append(AR_PATH_DICT[TARGET_NAME])
 
@@ -160,17 +232,17 @@ BENCHMARK_NAME_DICT = {0: 'IAR', 1: 'VG', 2: 'UAR'}
 BENCHMARK_FILE = BENCHMARK_FILE_DICT[TARGET_IDX]
 BENCHMARK_NAME = BENCHMARK_NAME_DICT[TARGET_IDX]
 BENCHMARK_INPUT_PATHS = [DATA_DIR / BENCHMARK_FILE]
-TIME_STEPS = data_config['time_steps']
-VAL_MONTHS = data_config['val_months']
-TEST_MONTHS = data_config['test_months']
+# TIME_STEPS = data_config['time_steps']
+# VAL_MONTHS = data_config['val_months']
+# TEST_MONTHS = data_config['test_months']
 TEST_IDX = pd.date_range(
     start=f'{YEAR+1}-01-01', 
     periods=TEST_MONTHS, 
     freq='MS'
 )
-TARGET_SCALE_FACTOR = data_config['target_scale_factor']
-SPLIT_FEATURES = data_config['split_features']
-FEATURE_SPLIT_METHOD = data_config['split_by']
+# TARGET_SCALE_FACTOR = data_config['target_scale_factor']
+# SPLIT_FEATURES = data_config['split_features']
+# FEATURE_SPLIT_METHOD = data_config['split_by']
 
 with open('data/fred_group_dict.json', 'r') as f:
     FRED_THEME_DICT = json.load(f)
@@ -502,9 +574,13 @@ def train_deep_models():
     if isinstance(X_train, list):
         X_train_full = concatenate_multi_input_data(X_train, X_val)
         input_shapes = [x.shape[1:] for x in X_train_full]
+
+        print([x.shape for x in X_train_full])
     else:
         X_train_full = np.concatenate([X_train, X_val], axis=0)
         input_shapes = [X_train_full.shape[1:]]
+        
+        print(X_train_full.shape)
 
     y_train = t_train[:, TARGET_IDX]
     y_val = t_val[:, TARGET_IDX]
