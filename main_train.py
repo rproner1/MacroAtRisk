@@ -575,12 +575,10 @@ def train_deep_models():
         X_train_full = concatenate_multi_input_data(X_train, X_val)
         input_shapes = [x.shape[1:] for x in X_train_full]
 
-        print([x.shape for x in X_train_full])
     else:
         X_train_full = np.concatenate([X_train, X_val], axis=0)
         input_shapes = [X_train_full.shape[1:]]
-        
-        print(X_train_full.shape)
+
 
     y_train = t_train[:, TARGET_IDX]
     y_val = t_val[:, TARGET_IDX]
