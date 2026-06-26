@@ -44,3 +44,4 @@ local_tuning_logs/*
 
 # Bash scripts
 *.sh
+*.ps1
