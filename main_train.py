@@ -584,22 +584,6 @@ def train_deep_models():
     y_val = t_val[:, TARGET_IDX]
     y_train_full = np.concatenate([y_train, y_val], axis=0)
 
-    mq_y_train = np.repeat(
-        y_train.reshape(-1,1), 
-        repeats=len(QUANTILES),
-        axis=1
-    )
-    mq_y_val = np.repeat(
-        y_val.reshape(-1,1), 
-        repeats=len(QUANTILES),
-        axis=1
-    )
-    mq_y_train_full = np.repeat(
-        y_train_full.reshape(-1,1), 
-        repeats=len(QUANTILES),
-        axis=1
-    )
-    
     # Custom objects for loading models
     custom_objects = {
         **{f'tilted_loss_{Q}': make_tilted_loss(Q) for Q in PATH_QUANTILES},
@@ -623,8 +607,8 @@ def train_deep_models():
 
     # Set training and validation sets
     X_tr = X_train_full
-    y_tr = mq_y_train_full
-    validation_data = (X_val, mq_y_val)
+    y_tr = y_train_full
+    validation_data = (X_val, y_val)
     X_te = X_test
 
     # set fit params
