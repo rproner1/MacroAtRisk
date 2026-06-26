@@ -190,7 +190,7 @@ def perform_hpo(
         builder_func=builder_func,
         fit_params=fit_params,
         early_stopping_args=early_stopping_args,
-        n_jobs=n_jobs,
+        n_jobs=1,
         grid=grid,
         **kwargs
     )
