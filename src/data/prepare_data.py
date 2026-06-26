@@ -646,6 +646,14 @@ def prepare_non_rnn_data(
         targets_val *= target_scale_factor
         targets_test *= target_scale_factor
 
+    # Convert data to float32 format
+    X_train = X_train.astype('float32')
+    X_val = X_val.astype('float32')
+    X_test = X_test.astype('float32')
+    targets_train = targets_train.astype('float32')
+    targets_val = targets_val.astype('float32')
+    targets_test = targets_test.astype('float32')
+
     return X_train, X_val, X_test, targets_train, targets_val, targets_test
 
 def _split_inputs_into_categories(
