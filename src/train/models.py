@@ -424,7 +424,11 @@ def _build_spaced_task_heads(
             )
         )
         if i < n_layers:
-            median_head.add(keras.layers.LayerNormalization())
+            median_head.add(
+                keras.layers.LayerNormalization(
+                    name=f'Q50_LN_{i}'
+                )
+            )
     
     median_head.add(
         keras.layers.Dense(
@@ -454,7 +458,11 @@ def _build_spaced_task_heads(
                 )
             )
             if i < n_layers:
-                qtask_layers.append(keras.layers.LayerNormalization())
+                qtask_layers.append(
+                    keras.layers.LayerNormalization(
+                        name=f'Q{int(q*100)}_LN_{i}'
+                    )
+                )
 
         qtask_layers.append(
             keras.layers.Dense(
@@ -462,7 +470,8 @@ def _build_spaced_task_heads(
                 activation='linear', 
                 kernel_regularizer=keras.regularizers.L1L2(l1,l2), 
                 kernel_initializer=initializer,
-                bias_initializer=bias_initializers[q]
+                bias_initializer=bias_initializers[q],
+                name='Q50_out_layer'
             )
         )
         q_task_resid = keras.models.Sequential(
@@ -470,9 +479,14 @@ def _build_spaced_task_heads(
             name=f'Q{int(q*100)}_lower_raw'
         )(inputs)
 
+        spacing = keras.layers.Activation(
+            'softplus',
+            name=f'R{int(q*100)}_softplus'
+        )(q_task_resid)
+
         q_out = keras.layers.Subtract(
-            name=f'Q{int(q*100)}_from_prev'
-        )([prev, keras.layers.Activation('softplus')(q_task_resid)])
+            name=f'Q{int(q*100)}'
+        )([prev, spacing])
 
         lower_outputs.append(q_out)
         prev = q_out
@@ -493,7 +507,11 @@ def _build_spaced_task_heads(
                 )
             )
             if i < n_layers:
-                qtask_layers.append(keras.layers.LayerNormalization())
+                qtask_layers.append(
+                    keras.layers.LayerNormalization(
+                        name=f'Q{int(q*100)}_LN_{i}'
+                    )
+                )
 
         qtask_layers.append(
             keras.layers.Dense(
@@ -501,7 +519,8 @@ def _build_spaced_task_heads(
                 activation='linear',
                 kernel_regularizer=keras.regularizers.L1L2(l1,l2), 
                 kernel_initializer=initializer,
-                bias_initializer=bias_initializers[q]
+                bias_initializer=bias_initializers[q],
+                name=f'Q{int(q*100)}_out_layer_{i}'
             )
         )
         q_task_resid = keras.models.Sequential(
@@ -509,9 +528,14 @@ def _build_spaced_task_heads(
             name=f'Q{int(q*100)}_upper_raw'
         )(inputs)
 
+        spacing = keras.layers.Activation(
+            'softplus',
+            name=f'R{int(q*100)}_softplus'
+        )(q_task_resid)
+
         q_out = keras.layers.Add(
             name=f'Q{int(q*100)}_from_prev'
-        )([prev, keras.layers.Activation('softplus')(q_task_resid)])
+        )([prev, spacing])
 
         upper_outputs.append(q_out)
 
