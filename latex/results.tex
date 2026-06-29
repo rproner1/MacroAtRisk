@@ -21,7 +21,7 @@
 \date{\today}
 \author{Robert Proner}
 % Date variable for results paths
-\newcommand{\resultsdate}{2026-06-24}
+\newcommand{\resultsdate}{2026-06-26}
 
 % Toggle to show/hide figures. Default shows figures.
 % To override from the command line, pass e.g.:
@@ -39,6 +39,15 @@
 \nprounddigits{2}
 
 \maketitle
+
+\section{Summary}
+\begin{itemize}
+  \item Data: JKP + 12 lags of target
+  \item JKP + lags is better than just FRED-MD alone
+  \item For inflation, QRF performance is worse while QGB performance is better compared to FRED + JKP
+  \item For IP, both QRF and QGB perform better compared to FRED+JKP
+  \item For Unrate Both QRF and QGB perform slightly worse compared to FRED+JKP
+\end{itemize}
 
 \section{Main tables}
 
