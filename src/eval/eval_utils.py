@@ -136,6 +136,22 @@ def r1_score(
     the constant-only model.
     '''
 
+    if not isinstance(y_true, np.ndarray):
+        y_true = y_true.values
+    
+    if not isinstance(y_pred, np.ndarray):
+        y_pred = y_pred.values
+
+    # Remove NaNs
+    if np.sum(np.isnan(y_pred)) > 0.0: 
+        warnings.warn('y_pred contains NaNs. Dropping...') 
+
+    mask = ~np.isnan(y_pred)
+
+    y_true = y_true[mask]
+    y_pred = y_pred[mask]
+    benchmark = benchmark[mask]
+
     r1 = (
         1 
         - mean_pinball_loss(y_true=y_true, y_pred=y_pred, alpha=q)
@@ -156,6 +172,22 @@ def r2_score(
     where A is the mse of the model and B is the mse of
     the constant-only model.
     '''
+
+    if not isinstance(y_true, np.ndarray):
+        y_true = y_true.values
+    
+    if not isinstance(y_pred, np.ndarray):
+        y_pred = y_pred.values
+
+    # Remove NaNs
+    if np.sum(np.isnan(y_pred)) > 0.0: 
+        warnings.warn('y_pred contains NaNs. Dropping...') 
+
+    mask = ~np.isnan(y_pred)
+
+    y_true = y_true[mask]
+    y_pred = y_pred[mask]
+    benchmark = benchmark[mask]
 
     r2 = (
         1 
@@ -220,6 +252,7 @@ def get_r1_results_df(
         model_cols = [c for c in preds_df if model in c]
         model_preds = preds_df.loc[:, model_cols]
 
+        print(model_preds)
         # Compute R1 for each quantile for the model
         model_r1_scores = _compute_r1_scores(
             y_true=y_true, 
