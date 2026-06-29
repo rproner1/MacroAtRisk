@@ -204,12 +204,19 @@ def main():
         )
         all_r1_results[target] = r1_results_df
         
+        if 'AR1_Mean' in target_preds.columns:
+            ar1_mean_preds = target_preds.loc[:,'AR1_Mean']
+            target_preds = target_preds.drop(columns=['AR1_Mean'])
+
         # Get mean predictions from quantiles
         mean_preds = get_mean_preds(
-            quantile_preds=target_preds.drop(columns=['AR1_Mean']),
+            quantile_preds=target_preds,
             models=MODELS,
             weights=[0.15, 0.225, 0.25, 0.225, 0.15]
         )
+
+        if 'AR1_Mean' in target_preds.columns:
+            mean_preds = pd.concat([ar1_mean_preds, mean_preds], axis=1)
 
         if PLOT_MEANS:
             print("\nGenerating mean plots...")
