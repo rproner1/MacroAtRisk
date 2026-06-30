@@ -246,8 +246,25 @@ def build_nn(
     
     return model
 
-def build_mt():
-    pass
+
+def dense_residual_block(
+        x, 
+        units, 
+        l1, 
+        l2
+):
+
+    y = keras.layers.Dense(
+        units,
+        activation='relu',
+        kernel_initializer='he_normal',
+        kernel_regularizer=keras.regularizers.L1L2(l1,l2)
+    )(x)
+
+    add = keras.layers.Add()([x,y])
+
+    return add
+
 
 def build_rnn(
         n_recurrent_layers: int=2, 
