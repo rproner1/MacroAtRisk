@@ -12,6 +12,7 @@ from pathlib import Path
 from datetime import date
 from src.eval.eval_utils import (
     concat_preds,
+    get_calibration_results_df,
     get_r1_results_df,
     get_r2_results_df,
     get_mean_preds
@@ -47,10 +48,16 @@ parser.add_argument(
     help="Date identifier for results (default: from config)"
 )
 parser.add_argument(
-    "--shelf-date", 
+    "--linear-date", 
     type=str, 
     default=None,
-    help="Date identifier for shelf model predictions"
+    help="Date identifier for linear model predictions"
+)
+parser.add_argument(
+    "--tree-date", 
+    type=str, 
+    default=None,
+    help="Date identifier for tree model predictions"
 )
 parser.add_argument(
     "--st-date", 
@@ -82,7 +89,8 @@ args = parser.parse_args()
 CONCAT_PREDS = args.concat_preds
 TARGETS = args.targets
 DATE = args.date
-SHELF_DATE = args.shelf_date if args.shelf_date is not None else DATE
+LINEAR_DATE = args.linear_date if args.linear_date is not None else DATE
+TREE_DATE = args.tree_date if args.tree_date is not None else DATE
 ST_DATE = args.st_date if args.st_date is not None else DATE
 PLOT_QUANTILES = args.plot_quantiles
 PLOT_MEANS = args.plot_means
@@ -92,9 +100,8 @@ BASE_DIR =Path('.')
 DATA_DIR = BASE_DIR / 'data' / 'processed'
 NAIVE_PRED_DIR = BASE_DIR / 'predictions' / 'naive_preds'
 LIT_BENCH_PRED_DIR = BASE_DIR / 'predictions' / 'lit_bench_preds' 
-# SHELF_PRED_DIR = BASE_DIR / 'predictions' / 'shelf_preds' / SHELF_DATE
-LINEAR_PRED_DIR = BASE_DIR / 'predictions' / 'linear_preds' / SHELF_DATE
-TREE_PRED_DIR = BASE_DIR / 'predictions' / 'tree_preds' / SHELF_DATE
+LINEAR_PRED_DIR = BASE_DIR / 'predictions' / 'linear_preds' / LINEAR_DATE
+TREE_PRED_DIR = BASE_DIR / 'predictions' / 'tree_preds' / TREE_DATE
 ST_PRED_DIR = BASE_DIR / 'predictions' / 'st_preds' / ST_DATE
 CONCAT_PRED_DIR = BASE_DIR / 'predictions' / 'concatenated' / DATE
 RESULTS_DIR = BASE_DIR / "results" / DATE
@@ -155,6 +162,7 @@ def main():
     targets = pd.read_csv(TARGETS_PATH, index_col=0, parse_dates=True) 
     targets *= TARGET_SCALE
 
+    all_calib_results = {}
     all_r1_results = {}
     all_r2_results = {}
     for target in TARGETS:
@@ -181,6 +189,10 @@ def main():
             columns=(q_benchmark_cols + ['Naive_Mean'])
         )
 
+        if 'AR1_Mean' in target_preds.columns:
+            ar1_mean_preds = target_preds.loc[:,'AR1_Mean']
+            target_preds = target_preds.drop(columns=['AR1_Mean'])
+
         if PLOT_QUANTILES:
             print("\nGenerating quantile plots...")
             make_quantile_plots(
@@ -194,6 +206,15 @@ def main():
                 horizon_in_quarters=HORIZON
             )
 
+        # Test calibration for each model and quantile
+        calibration_results_df = get_calibration_results_df(
+            y_true=y_true,
+            preds_df=target_preds,
+            models=MODELS,
+            probabilities=QUANTILES
+        )
+        all_calib_results[target] = calibration_results_df
+
         # Compute R1 scores for each model and quantile 
         r1_results_df = get_r1_results_df(
             y_true=y_true,
@@ -206,10 +227,13 @@ def main():
         
         # Get mean predictions from quantiles
         mean_preds = get_mean_preds(
-            quantile_preds=target_preds.drop(columns=['AR1_Mean']),
+            quantile_preds=target_preds,
             models=MODELS,
             weights=[0.15, 0.225, 0.25, 0.225, 0.15]
         )
+
+        if 'AR1_Mean' in target_preds.columns:
+            mean_preds = pd.concat([ar1_mean_preds, mean_preds], axis=1)
 
         if PLOT_MEANS:
             print("\nGenerating mean plots...")
@@ -233,6 +257,32 @@ def main():
         all_r2_results[target] = r2_df
     
     # Save results
+
+    # Calibration results
+    all_calib_results_df = pd.concat(all_calib_results)
+
+    all_calib_results_df.index.names = ['Target', 'Quantile']
+
+    all_calib_results_df.index = all_calib_results_df.index.set_levels(
+        all_calib_results_df.index.levels[0].str.replace(r'_yoy', '', regex=False),
+        level='Target'
+    )
+
+    all_calib_results_df.to_csv(
+        (
+            RESULTS_DIR 
+            / f'calibration_{COUNTRY}_{HORIZON}q_{TEST_START}-{TEST_END}.csv'
+        )
+    )
+
+    all_calib_results_df.to_latex(
+        (
+            TABLES_DIR 
+            / f'calibration_{COUNTRY}_{HORIZON}q_{TEST_START}-{TEST_END}.tex'
+        ),
+        multirow=True,
+        float_format='%.2f'
+    )
 
     # R1 results
     all_r1_results_df = pd.concat(all_r1_results)

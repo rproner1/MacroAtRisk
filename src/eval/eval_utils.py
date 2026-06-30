@@ -136,6 +136,22 @@ def r1_score(
     the constant-only model.
     '''
 
+    if not isinstance(y_true, np.ndarray):
+        y_true = y_true.values
+    
+    if not isinstance(y_pred, np.ndarray):
+        y_pred = y_pred.values
+
+    # Remove NaNs
+    if np.sum(np.isnan(y_pred)) > 0.0: 
+        warnings.warn('y_pred contains NaNs. Dropping...') 
+
+    mask = ~np.isnan(y_pred)
+
+    y_true = y_true[mask]
+    y_pred = y_pred[mask]
+    benchmark = benchmark[mask]
+
     r1 = (
         1 
         - mean_pinball_loss(y_true=y_true, y_pred=y_pred, alpha=q)
@@ -156,6 +172,22 @@ def r2_score(
     where A is the mse of the model and B is the mse of
     the constant-only model.
     '''
+
+    if not isinstance(y_true, np.ndarray):
+        y_true = y_true.values
+    
+    if not isinstance(y_pred, np.ndarray):
+        y_pred = y_pred.values
+
+    # Remove NaNs
+    if np.sum(np.isnan(y_pred)) > 0.0: 
+        warnings.warn('y_pred contains NaNs. Dropping...') 
+
+    mask = ~np.isnan(y_pred)
+
+    y_true = y_true[mask]
+    y_pred = y_pred[mask]
+    benchmark = benchmark[mask]
 
     r2 = (
         1 
@@ -220,6 +252,7 @@ def get_r1_results_df(
         model_cols = [c for c in preds_df if model in c]
         model_preds = preds_df.loc[:, model_cols]
 
+        print(model_preds)
         # Compute R1 for each quantile for the model
         model_r1_scores = _compute_r1_scores(
             y_true=y_true, 
@@ -248,3 +281,44 @@ def get_r2_results_df(
         ]
     
     return pd.DataFrame(r2s)
+
+def compute_calibration_error(
+        quantile_preds: np.ndarray,
+        probabilities: np.ndarray,
+        y_true: np.ndarray
+):
+    
+    results = {}
+    for i, q in enumerate(probabilities):
+
+        print(quantile_preds)
+        coverage = np.mean(y_true < quantile_preds[:,i])
+        calibration_error = coverage - q
+        results[f'Q{int(q*100)}'] = calibration_error
+    
+    results['Mean'] = np.mean(list(results.values()))
+
+    return results
+
+def get_calibration_results_df(
+    y_true: pd.Series,
+    preds_df: pd.DataFrame,
+    models: list[str],
+    probabilities: list[float]
+):
+    
+    all_models_results = {}
+    for model in models:
+        model_cols = [c for c in preds_df.columns if c.startswith(f'{model}_')]
+        model_q_preds = preds_df[model_cols]
+
+        print(model)
+        calibration_results = compute_calibration_error(
+            quantile_preds=model_q_preds.values,
+            probabilities=probabilities,
+            y_true=y_true.values
+        )
+
+        all_models_results[model] = calibration_results
+    
+    return pd.DataFrame(all_models_results)
