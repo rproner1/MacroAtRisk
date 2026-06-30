@@ -17,7 +17,7 @@ from statsmodels.tools import add_constant
 from sklearn.dummy import DummyRegressor
 
 from src.train.losses import make_tilted_loss
-from src.train.models import build_qlr
+from src.train.models import build_linear_model
 from src.train.train_utils import fit_models
 from src.train.tuning import CVObjective
 
@@ -130,7 +130,7 @@ def fit_linear_models(
                     y_tr=y_train_full,
                     val_size=val_size,
                     n_splits=k_folds,
-                    builder_func=build_qlr,
+                    builder_func=build_linear_model,
                     fit_params=fit_params,
                     early_stopping_args=early_stopping_args,
                     n_jobs=1,
