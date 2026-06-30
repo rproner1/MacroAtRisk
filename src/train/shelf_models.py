@@ -8,9 +8,10 @@ import numpy as np
 from sklearn.model_selection import GridSearchCV
 import os
 from pathlib import Path
-from src.utils.files import check_hps_exist, load_hyperparameters, save_hyperparameters
+from typing import Literal
+
 from sklearn.linear_model import LinearRegression, QuantileRegressor
-from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 from quantile_forest import RandomForestQuantileRegressor
 from statsmodels.regression.quantile_regression import QuantReg
 from statsmodels.tools import add_constant
@@ -19,32 +20,56 @@ from sklearn.dummy import DummyRegressor
 from src.train.losses import make_tilted_loss
 from src.train.models import build_linear_model
 from src.train.train_utils import fit_models
-from src.train.tuning import CVObjective
+from src.train.tuning import perform_hpo
+from src.utils.files import (
+    check_hps_exist, 
+    load_hyperparameters, 
+    save_hyperparameters
+)
 
 def fit_lit_bench_model(
         X_train: pd.DataFrame, 
         y_train: pd.DataFrame, 
         X_test: pd.DataFrame, 
-        quantiles: list[float], 
-        model_name: str
+        loss: Literal['quantile, mse'],
+        quantiles: list[float]
     ) -> dict:
+
+    if loss not in ("quantile", "mse"):
+        raise ValueError(f"Invalid loss '{loss}'. Must be 'quantile' or 'mse'.")
 
     train_preds_dict = {}
     preds_dict = {}
 
-    for q in quantiles:
+    if loss == 'quantile':
 
-        Q = int(q*100)
+        for q in quantiles:
 
-        model = QuantReg(y_train.values, add_constant(X_train.values, has_constant='skip'))
-        res = model.fit(q=q)
-        print(f"Quantile: {q}, Params: {res.params}")
+            Q = int(q*100)
 
-        # predict
-        preds = res.predict(add_constant(X_test.values, has_constant='skip'))
-        train_preds = res.predict(add_constant(X_train.values, has_constant='skip'))
-        preds_dict[f'{model_name}_Q{Q}'] = preds
-        train_preds_dict[f'{model_name}_Q{Q}'] = train_preds
+            model = QuantReg(y_train.values, add_constant(X_train.values, has_constant='skip'))
+            res = model.fit(q=q)
+            print(f"Quantile: {q}, Params: {res.params}")
+
+            # predict
+            preds = res.predict(add_constant(X_test.values, has_constant='skip'))
+            train_preds = res.predict(add_constant(X_train.values, has_constant='skip'))
+            preds_dict[f'LIT_Q{Q}'] = preds
+            train_preds_dict[f'LIT_Q{Q}'] = train_preds
+
+    else: 
+
+        model = LinearRegression()
+        model.fit(
+            X_train.values,
+            y_train.values
+        )
+
+        train_preds = model.predict(X_train)
+        preds = model.predict(X_test)
+
+        train_preds_dict['LIT'] = train_preds
+        preds_dict['LIT'] = preds
 
     return train_preds_dict, preds_dict
 
@@ -68,7 +93,11 @@ def fit_linear_models(
         model_dir_path: Path,
         linear_grids: dict | None = None,
         optuna_storage: str = "journal",
+        loss: Literal['quantile', 'mse'] = 'quantile'
     ):
+
+    if loss not in ("quantile", "mse"):
+        raise ValueError(f"Invalid loss '{loss}'. Must be 'quantile' or 'mse'.")
 
     path_quantiles = [int(q*100) for q in quantiles]
     custom_objects = {
@@ -109,10 +138,77 @@ def fit_linear_models(
     all_model_preds = {}
     # Train each model variant
     for model in models:
-        for q,Q in zip(quantiles, path_quantiles):
-            study_name = f'{model}_Q{Q}_{target_name}_{year}'
+
+        if loss == 'quantile':
+            for q,Q in zip(quantiles, path_quantiles):
+                study_name = f'{model}_Q{Q}_{target_name}_{year}'
+
+                builder_params = {'q': q, 'loss': loss}
+                
+                logging.info(f"Training {model}_Q{Q}...")
             
-            logging.info(f"Training {model}_Q{Q}...")
+                # Check if hyperparameters already exist
+                if check_hps_exist(study_name, tuning_path):
+                    logging.info(f"Hyperparameters for {study_name} already exist. Loading...")
+                    best_params = load_hyperparameters(study_name, tuning_path)
+                else:
+                    logging.info(f"No existing hyperparameters for {study_name}, optimizing...")
+
+                    best_params = perform_hpo(
+                        X_train=X_train_full,
+                        y_train=y_train_full,
+                        val_size=val_size,
+                        n_splits=k_folds,
+                        builder_func=build_linear_model,
+                        fit_params=fit_params,
+                        early_stopping_args=early_stopping_args,
+                        grid=linear_grids[model],
+                        study_name=study_name,
+                        trials=trials,
+                        n_jobs=os.cpu_count()-1,
+                        storage=storage,
+                        sampler=optuna.samplers.RandomSampler(seed=seed),
+                        pruner=optuna.pruners.MedianPruner(),
+                        save_hps=True if optuna_storage == 'inmemory' else False,
+                        log_path=tuning_path,
+                        **builder_params
+                    )
+
+                best_params.update(builder_params)
+                
+                # Fit models with best hyperparameters
+                estimators = fit_models(
+                    X_train,
+                    y_train,
+                    build_linear_model,
+                    model_name=study_name,
+                    hps=best_params,
+                    fit_params=fit_params,
+                    early_stopping_args=early_stopping_args,
+                    n_estimators=n_estimators,
+                    models_dir_path=model_dir_path,
+                    save_models=True,
+                    custom_objects=custom_objects
+                )
+                
+                # Generate predictions
+                preds = []
+                for e in estimators:
+                    e_preds = np.asarray(e.predict(X_test, verbose=0)).reshape(-1)
+                    preds.append(e_preds[:, np.newaxis])
+                
+                preds = np.concatenate(preds, axis=1).mean(axis=1) # Take the mean over estimators
+
+                # Store predictions for the current quantile
+                all_model_preds[f'{model}_Q{Q}'] = preds
+
+        else:
+
+            study_name = f'{model}_{target_name}_{year}'
+
+            builder_params = {'loss': loss}
+            
+            logging.info(f"Training {model}...")
         
             # Check if hyperparameters already exist
             if check_hps_exist(study_name, tuning_path):
@@ -121,67 +217,33 @@ def fit_linear_models(
             else:
                 logging.info(f"No existing hyperparameters for {study_name}, optimizing...")
 
-                builder_params = {'q': q}
-
-                grid = linear_grids[model]
-
-                objective = CVObjective(
-                    X_tr=X_train_full,
-                    y_tr=y_train_full,
+                best_params = perform_hpo(
+                    X_train=X_train_full,
+                    y_train=y_train_full,
                     val_size=val_size,
                     n_splits=k_folds,
                     builder_func=build_linear_model,
                     fit_params=fit_params,
                     early_stopping_args=early_stopping_args,
-                    n_jobs=1,
-                    grid=grid,
+                    grid=linear_grids[model],
+                    study_name=study_name,
+                    trials=trials,
+                    n_jobs=os.cpu_count()-1,
+                    storage=storage,
+                    sampler=optuna.samplers.RandomSampler(seed=seed),
+                    pruner=optuna.pruners.MedianPruner(),
+                    save_hps=True if optuna_storage == 'inmemory' else False,
+                    log_path=tuning_path,
                     **builder_params
                 )
-                
-                study = optuna.create_study(
-                    direction="minimize",
-                    study_name=study_name,
-                    storage=storage,
-                    load_if_exists=True,
-                    sampler=optuna.samplers.RandomSampler(seed),
-                    pruner=None
-                )
 
-                n_completed_trials = len(
-                    study.get_trials(deepcopy=False, states=[TrialState.COMPLETE])
-                )
-                remaining_trials = max(0, trials - n_completed_trials)
-
-                if remaining_trials == 0:
-                    logging.info(
-                        f"Study {study_name} already has {n_completed_trials} completed trials. Skipping..."
-                    )
-                else:
-                    logging.info(
-                        f"Study {study_name} has {n_completed_trials} completed trials. Running {remaining_trials} more..."
-                    )
-                    study.optimize(
-                        objective,
-                        n_trials=remaining_trials,
-                        n_jobs=os.cpu_count(),
-                        gc_after_trial=True,
-                        show_progress_bar=True
-                    )
-                
-                best_params = study.best_params
-                best_params.update(builder_params)
-                
-                save_hyperparameters(
-                    best_params,
-                    study_name,
-                    log_path=tuning_path
-                )
+            best_params.update(builder_params)
             
             # Fit models with best hyperparameters
             estimators = fit_models(
                 X_train,
                 y_train,
-                build_qlr,
+                build_linear_model,
                 model_name=study_name,
                 hps=best_params,
                 fit_params=fit_params,
@@ -201,7 +263,7 @@ def fit_linear_models(
             preds = np.concatenate(preds, axis=1).mean(axis=1) # Take the mean over estimators
 
             # Store predictions for the current quantile
-            all_model_preds[f'{model}_Q{Q}'] = preds
+            all_model_preds[model] = preds
     
     # # Save predictions
     # all_model_preds_df = pd.DataFrame(
@@ -270,17 +332,55 @@ def fit_qgb(
     year: int,
     grid: dict[list],
     k_folds: int,
-    tuning_log_path: Path
+    tuning_log_path: Path,
+    loss: Literal['quantile', 'mse']
 ):
-
+    if loss not in ("quantile", "mse"):
+        raise ValueError(f"Invalid loss '{loss}'. Must be 'quantile' or 'mse'.")
+    
     preds = {}
     path_quantiles = [int(q*100) for q in quantiles]  # Quantiles as integers (e.g., 5 for 0.05) for file names
 
-    for Q, q in zip(path_quantiles, quantiles):
-        study_name = f'QGB_Q{Q}_{target_name}_{year}'
+    if loss == 'quantile': 
+        for Q, q in zip(path_quantiles, quantiles):
+            study_name = f'QGB_Q{Q}_{target_name}_{year}'
+
+            # Check if study already exists
+            gbt = GradientBoostingRegressor(random_state=1, loss='quantile', alpha=q)
+            
+            if check_hps_exist(study_name, tuning_log_path):
+                print(f"Study {study_name} already exists. Loading...")
+                best_params = load_hyperparameters(study_name, tuning_log_path)
+                gbt.set_params(**best_params)
+                best_fit = gbt.fit(X_train, y_train.values.flatten())
+            else:
+                print(f'Tuning {study_name}...')
+                grid_search = GridSearchCV(
+                    gbt, 
+                    grid, 
+                    refit=True, 
+                    cv=k_folds, 
+                    n_jobs=-1
+                )
+
+                # Perform grid search and refit with best params
+                best_fit = grid_search.fit(X_train, y_train.values.flatten())
+
+                # Save hps
+                best_params = best_fit.best_params_
+                save_hyperparameters(best_params, study_name, tuning_log_path)
+
+            preds[f'QGB_Q{Q}'] = best_fit.predict(X_test)
+
+    else: 
+        study_name = f'QGB_{target_name}_{year}'
 
         # Check if study already exists
-        gbt = GradientBoostingRegressor(random_state=1, loss='quantile', alpha=q)
+        gbt = GradientBoostingRegressor(
+            random_state=1, 
+            loss='squared_error'
+        )
+        
         if check_hps_exist(study_name, tuning_log_path):
             print(f"Study {study_name} already exists. Loading...")
             best_params = load_hyperparameters(study_name, tuning_log_path)
@@ -288,7 +388,13 @@ def fit_qgb(
             best_fit = gbt.fit(X_train, y_train.values.flatten())
         else:
             print(f'Tuning {study_name}...')
-            grid_search = GridSearchCV(gbt, grid, refit=True, cv=k_folds, n_jobs=-1)
+            grid_search = GridSearchCV(
+                gbt, 
+                grid, 
+                refit=True, 
+                cv=k_folds, 
+                n_jobs=-1
+            )
 
             # Perform grid search and refit with best params
             best_fit = grid_search.fit(X_train, y_train.values.flatten())
@@ -297,7 +403,8 @@ def fit_qgb(
             best_params = best_fit.best_params_
             save_hyperparameters(best_params, study_name, tuning_log_path)
 
-        preds[f'QGB_Q{Q}'] = best_fit.predict(X_test)
+        preds[f'QGB'] = best_fit.predict(X_test)
+
     return preds
 
 def fit_qrf(
@@ -309,14 +416,23 @@ def fit_qrf(
         year: int,
         grid: dict[list],
         k_folds: int,
-        tuning_log_path: Path
+        tuning_log_path: Path,
+        loss: Literal['quantile', 'mse']
     ):
+
+    if loss not in ("quantile", "mse"):
+        raise ValueError(f"Invalid loss '{loss}'. Must be 'quantile' or 'mse'.")
 
     path_quantiles = [int(q*100) for q in quantiles]  # Quantiles as integers (e.g., 5 for 0.05) for file names
     preds = {}
 
+   
     study_name = f'QRF_{target_name}_{year}'
-    qrf = RandomForestQuantileRegressor(random_state=1, max_features='sqrt')
+    if loss == 'quantile':
+        qrf = RandomForestQuantileRegressor(random_state=1, max_features='sqrt')
+    else:
+        qrf = RandomForestRegressor(random_state=1, max_features='sqrt')
+    
     # Check if study already exists
     if check_hps_exist(study_name, tuning_log_path):
         print(f"Study {study_name} already exists. Loading...")
@@ -335,10 +451,17 @@ def fit_qrf(
 
     qrf.set_params(**best_params)
     qrf.fit(X_train, y_train.values.flatten())
-    preds_array = qrf.predict(X_test, quantiles=quantiles).reshape(-1,len(quantiles))  # Shape (n_samples, n_quantiles)
-    
-    for i, Q in enumerate(path_quantiles):
-        preds[f'QRF_Q{Q}'] = preds_array[:, i]
+
+    if loss == 'quantile':
+        preds_array = qrf.predict(
+            X_test, 
+            quantiles=quantiles
+        ).reshape(-1,len(quantiles))  # Shape (n_samples, n_quantiles)
+        for i, Q in enumerate(path_quantiles):
+            preds[f'QRF_Q{Q}'] = preds_array[:, i]
+    else:
+        preds_array = qrf.predict(X_test).flatten()  # Shape (n_samples, n_quantiles)
+        preds['QRF'] = preds_array
 
     return preds
 
@@ -392,19 +515,22 @@ def fit_ar1(
         y_train: pd.DataFrame, 
         X_test: pd.DataFrame, 
         quantiles: list[float], 
-        target_name: str, 
-        year: int,
-        verbose: bool=True
+        verbose: bool=True,
+        loss: Literal['quantile', 'mse'] = 'quantile'
     ):
+
+    if loss not in ("quantile", "mse"):
+        raise ValueError(f"Invalid loss '{loss}'. Must be 'quantile' or 'mse'.")
 
     preds_dict = {}
 
-    for q in quantiles:
-        if verbose: print(f'Fitting quantile {q}') 
-        ar_1 = QuantileRegressor(quantile=q)
-        ar_1.fit(X_train.values.reshape(-1,1), y_train.values)
-        preds = ar_1.predict(X_test.values.reshape(-1,1)) # Shape (n_samples,)
-        preds_dict[f'AR1_Q{int(q*100)}'] = preds
+    if loss == 'quantile':
+        for q in quantiles:
+            if verbose: print(f'Fitting quantile {q}') 
+            ar_1 = QuantileRegressor(quantile=q)
+            ar_1.fit(X_train.values.reshape(-1,1), y_train.values)
+            preds = ar_1.predict(X_test.values.reshape(-1,1)) # Shape (n_samples,)
+            preds_dict[f'AR1_Q{int(q*100)}'] = preds
 
     # Train an AR(1) specifically for the mean
     ar1_mean = LinearRegression()
@@ -414,20 +540,26 @@ def fit_ar1(
 
     return preds_dict
 
-def fit_dummy(X_train: pd.DataFrame, 
-              y_train: pd.Series,
-              X_test: pd.DataFrame,
-              quantiles: list[float]):
-    
+def fit_dummy(
+        X_train: pd.DataFrame, 
+        y_train: pd.Series,
+        X_test: pd.DataFrame,
+        quantiles: list[float],
+        loss: Literal['quantile', 'mse'] = 'quantile'
+):
+    if loss not in ("quantile", "mse"):
+        raise ValueError(f"Invalid loss '{loss}'. Must be 'quantile' or 'mse'.")
+
     preds_dict = {}
 
-    for q in quantiles:
-        Q = int(q*100)
-        naive = DummyRegressor(strategy='quantile', quantile=q)
-        # X does not matter for DummyRegressor but required for consistency
-        naive.fit(X_train, y_train)
-        preds = naive.predict(X_test)
-        preds_dict[f'Naive_Q{Q}'] = preds
+    if loss == 'quantile':
+        for q in quantiles:
+            Q = int(q*100)
+            naive = DummyRegressor(strategy='quantile', quantile=q)
+            # X does not matter for DummyRegressor but required for consistency
+            naive.fit(X_train, y_train)
+            preds = naive.predict(X_test)
+            preds_dict[f'Naive_Q{Q}'] = preds
 
     # Naive Mean Regressor
     naive_mean = DummyRegressor(strategy='mean')

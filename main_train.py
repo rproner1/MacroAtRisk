@@ -149,6 +149,13 @@ parser.add_argument(
         "(reduces hyperparameter tuning for quick testing)"
     )
 )
+parser.add_argument(
+    '--loss',
+    type=str,
+    default='quantile',
+    choices=['quantile', 'mse'],
+    help='Whether to perform quantile or mean regression'
+)
 
 args = parser.parse_args()
 
@@ -168,6 +175,10 @@ FEATURE_SPLIT_METHOD = args.split_by
 TIME_STEPS = args.time_steps
 VAL_MONTHS = args.val_months
 TEST_MONTHS = args.test_months
+LOSS = args.loss
+
+if LOCAL_TEST:
+    DATE = DATE + '_local_test'
 
 # Paths
 BASE_DIR = Path('./')
@@ -178,8 +189,8 @@ LINEAR_PRED_DIR = BASE_DIR / 'predictions' / 'linear_preds' / DATE
 TREE_PRED_DIR = BASE_DIR / 'predictions' / 'tree_preds' / DATE
 
 SHELF_TUNING_LOG_PATH = BASE_DIR / 'tuning_logs' / f"shelf_tuning_log_{DATE}.json"
-NAIVE_PRED_DIR = BASE_DIR / 'predictions' / 'naive_preds' 
-LIT_BENCH_PRED_DIR = BASE_DIR / 'predictions' / 'lit_bench_preds'
+NAIVE_PRED_DIR = BASE_DIR / 'predictions' / 'naive_preds' / LOSS
+LIT_BENCH_PRED_DIR = BASE_DIR / 'predictions' / 'lit_bench_preds' / LOSS
 DEEP_MODEL_DIR = BASE_DIR / 'models' / 'st_models' / DATE 
 DEEP_PRED_DIR = BASE_DIR / 'predictions' / 'st_preds' / DATE
 DEEP_TUNING_LOG_PATH = BASE_DIR / 'tuning_logs' / f"st_tuning_log_{DATE}.json"
@@ -351,7 +362,13 @@ def train_naive_models():
     ) = _load_shelf_data()
 
     # Naive models
-    naive_preds = fit_dummy(X_train_full, y_train_full, X_test, QUANTILES)
+    naive_preds = fit_dummy(
+        X_train_full, 
+        y_train_full, 
+        X_test, 
+        QUANTILES,
+        loss=LOSS
+    )
     
     # Save predictions
     output_path = (
@@ -388,8 +405,7 @@ def train_ar1_model():
         y_train=y_train_full,
         X_test=X_test,
         quantiles=QUANTILES,
-        target_name=TARGET_NAME,
-        year=YEAR
+        loss=LOSS
     )
 
     return ar1_preds
@@ -436,6 +452,7 @@ def train_linear_models():
         model_dir_path=SHELF_MODEL_DIR,
         linear_grids=LINEAR_GRIDS,
         optuna_storage=OPTUNA_STORAGE,
+        loss=LOSS
     )
     all_preds.update(linear_preds)
 
@@ -478,7 +495,8 @@ def train_tree_models():
         YEAR, 
         QRF_GRID, 
         K_FOLDS, 
-        SHELF_TUNING_LOG_PATH
+        SHELF_TUNING_LOG_PATH,
+        loss=LOSS
     )
     all_preds.update(qrf_preds)
 
@@ -492,7 +510,8 @@ def train_tree_models():
         YEAR, 
         QGB_GRID, 
         K_FOLDS, 
-        SHELF_TUNING_LOG_PATH
+        SHELF_TUNING_LOG_PATH,
+        loss=LOSS
     )
     all_preds.update(qgb_preds)
 
@@ -530,13 +549,21 @@ def train_lit_bench_models():
     )
     
     
-    # Fit quantile regression models
-    preds = {}
-    for q in QUANTILES:
-        Q = int(q * 100)
-        model = QuantReg(y_train_full.values.flatten(), add_constant(X_train_full.values, has_constant='skip'))
-        res = model.fit(q=q)
-        preds[f'{BENCHMARK_NAME}_Q{Q}'] = res.predict(add_constant(X_test.values, has_constant='skip'))
+    # # Fit quantile regression models
+    # preds = {}
+    # for q in QUANTILES:
+    #     Q = int(q * 100)
+    #     model = QuantReg(y_train_full.values.flatten(), add_constant(X_train_full.values, has_constant='skip'))
+    #     res = model.fit(q=q)
+    #     preds[f'LIT_Q{Q}'] = res.predict(add_constant(X_test.values, has_constant='skip'))
+
+    _, preds = fit_lit_bench_model(
+        X_train=X_train_full,
+        y_train=y_train_full,
+        X_test=X_test,
+        loss=LOSS,
+        quantiles=QUANTILES
+    )
     
     # Save predictions
     output_path = (
@@ -751,13 +778,9 @@ def main():
     # shelf_preds = {}
     if run_all or "linear" in MODEL_TYPE:
         train_linear_models()
-        # shelf_preds.update(linear_preds)
 
     if run_all or "trees" in MODEL_TYPE:
         train_tree_models()
-        # shelf_preds.update(tree_preds)
-    
-    # Save shelf predictions 
 
     if run_all or "deep" in MODEL_TYPE:
         train_deep_models()
