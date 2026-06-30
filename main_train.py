@@ -330,7 +330,8 @@ def _load_shelf_data(
         train_cutoff_year=train_cutoff_year,
         val_months=val_months,
         test_months=test_months,
-        target_scale_factor=target_scale_factor
+        target_scale_factor=target_scale_factor,
+        winsorize=True
     )
 
     X_train_full = pd.concat([X_train, X_val])
@@ -595,7 +596,8 @@ def train_deep_models():
         val_months=VAL_MONTHS,
         test_months=TEST_MONTHS,
         target_scale_factor=TARGET_SCALE_FACTOR,
-        split_groups=FEATURE_SPLITS
+        split_groups=FEATURE_SPLITS,
+        winsorize=True
     )
 
     if isinstance(X_train, list):
