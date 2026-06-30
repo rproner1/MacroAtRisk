@@ -42,11 +42,12 @@
 
 \section{Summary}
 \begin{itemize}
-  \item Data: JKP + 12 lags of target
-  \item JKP + lags is better than just FRED-MD alone
-  \item For inflation, QRF performance is worse while QGB performance is better compared to FRED + JKP
-  \item For IP, both QRF and QGB perform better compared to FRED+JKP
-  \item For Unrate Both QRF and QGB perform slightly worse compared to FRED+JKP
+  % \item Data: JKP + 12 lags of target
+  % \item JKP + lags is better than just FRED-MD alone
+  % \item For inflation, QRF performance is worse while QGB performance is better compared to FRED + JKP
+  % \item For IP, both QRF and QGB perform better compared to FRED+JKP
+  % \item For Unrate Both QRF and QGB perform slightly worse compared to FRED+JKP
+  \item FRED only
 \end{itemize}
 
 \section{Main tables}
@@ -101,6 +102,16 @@
   \label{tab: baseline r2 table}
 \end{table}
 
+
+% Calibration
+\begin{table}[htbp]
+  \centering
+  \resizebox{\textwidth}{!}{
+  \input{../results_tables/\resultsdate/calibration_us_4q_1998-01-01-2024-12-01.tex}
+  }
+  \caption{Calibration table for annual inflation, annual IP growth, and annual percent change in the unemployment rate for the period January 1998 to December 2024}
+  \label{tab: baseline calibration table}
+\end{table}
 
 
 % \section{Figures}

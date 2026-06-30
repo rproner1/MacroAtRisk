@@ -281,3 +281,44 @@ def get_r2_results_df(
         ]
     
     return pd.DataFrame(r2s)
+
+def compute_calibration_error(
+        quantile_preds: np.ndarray,
+        probabilities: np.ndarray,
+        y_true: np.ndarray
+):
+    
+    results = {}
+    for i, q in enumerate(probabilities):
+
+        print(quantile_preds)
+        coverage = np.mean(y_true < quantile_preds[:,i])
+        calibration_error = coverage - q
+        results[f'Q{int(q*100)}'] = calibration_error
+    
+    results['Mean'] = np.mean(list(results.values()))
+
+    return results
+
+def get_calibration_results_df(
+    y_true: pd.Series,
+    preds_df: pd.DataFrame,
+    models: list[str],
+    probabilities: list[float]
+):
+    
+    all_models_results = {}
+    for model in models:
+        model_cols = [c for c in preds_df.columns if c.startswith(f'{model}_')]
+        model_q_preds = preds_df[model_cols]
+
+        print(model)
+        calibration_results = compute_calibration_error(
+            quantile_preds=model_q_preds.values,
+            probabilities=probabilities,
+            y_true=y_true.values
+        )
+
+        all_models_results[model] = calibration_results
+    
+    return pd.DataFrame(all_models_results)
