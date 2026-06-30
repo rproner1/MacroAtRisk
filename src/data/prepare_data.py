@@ -536,10 +536,26 @@ def _impute_missing_features(
 
     return X_train_imp, X_val_imp, X_test_imp
 
+def _winsorize_features(
+        X_train,
+        X_val,
+        X_test,
+        lower=0.005,
+        upper=0.995
+):
+    # Winsorize data to avoid extreme outliers 
+    low, high = X_train.quantile(lower), X_train.quantile(upper)
+    X_train = X_train.clip(lower=low, upper=high, axis=1)
+    X_val = X_val.clip(lower=low, upper=high, axis=1)
+    X_test = X_test.clip(lower=low, upper=high, axis=1)
+
+    return X_train, X_val, X_test
+
+
 def _scale_features(
         X_train,
         X_val,
-        X_test
+        X_test,
 ):
     # Standardize features
     scaler = StandardScaler()
@@ -586,7 +602,10 @@ def prepare_non_rnn_data(
         val_months: int = 24,
         test_months: int = 12,
         target_scale_factor: int|float = 100,
-        split_groups: list[list[str]] = None
+        split_groups: list[list[str]] = None,
+        winsorize: bool = False,
+        lower: float = 0.005,
+        upper: float = 0.995
     ):
 
     # Read and merge data
@@ -629,9 +648,21 @@ def prepare_non_rnn_data(
         X_train, X_val, X_test
     )
 
+    # Winsorize data
+    if winsorize:
+        X_train, X_val, X_test = _winsorize_features(
+            X_train=X_train,
+            X_val=X_val, 
+            X_test=X_test,
+            lower=lower,
+            upper=upper
+        )
+
     # Scale data
     X_train, X_val, X_test = _scale_features(
-        X_train, X_val, X_test
+        X_train, 
+        X_val, 
+        X_test
     )
 
     # Split inputs into lists of groups
@@ -683,7 +714,10 @@ def prepare_rnn_data(
         test_months: int = 12,
         n_timesteps: int = 12,
         target_scale_factor: int|float = 100,
-        split_groups: list[list[str]] = None
+        split_groups: list[list[str]] = None,
+        winsorize: bool = False,
+        lower: float = 0.005,
+        upper: float = 0.995
     ):
 
 
@@ -700,7 +734,10 @@ def prepare_rnn_data(
         train_cutoff_year,
         val_months,
         test_months,
-        target_scale_factor=target_scale_factor
+        target_scale_factor=target_scale_factor,
+        winsorize=winsorize,
+        lower=lower,
+        upper=upper
     )
 
 
