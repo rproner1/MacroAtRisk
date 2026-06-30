@@ -223,7 +223,7 @@ Scaled Features Ready for Training
 If using `prepare_rnn_data()`:
 - Concatenate features with targets to create sequences
 - Use `split_sequences()` to create (n_samples, n_timesteps, n_features) arrays
-- Each RNN sample sees 12 quarters (3 years) of history
+- Each RNN sample sees 12 months of history
 
 ## Implementation Details
 
