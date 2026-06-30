@@ -1,5 +1,5 @@
 import warnings
-from typing import Union, List
+from typing import Union, List, Literal
 
 import numpy as np
 from joblib import Parallel, delayed
@@ -145,17 +145,47 @@ def fit_qpcr(X: np.ndarray, y: np.ndarray, q: float, n_updates: int=None, max_pr
 
 
 
-def build_qlr(q: float=0.5, l1: float=0.0, l2: float=0.0, lr: float=0.001):
+def build_linear_model(
+        l1: float=0.0, 
+        l2: float=0.0, 
+        lr: float=0.001, 
+        loss: Literal['quantile', 'mse'] = 'quantile',
+        q: float = 0.5
+    ):
+    
+    if loss not in ("quantile", "mse"):
+        raise ValueError(f"Invalid loss '{loss}'. Must be 'quantile' or 'mse'.")
+
     model = keras.models.Sequential()
-    model.add(keras.layers.Dense(int(1), activation = 'linear', kernel_regularizer=keras.regularizers.L1L2(l1=l1,l2=l2)))
+    model.add(
+        keras.layers.Dense(
+            int(1), 
+            activation = 'linear', 
+            kernel_initializer='glorot_normal',
+            kernel_regularizer=keras.regularizers.L1L2(l1=l1,l2=l2)
+        )
+    )
     opt = keras.optimizers.Adam(learning_rate=lr)
-    loss = make_tilted_loss(q)
-    model.compile(loss = loss, optimizer = opt)
+
+    if loss == 'quantile':
+        loss_fn = make_tilted_loss(q)
+    else:
+        loss_fn = 'mse'
+
+    model.compile(loss = loss_fn, optimizer = opt)
+
     return model
 
 
-def build_nn(q: Union[float, int]=0.5, n_dense_layers: int=1, n_nodes: int=16,
-             l1: float=0.0, l2: float=0.0, lr: float=0.001, norm_fn: str='batch'):
+def build_nn(
+        n_layers: int=1, 
+        n_nodes: int=16,
+        l1: float=0.0, 
+        l2: float=0.0, 
+        lr: float=0.001,
+        loss: Literal['quantile', 'mse'] = 'quantile',
+        q: float=0.5,
+):
     """
     Builds a single task quantile regression neural network.
 
@@ -179,43 +209,57 @@ def build_nn(q: Union[float, int]=0.5, n_dense_layers: int=1, n_nodes: int=16,
     model: a compiled keras model
     """
 
-    norm_fn = norm_fn.lower()
-    if norm_fn == 'batch':
-        norm_fn = keras.layers.BatchNormalization
-    elif norm_fn == 'layer':    
-        norm_fn = keras.layers.LayerNormalization
-    else:
-        raise ValueError("norm_fn must be 'batch' or 'layer'")
+    if loss not in ("quantile", "mse"):
+        raise ValueError(f"Invalid loss '{loss}'. Must be 'quantile' or 'mse'.")
 
     model = keras.models.Sequential()
-    for i in range(1,n_dense_layers+1):
+    for i in range(1, n_layers + 1):
         model.add(
             keras.layers.Dense(
                 n_nodes, 
                 'relu', 
+                kernel_initializer='he_normal',
                 kernel_regularizer=keras.regularizers.L1L2(l1,l2)
             )
         )
 
-        if i<n_dense_layers:
-            model.add(norm_fn())
+        if i < n_layers:
+            model.add(keras.layers.LayerNormalization())
 
     model.add(
         keras.layers.Dense(
-            int(1), 
+            1, 
             activation='linear', 
+            kernel_initializer='glorot_normal',
             kernel_regularizer=keras.regularizers.L1L2(l1,l2)
         )
     )
     
     opt = keras.optimizers.Adam(learning_rate=lr)
-    loss = make_tilted_loss(q)
-    model.compile(loss = loss, optimizer = opt)
+
+    if loss == 'quantile':
+        loss_fn = make_tilted_loss(q)
+    else:
+        loss_fn = 'mse'
+
+    model.compile(loss = loss_fn, optimizer = opt)
+    
     return model
 
+def build_mt():
+    pass
 
-def build_rnn(q: Union[float, int]=0.5, n_recurrent_layers: int=2, n_dense_layers: int=1, n_nodes: int=32,
-               l1: float=0.0, l2: float=0.0, lr: float=0.001, recurrent_layer_type: str='gru'):
+def build_rnn(
+        n_recurrent_layers: int=2, 
+        n_dense_layers: int=1, 
+        n_nodes: int=32,
+        l1: float=0.0, 
+        l2: float=0.0, 
+        rec_drop: float=0.0,
+        lr: float=0.001, 
+        loss: Literal['quantile', 'mse'] = 'quantile',
+        q: float=0.5
+):
     """
     Builds a single task quantile regression recurrent neural network.
 
@@ -242,20 +286,25 @@ def build_rnn(q: Union[float, int]=0.5, n_recurrent_layers: int=2, n_dense_layer
     ----------
     model: a compiled keras model
     """
-    recurrent_layer_type = recurrent_layer_type.lower()
-    if recurrent_layer_type == 'lstm':
-        recurrent_layer_type = keras.layers.LSTM
-    elif recurrent_layer_type == 'gru':    
-        recurrent_layer_type = keras.layers.GRU
 
+    if loss not in ("quantile", "mse"):
+        raise ValueError(f"Invalid loss '{loss}'. Must be 'quantile' or 'mse'.")
+    
     # Recurrent layers
     model = keras.models.Sequential()
     for i in range(1,n_recurrent_layers+1):
         model.add(
-            recurrent_layer_type(
+            keras.layers.LSTM(
                 n_nodes, 
-                return_sequences=(i < n_recurrent_layers), kernel_regularizer=keras.regularizers.L1L2(l1,l2)
+                return_sequences=(i < n_recurrent_layers), 
+                recurrent_dropout=rec_drop,
+                recurrent_regularizer=keras.regularizers.L1L2(l1,l2),
+                kernel_regularizer=keras.regularizers.L1L2(l1,l2)
             )
+        )
+
+        model.add(
+            keras.layers.LayerNormalization()
         )
 
     # Dense layers
@@ -264,23 +313,35 @@ def build_rnn(q: Union[float, int]=0.5, n_recurrent_layers: int=2, n_dense_layer
             keras.layers.Dense(
                 n_nodes, 
                 'relu', 
+                kernel_initializer='he_normal',
                 kernel_regularizer=keras.regularizers.L1L2(l1,l2)
             )
         )
+    
+        if i < n_dense_layers:
+            model.add(
+                keras.layers.LayerNormalization()
+            )
 
     # Output layer    
     model.add(
         keras.layers.Dense(
-            int(1), 
+            1, 
             activation='linear', 
+            kernel_initializer='glorot_normal',
             kernel_regularizer=keras.regularizers.L1L2(l1,l2)
         )
     )
     
     opt = keras.optimizers.Adam(learning_rate=lr)
-    loss = make_tilted_loss(q)
-    model.compile(loss = loss, optimizer = opt)
+
+    if loss == 'quantile':
+        loss_fn = make_tilted_loss(q)
+    else:
+        loss_fn = 'mse'
+    model.compile(loss = loss_fn, optimizer = opt)
     return model
+    
 
 def _build_input_layer(
         input_shapes: list[tuple]
